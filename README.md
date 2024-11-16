@@ -64,13 +64,13 @@ The project uses a JSON-based content management system, making it perfect for J
 
 ## 🛠️ Tech Stack
 
-- Vue 3.5+
-- Vite
-- Bun.js
-- TypeScript
-- Tailwind CSS
-- shadcn-vue
-- Radix Vue
+- [Vue 3.5+](https://vuejs.org/)
+- [Vite](https://vitejs.dev/)
+- [Bun.js](https://bun.sh/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn-vue](https://github.com/unovue/shadcn-vue)
+- [Radix Vue](https://www.radix-vue.com/)
 
 ## 📦 Project Structure
 
