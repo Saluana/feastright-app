@@ -1,0 +1,29 @@
+@layer components {
+  .glow-border {
+    @apply relative;
+
+    &::before {
+      @apply content-[''] absolute -inset-[2px] bg-gradient-to-r from-primary/50 
+             to-secondary/50 rounded-lg blur-sm transition-all duration-500;
+    }
+  }
+
+  .animate-border {
+    --border-size: 2px;
+    --border-angle: 0turn;
+    background-image: conic-gradient(
+      from var(--border-angle),
+      transparent 20%,
+      theme('colors.primary.DEFAULT'),
+      transparent 80%
+    );
+    animation: rotate-border 4s linear infinite;
+  }
+}
+
+@keyframes rotate-border {
+  to { --border-angle: 1turn; }
+}
+
+
+

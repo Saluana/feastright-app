@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@lib/*": ["src/lib/*"]
+    },
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": [
+      "bun-types",
+      "vue"
+    ],
+    "allowImportingTsExtensions": true,
+    "composite": true,
+
+    /* Vue */
+    "jsx": "preserve",
+    
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "isolatedModules": true,
+    "allowJs": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "vite.config.ts",
+    "types"
+  ]
+}
