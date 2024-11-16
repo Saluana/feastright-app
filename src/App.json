@@ -1,17 +1,33 @@
-{
-  "hero": {
-    "title": "Welcome to the Revolution",
-    "description": "We are excited to present the revolutionary use of the ui/shadcn library, now not only for dashboards and SPA applications but also for websites, MPA, and block components for better and flexible UI/UX."
-  },
-  "buttons": {
-    "primary": {
-      "text": "Visit shadcn-vue",
-      "url": "https://shadcn-vue.com"
-    },
-    "secondary": {
-      "text": "View Repository",
-      "url": "https://github.com/alexy-os/vue-shadcn-starter"
-    }
-  }
-}
-
+{
+
+  "hero": {
+
+    "title": "Welcome to the Revolution UI",
+
+    "description": "We are excited to present the revolutionary use of the ui/shadcn library, now not only for dashboards and SPA applications but also for websites, MPA, and block components for better and flexible UI/UX."
+
+  },
+
+  "buttons": {
+
+    "primary": {
+
+      "text": "Shadcn Vue UI",
+
+      "url": "https://github.com/unovue/shadcn-vue"
+
+    },
+
+    "secondary": {
+
+      "text": "UI Starter",
+
+      "url": "https://github.com/alexy-os/vue-shadcn-starter"
+
+    }
+
+  }
+
+}
+
+

@@ -1,6 +1,6 @@
-# Vue Shadcn Starter
+# Vue Shadcn UI Starter
 
-A revolutionary approach to building modern websites using Vue 3, Shadcn UI, and Tailwind CSS. This starter kit transforms the traditional admin-dashboard-focused shadcn components into a versatile solution for creating stunning landing pages, multi-page applications, and reusable UI blocks.
+A revolutionary approach to building modern websites using Vite + Vue 3 Shadcn UI in a BunJS environment. This starter kit turns traditional admin panel-centric ui/shadcn components into a versatile solution for creating stunning landing pages, multi-page applications, and reusable UI blocks.
 
 ## 🌟 Key Features
 
