@@ -1,3 +1,10 @@
+> **Note**: This README is for the initial version (v.0.01) that implements BEM methodology: 
+> https://github.com/alexy-os/vue-shadcn-starter/tree/v.0.01/
+>
+> The second version without BEM is currently under active development and will be released soon. 
+> The decision to remove BEM was made to maintain closer alignment with shadcn's utility-first philosophy 
+> and to simplify component maintenance and updates.
+
 # Vue Shadcn UI Starter
 
 A revolutionary approach to building modern websites using Vite + Vue 3 Shadcn UI in a BunJS environment. This starter kit turns traditional admin panel-centric ui/shadcn components into a versatile solution for creating stunning landing pages, multi-page applications, and reusable UI blocks.
