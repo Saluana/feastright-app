@@ -11,7 +11,7 @@ A revolutionary approach to building modern websites using Vite + Vue 3 Shadcn U
 
 ## Page speed Google Lighthouse score 100%
 
-![Google Lighthouse score](https://pagespeed.web.dev/analysis/https-vue-uikit-shadcn-vercel-app/6a6ivry2d8?form_factor=desktop)
+[Google Lighthouse score](https://pagespeed.web.dev/analysis/https-vue-uikit-shadcn-vercel-app/6a6ivry2d8?form_factor=desktop)
 
 ## 🌟 Key Features
 
