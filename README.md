@@ -9,6 +9,10 @@
 
 A revolutionary approach to building modern websites using Vite + Vue 3 Shadcn UI in a BunJS environment. This starter kit turns traditional admin panel-centric ui/shadcn components into a versatile solution for creating stunning landing pages, multi-page applications, and reusable UI blocks.
 
+## Page speed Google Lighthouse score 100%
+
+![Google Lighthouse score](https://pagespeed.web.dev/analysis/https-vue-uikit-shadcn-vercel-app/6a6ivry2d8?form_factor=desktop)
+
 ## 🌟 Key Features
 
 - **Advanced Design System**: Built on top of shadcn-vue with extended functionality for websites
