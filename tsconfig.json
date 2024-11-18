@@ -15,7 +15,8 @@
     "noEmit": true,
     "types": [
       "bun-types",
-      "vue"
+      "vue",
+      "vue-router"
     ],
     "allowImportingTsExtensions": true,
     "composite": true,
