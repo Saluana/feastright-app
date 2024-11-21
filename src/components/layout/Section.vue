@@ -21,7 +21,7 @@ const sectionVariants = cva(
       }
     },
     defaultVariants: {
-      spacing: 'md',
+      spacing: 'none',
       background: 'none'
     }
   }

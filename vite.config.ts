@@ -13,9 +13,7 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': resolve('./src'),
-      '@components': resolve('./src/components'),
-      '@lib': resolve('./src/lib')
+      '@': resolve('./src')
     }
   }
 })

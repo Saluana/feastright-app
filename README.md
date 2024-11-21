@@ -1,76 +1,82 @@
-> **Note**: This README is for the initial version (v.0.01) that implements BEM methodology: 
-> https://github.com/alexy-os/vue-shadcn-starter/tree/v.0.01/
->
-> The second version without BEM is currently under active development and will be released soon. 
-> The decision to remove BEM was made to maintain closer alignment with shadcn's utility-first philosophy 
-> and to simplify component maintenance and updates.
+# Vue Shadcn UIKit Starter
 
-# Vue Shadcn UI Starter
-
-A revolutionary approach to building modern websites using Vite + Vue 3 Shadcn UI in a BunJS environment. This starter kit turns traditional admin panel-centric ui/shadcn components into a versatile solution for creating stunning landing pages, multi-page applications, and reusable UI blocks.
+A modern approach to building websites using Vue 3 + Shadcn UI in a BunJS environment. This starter kit provides a robust foundation for creating landing pages, multi-page applications, and reusable UI components with a utility-first CSS approach.
 
 ## Page speed Google Lighthouse score 100%
 
 [Google Lighthouse score](https://pagespeed.web.dev/analysis/https-vue-uikit-shadcn-vercel-app/6a6ivry2d8?form_factor=desktop)
 
-## 🌟 Key Features
+## 🚀 Getting Started
 
-- **Advanced Design System**: Built on top of shadcn-vue with extended functionality for websites
-- **BEM + Tailwind Methodology**: Centralized styling configuration with BEM naming convention
-- **Dark Mode Support**: Seamless theme switching with persistent state
-- **JAMstack Ready**: Content management through JSON files
-- **Type-Safe**: Full TypeScript support
-- **Performance Optimized**: Powered by Bun.js and Vite
-
-## 🚀 Quick Start
+### Prerequisites
+- [Bun](https://bun.sh/) >= 1.0.0
+- Node.js >= 18.0.0
 
 ```bash
-# Clone the repository
+# Install Bun
+curl -fsSL https://bun.sh/install | bash
+
+# Clone and Setup
 git clone https://github.com/alexy-os/vue-shadcn-starter
-
-# Install dependencies
+cd vue-shadcn-starter
 bun install
-
-# Start development server
 bun dev
 ```
 
-## 🎨 Styling Architecture
+## 🎨 Component Development
 
-The project introduces a unique styling approach that combines BEM methodology with Tailwind CSS, managed through a centralized configuration:
+### CVA (class-variance-authority) Approach
+
+We use CVA for type-safe component variants. Here's how to create a new component:
 
 ```typescript
-// styles.config.ts example
-export const styles = {
-  'block': 'tailwind-classes',
-  'block__element': 'tailwind-classes',
-  'block__element--modifier': 'tailwind-classes'
-}
+// components/ui/button/button.ts
+import { cva } from 'class-variance-authority'
+
+export const buttonVariants = cva(
+  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground'
+      },
+      size: {
+        default: 'h-10 px-4 py-2',
+        sm: 'h-9 rounded-md px-3',
+        lg: 'h-11 rounded-md px-8'
+      }
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default'
+    }
+  }
+)
 ```
 
-### Usage in Components
+### Component Implementation
 
 ```vue
+<!-- components/ui/button/button.vue -->
+<script setup lang="ts">
+import { computed } from 'vue'
+import { buttonVariants } from './button'
+import type { ButtonVariants } from './button.types'
+
+const props = defineProps<ButtonVariants>()
+
+const classes = computed(() => 
+  buttonVariants({ variant: props.variant, size: props.size })
+)
+</script>
+ 
 <template>
-  <div :class="getStyles('block')">
-    <div :class="getStyles('block__element')">
-      {{ content.title }}
-    </div>
-  </div>
+  <button :class="classes">
+    <slot />
+  </button>
 </template>
-```
-
-## 📄 Content Management
-
-The project uses a JSON-based content management system, making it perfect for JAMstack architectures:
-
-```json
-{
-  "hero": {
-    "title": "Your Title",
-    "description": "Your Description"
-  }
-}
 ```
 
 ## 🛠️ Tech Stack
@@ -82,6 +88,7 @@ The project uses a JSON-based content management system, making it perfect for J
 - [Tailwind CSS](https://tailwindcss.com/)
 - [shadcn-vue](https://github.com/unovue/shadcn-vue)
 - [Radix Vue](https://www.radix-vue.com/)
+- [class-variance-authority (CVA)](https://github.com/joe-bell/class-variance-authority)
 
 ## 📦 Project Structure
 
@@ -89,14 +96,34 @@ The project uses a JSON-based content management system, making it perfect for J
 src/
 ├── components/
 │   └── ui/          # Shadcn components
-├── config/
-│   └── styles.config.ts  # Centralized styling
-├── utils/
-│   └── styles.ts    # Style utilities
-├── assets/
-│   └── index.css    # Global styles
+│       └── button/  # Example component structure
+│           ├── button.ts        # CVA variants
+│           ├── button.vue       # Component implementation
+│           └── button.types.ts  # TypeScript interfaces
+├── lib/
+│   └── utils.ts     # Utility functions
+├── styles/
+│   └── globals.css  # Global styles
 └── App.vue          # Main application
 ```
+
+## 🔧 Development Guidelines
+
+1. **Component Creation**:
+   - Place new components in `src/components/ui/`
+   - Use CVA for variant management
+   - Create separate files for types and variants
+   - Implement proper TypeScript interfaces
+
+2. **Styling**:
+   - Follow utility-first approach with Tailwind CSS
+   - Use CVA for managing component variants
+   - Maintain dark mode compatibility
+
+3. **Type Safety**:
+   - Ensure all components are properly typed
+   - Use TypeScript strict mode
+   - Leverage Vue 3.5+ type inference
 
 ## 🎯 Use Cases
 

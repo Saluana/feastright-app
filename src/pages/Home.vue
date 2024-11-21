@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import Hero from '@/components/sections/hero/Hero.vue'
-import HeroContent from '@/components/sections/hero/HeroContent.vue'
-import HeroTitle from '@/components/sections/hero/HeroTitle.vue'
-import HeroDescription from '@/components/sections/hero/HeroDescription.vue'
-import HeroActions from '@/components/sections/hero/HeroActions.vue'
-import { DarkMode } from '@/components/darkMode'
-import Button from '@/components/ui/button/Button.vue'
+import { MainNavigation } from '@/components/sections/navbar'
+import {
+  Hero,
+  HeroContent,
+  HeroTitle,
+  HeroDescription,
+  HeroActions
+} from '@/components/sections/hero'
+import { Button } from '@/components/ui/button'
 </script>
 
 <template>
   <main>
-    <Hero align="center" size="lg">
-      <DarkMode />
-      <HeroContent>
+    <MainNavigation />
+    <router-view />
+    <Hero layout="centered" height="nav">
+      <HeroContent class="container mx-auto">
         <HeroTitle>
           Build your next <br>
           <span class="text-primary">Landing Page</span><br>
@@ -27,6 +30,5 @@ import Button from '@/components/ui/button/Button.vue'
         </HeroActions>
       </HeroContent>
     </Hero>
-    <!-- Другие секции будут добавляться здесь -->
   </main>
 </template>

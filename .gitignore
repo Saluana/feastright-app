@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .manual/
+htmlTest/
 .vscode/
 bun.lockb
 tsconfig.tsbuildinfo

@@ -1,4 +1,4 @@
-/// <reference types="vue" />
+/// <reference types="bun-types" />
 /// <reference types="vite/client" />
 /// <reference types="vue-router" />
 
@@ -11,7 +11,6 @@ declare module '*.vue' {
 // Глобальные типы
 interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string
-  // добавьте другие переменные окружения по необходимости
 }
 
 interface ImportMeta {

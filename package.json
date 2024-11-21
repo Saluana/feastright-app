@@ -1,10 +1,10 @@
 {
     "name": "vue-shadcn-starter",
-    "description": "A starter project for Vue 3 with Shadcn UI and Tailwind CSS",
+    "description": "A starter project for Vue 3 with Shadcn UIKit and Tailwind CSS",
     "author": "Alexy-OS",
     "repository": "https://github.com/alexy-os/vue-shadcn-starter",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "0.2.1",
     "private": true,
     "scripts": {
         "dev": "vite",
@@ -13,14 +13,17 @@
     },
     "type": "module",
     "dependencies": {
+        "@radix-icons/vue": "^1.0.0",
+        "@vueuse/core": "^11.2.0",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "lucide-vue-next": "^0.456.0",
         "radix-vue": "^1.9.9",
         "tailwind-merge": "^2.5.4",
+        "tailwindcss-animate": "^1.0.7",
         "vaul-vue": "^0.2.0",
         "vue": "^3.5.13",
-        "vue-router": "4"
+        "vue-router": "^4.4.5"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^5.1.4",

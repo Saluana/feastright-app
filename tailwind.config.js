@@ -1,3 +1,5 @@
+const animate = require("tailwindcss-animate")
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -9,9 +11,7 @@ module.exports = {
     './components/**/*.{ts,tsx,vue}',
     './app/**/*.{ts,tsx,vue}',
     './src/**/*.{ts,tsx,vue}',
-    './src/config/**/*.ts',
-    './src/utils/**/*.ts',
-  ],
+	],
   
   theme: {
     container: {
@@ -87,6 +87,13 @@ module.exports = {
         "collapsible-down": "collapsible-down 0.2s ease-in-out",
         "collapsible-up": "collapsible-up 0.2s ease-in-out",
       },
+      boxShadow: {
+        'glow-sm': '0 1px 3px 0 rgb(var(--primary) / 0.1), 0 1px 2px -1px rgb(var(--primary) / 0.1)',
+        'glow': '0 1px 3px 0 rgb(var(--primary) / 0.1), 0 1px 2px -1px rgb(var(--primary) / 0.1), 0 0 0 1px rgb(var(--primary) / 0.05)',
+        'glow-md': '0 4px 6px -1px rgb(var(--primary) / 0.15), 0 2px 4px -2px rgb(var(--primary) / 0.15)',
+        'glow-lg': '0 10px 15px -3px rgb(var(--primary) / 0.15), 0 4px 6px -4px rgb(var(--primary) / 0.15)',
+      },
     },
   },
+  plugins: [animate],
 }
