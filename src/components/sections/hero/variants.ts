@@ -12,12 +12,13 @@ export const heroVariants = cva(
       layout: {
         default: '',
         split: 'grid grid-cols-1 md:grid-cols-2 gap-0 items-center',
+        splitBox: 'container mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 items-center',
         centered: 'flex min-h-[inherit] items-center justify-center',
         asymmetric: 'grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8 items-center'
       },
       container: {
         none: '',
-        box: 'container mx-auto px-4 md:px-6 lg:px-8',
+        box: 'container mx-auto',
         full: 'w-full'
       },
       height: {
@@ -25,7 +26,7 @@ export const heroVariants = cva(
         screen: 'min-h-screen',
         large: 'min-h-[80vh]',
         medium: 'min-h-[60vh]',
-        nav: 'h-[calc(100vh-64px)]'
+        nav: 'min-h-[calc(100vh-64px)]'
       },
       background: {
         none: '',
@@ -35,9 +36,9 @@ export const heroVariants = cva(
       },
       spacing: {
         none: '',
-        sm: 'py-12 md:py-16',
-        md: 'py-16 md:py-24',
-        lg: 'py-24 md:py-32'
+        sm: 'py-6 sm:py-8 lg:py-12',
+        md: 'py-8 sm:py-12 lg:py-16',
+        lg: 'py-12 sm:py-16 lg:py-24'
       }
     },
     defaultVariants: {
@@ -53,7 +54,7 @@ export const heroVariants = cva(
 
 export interface HeroVariants {
   align?: 'left' | 'center' | 'right'
-  layout?: 'default' | 'split' | 'centered' | 'asymmetric'
+  layout?: 'default' | 'split' | 'splitBox' | 'centered' | 'asymmetric'
   container?: 'none' | 'box' | 'full'
   height?: 'auto' | 'screen' | 'large' | 'medium' | 'nav'
   background?: 'none' | 'gradient' | 'pattern' | 'overlay'

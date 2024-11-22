@@ -14,15 +14,15 @@ const contentVariants = cva(
       },
       spacing: {
         none: 'gap-0',
-        sm: 'gap-2',
-        md: 'gap-4',
-        lg: 'gap-6'
+        sm: 'gap-3 sm:gap-4',
+        md: 'gap-4 sm:gap-6',
+        lg: 'gap-6 sm:gap-8'
       },
       padding: {
         none: '',
-        sm: 'p-4',
-        md: 'p-8 md:p-12',
-        lg: 'p-8 md:p-12 lg:p-16'
+        sm: 'p-4 sm:p-6 lg:p-8',
+        md: 'p-6 sm:p-8 lg:p-12',
+        lg: 'p-8 sm:p-12 lg:p-16'
       },
       width: {
         auto: '',

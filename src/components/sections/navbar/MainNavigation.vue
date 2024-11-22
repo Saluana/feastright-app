@@ -24,9 +24,9 @@ const routes = router.getRoutes()
 
 <template>
   <Navbar class="border-b-[0.5px] border-gradient shadow-glow h-[64px]" style="--navbar-height: 64px;">
+    <div class="flex container mx-auto px-2 md:px-4 lg:px-8 ">
     <!-- Левая часть: бренд и навигация -->
     <NavbarLayer position="start" class="flex-1">
-      <div class="container mx-auto px-4 md:px-6 lg:px-8">
         <div class="flex items-center gap-6">
           <NavbarBrand>
             <Layout class="w-6 h-6" />
@@ -46,11 +46,10 @@ const routes = router.getRoutes()
             </router-link>
           </nav>
         </div>
-      </div>
     </NavbarLayer>
 
     <!-- Правая часть: кнопки -->
-    <NavbarLayer position="end" class="container mx-auto px-4 md:px-6 lg:px-8">
+    <NavbarLayer position="end">
       <div class="flex items-center gap-2">
         <DarkMode />
 
@@ -92,6 +91,7 @@ const routes = router.getRoutes()
         </div>
       </div>
     </NavbarLayer>
+    </div>
   </Navbar>
 </template>
 

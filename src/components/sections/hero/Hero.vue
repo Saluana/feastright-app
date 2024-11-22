@@ -6,7 +6,7 @@ import { heroVariants } from './variants'
 
 interface Props {
   align?: 'left' | 'center' | 'right'
-  layout?: 'default' | 'split' | 'centered' | 'asymmetric'
+  layout?: 'default' | 'split' | 'splitBox' | 'centered' | 'asymmetric'
   container?: 'none' | 'box' | 'full'
   height?: 'auto' | 'screen' | 'large' | 'medium' | 'nav'
   spacing?: 'none' | 'sm' | 'md' | 'lg'

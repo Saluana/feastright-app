@@ -18,18 +18,18 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const tag = computed(() => props.as || titleContext.defaultTag || 'h1')
-const size = computed(() => props.size || titleContext.defaultSize || '7xl')
+const tag = computed(() => props.as || titleContext.defaultTag || 'h2')
+const size = computed(() => props.size || titleContext.defaultSize || '4xl')
 
 const sizeClasses = {
   sm: 'text-lg sm:text-xl',
   md: 'text-xl sm:text-2xl',
   lg: 'text-2xl sm:text-3xl',
   xl: 'text-3xl sm:text-4xl',
-  '2xl': 'text-4xl sm:text-5xl',
-  '3xl': 'text-4xl sm:text-5xl md:text-6xl',
-  '4xl': 'text-5xl sm:text-6xl md:text-7xl',
-  '5xl': 'text-6xl sm:text-7xl md:text-8xl',
+  '2xl': 'text-3xl sm:text-5xl',
+  '3xl': 'text-3xl sm:text-4xl md:text-6xl',
+  '4xl': 'text-3xl sm:text-4xl md:text-7xl',
+  '5xl': 'text-3xl sm:text-5xl md:text-8xl',
   '6xl': 'text-7xl sm:text-8xl md:text-9xl',
   '7xl': 'text-3xl sm:text-5xl md:text-6xl lg:text-7xl'
 }

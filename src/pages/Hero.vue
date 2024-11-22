@@ -12,20 +12,21 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
 // Base64 заглушки для изображений
-const placeholderLight = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2YxZjVmOSIvPjwvc3ZnPg=='
-const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAyMDYxNyIvPjwvc3ZnPg=='
+const placeholderLight = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2Q1ZjRkYyIvPjwvc3ZnPg=='
+const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAxMGUwNCIvPjwvc3ZnPg=='
 </script>
 
 <template>
   <MainNavigation />
 
   <!-- Hero 1: Centered with background -->
-  <Hero layout="centered" class="h-[calc(100vh-64px)] bg-gradient-to-b from-muted/50 to-background dark:from-muted/10">
-    <HeroContent class="container mx-auto">
+  <Hero layout="centered" height="nav" class="bg-gradient-to-b from-muted/50 to-background dark:from-muted/10">
+    <HeroContent class="container mx-auto" padding="md">
       <Badge>New Features</Badge>
-      <HeroTitle as="h2">A better way to build your SaaS</HeroTitle>
+      <HeroTitle>A better way to build your SaaS</HeroTitle>
       <HeroDescription>
         Create a landing page that converts visitors into customers with our easy-to-use builder.
+
       </HeroDescription>
       <HeroActions>
         <Button size="lg">Get Started</Button>
@@ -34,10 +35,10 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
     </HeroContent>
   </Hero>
 
-  <!-- Hero 2: Split with image -->
-  <Hero container="box" layout="split" height="medium" spacing="md" key="hero-2">
-      <HeroContent align="left" width="lg" padding="sm">
-        <HeroTitle as="h2">Transform your workflow</HeroTitle>
+  <!-- Hero 2: Split with image --> 
+  <Hero layout="split" height="medium" spacing="md">
+      <HeroContent align="left" padding="md">
+        <HeroTitle>Transform your workflow</HeroTitle>
         <HeroDescription>
           Streamline your development process with our integrated tools and components.
         </HeroDescription>
@@ -61,9 +62,9 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Hero 3: Minimal centered -->
-  <Hero container="box" layout="centered" height="medium" spacing="sm">
-    <HeroContent>
-      <HeroTitle as="h2" class="text-5xl lg:text-6xl">
+  <Hero layout="centered" height="medium" spacing="sm">
+    <HeroContent class="container mx-auto" padding="md">
+      <HeroTitle>
         Simple. Fast. Secure.
       </HeroTitle>
       <HeroDescription class="max-w-xl">
@@ -76,7 +77,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Hero 4: Split with image -->
-  <Hero container="box" layout="split" height="medium" spacing="md" key="hero-4">
+  <Hero layout="split" height="medium" spacing="md">
       <HeroMedia aspectRatio="video">
         <img
           :src="placeholderLight"
@@ -89,8 +90,8 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
           alt="Placeholder"
         />
       </HeroMedia>
-      <HeroContent align="left" width="lg" padding="lg">
-        <HeroTitle as="h2">Transform your workflow</HeroTitle>
+      <HeroContent align="left" padding="md">
+        <HeroTitle>Transform your workflow</HeroTitle>
         <HeroDescription>
           Streamline your development process with our integrated tools and components.
         </HeroDescription>
@@ -101,7 +102,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Hero 5: Full screen with overlay -->
-  <Hero container="full" layout="centered" height="screen" class="relative">
+  <Hero layout="centered" height="screen" class="relative">
     <div class="absolute inset-0">
       <img
         :src="placeholderLight"
@@ -115,8 +116,8 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
       />
       <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" />
     </div>
-    <HeroContent class="relative z-10">
-      <HeroTitle as="h2">Build the future</HeroTitle>
+    <HeroContent class="relative container mx-auto z-10" padding="md">
+      <HeroTitle>Build the future</HeroTitle>
       <HeroDescription>
         Join thousands of developers building the next generation of web applications.
       </HeroDescription>

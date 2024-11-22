@@ -14,26 +14,23 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
 // Заглушки изображений
-const placeholders = {
-  dashboard: 'data:image/svg+xml;base64, PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2YxZjVmOSIvPjwvc3ZnPg==',
-  features: 'data:image/svg+xml;base64, PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAyMDYxNyIvPjwvc3ZnPg==',
-  testimonial: 'data:image/svg+xml;base64, PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAyMDYxNyIvPjwvc3ZnPg=='
-}
+const placeholderLight = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2Q1ZjRkYyIvPjwvc3ZnPg=='
+const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAxMGUwNCIvPjwvc3ZnPg=='
 </script>
 
 <template>
   <MainNavigation />
 
   <!-- Секция 1: Дашборд Preview -->
-  <Hero layout="split" height="screen">
+  <Hero layout="split" height="nav">
     <HeroContent 
       align="left" 
-      padding="lg"
+      padding="md"
       width="lg"
       class="space-y-8"
     >
       <Badge variant="outline">Dashboard</Badge>
-      <HeroTitle as="h2" size="3xl">Powerful Analytics</HeroTitle>
+      <HeroTitle size="3xl">Powerful Analytics</HeroTitle>
       <HeroDescription>
         Get real-time insights into your business performance with our advanced analytics dashboard.
       </HeroDescription>
@@ -53,10 +50,15 @@ const placeholders = {
       aspectRatio="auto"
       class="h-full bg-gradient-to-br from-primary/5 to-primary/10"
     >
-      <img 
-        :src="placeholders.dashboard" 
-        class="object-cover w-full h-full" 
-        alt="Dashboard Preview" 
+    <img
+        :src="placeholderLight"
+        class="object-cover w-full h-full dark:hidden"
+        alt="Enterprise"
+      />
+      <img
+        :src="placeholderDark"
+        class="object-cover w-full h-full hidden dark:block"
+        alt="Enterprise"
       />
     </HeroMedia>
   </Hero>
@@ -65,7 +67,7 @@ const placeholders = {
   <Hero layout="split" height="nav">
     <HeroMedia 
       rounded="none"
-      class="relative h-full bg-muted/50"
+      class="relative h-full bg-secondary/50"
     >
       <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-primary/5" />
       <div class="relative h-full flex items-center">
@@ -101,10 +103,10 @@ const placeholders = {
     </HeroMedia>
     <HeroContent 
       align="left"
-      padding="lg"
-      width="md"
+      padding="md"
+      width="lg"
     >
-      <HeroTitle as="h2">Choose Your Plan</HeroTitle>
+      <HeroTitle>Choose Your Plan</HeroTitle>
       <HeroDescription>
         Select the perfect plan for your needs. Upgrade or downgrade at any time.
       </HeroDescription>
@@ -119,7 +121,7 @@ const placeholders = {
   <Hero layout="split" height="nav">
     <HeroContent 
       align="left"
-      padding="lg"
+      padding="md"
       width="lg"
       class="space-y-8"
     >
@@ -162,10 +164,15 @@ const placeholders = {
       <div class="relative h-full flex items-center justify-center p-12">
         <div class="relative w-full max-w-lg">
           <div class="absolute -inset-4 bg-primary/5 blur-2xl rounded-[2rem]" />
-          <img 
-            :src="placeholders.testimonial" 
-            class="relative rounded-xl shadow-2xl" 
-            alt="Product Screenshot" 
+          <img
+            :src="placeholderLight"
+            class="relative dark:hidden rounded-2xl shadow-2xl"
+            alt="Product Screenshot"
+          />
+          <img
+            :src="placeholderDark"
+            class="relative hidden dark:block rounded-2xl shadow-2xl"
+            alt="Product Screenshot"
           />
         </div>
       </div>

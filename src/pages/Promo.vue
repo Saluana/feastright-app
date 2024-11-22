@@ -21,9 +21,9 @@ const placeholders = {
   <MainNavigation />
 
   <!-- Large Hero with gradient overlay -->
-  <Hero layout="centered" class="h-[calc(100vh-64px)] bg-gradient-to-br from-primary/20 via-primary/10 to-background">
+  <Hero layout="centered" height="nav" class="bg-gradient-to-br from-primary/20 via-primary/10 to-background">
     <div class="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.5))]" />
-    <HeroContent class="relative container mx-auto py-12">
+    <HeroContent class="relative z-10" padding="md">
       <Badge variant="outline" class="mb-4">New Release</Badge>
       <HeroTitle class="max-w-4xl">Transform Your Business with AI-Powered Solutions</HeroTitle>
       <HeroDescription>
@@ -31,18 +31,18 @@ const placeholders = {
       </HeroDescription>
       <HeroActions>
         <Button size="lg" variant="default">Start Free Trial</Button>
-        <Button size="lg" variant="outline">Watch Demo</Button>
+        <Button size="lg" variant="outline" class="bg-primary-foreground/50 hover:bg-primary-foreground">Watch Demo</Button>
       </HeroActions>
     </HeroContent>
   </Hero>
 
   <!-- Medium Hero with abstract background -->
-  <Hero container="full" layout="centered" height="large" spacing="none" class="relative overflow-hidden">
+  <Hero layout="centered" height="screen" class="relative overflow-hidden">
     <div 
       class="absolute inset-0 bg-cover bg-center opacity-20"
       :style="{ backgroundImage: `url(${placeholders.abstract})` }"
     />
-    <HeroContent class="relative container mx-auto z-10">
+    <HeroContent class="relative z-10" padding="md">
       <Badge>Limited Time Offer</Badge>
       <HeroTitle>50% Off for Early Birds</HeroTitle>
       <HeroDescription>
@@ -55,35 +55,26 @@ const placeholders = {
   </Hero>
 
   <!-- Full screen Hero with image background -->
-  <Hero container="full" layout="centered" height="screen" spacing="none" class="relative">
+  <Hero layout="centered" height="screen" class="relative">
     <div class="absolute inset-0">
       <img :src="placeholders.abstract" class="object-cover w-full h-full" alt="Background" />
       <div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
     </div>
-    <HeroContent class="relative container mx-auto z-10">
+    <HeroContent class="relative z-10" padding="md">
       <HeroTitle>Build the Future Today</HeroTitle>
       <HeroDescription>
         Join thousands of innovative companies already using our platform to grow their business.
       </HeroDescription>
       <HeroActions>
         <Button size="lg" variant="default">Get Started</Button>
-        <Button size="lg" variant="outline">Schedule Demo</Button>
+        <Button size="lg" variant="outline" class="bg-background/50 hover:bg-background/20">Schedule Demo</Button>
       </HeroActions>
     </HeroContent>
   </Hero>
 
   <!-- Hero with overlay background -->
-  <Hero 
-    container="full" 
-    layout="centered" 
-    height="screen"
-    background="overlay"
-  >
-    <HeroContent 
-      class="relative z-10"
-      width="xl"
-      spacing="lg"
-    >
+  <Hero layout="centered" height="screen" background="overlay">
+    <HeroContent class="relative z-10" padding="md">
       <Badge>Limited Time Offer</Badge>
       <HeroTitle>50% Off for Early Birds</HeroTitle>
       <HeroDescription>

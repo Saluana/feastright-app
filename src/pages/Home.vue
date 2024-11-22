@@ -15,8 +15,8 @@ import { Button } from '@/components/ui/button'
     <MainNavigation />
     <router-view />
     <Hero layout="centered" height="nav">
-      <HeroContent class="container mx-auto">
-        <HeroTitle>
+      <HeroContent class="container mx-auto" padding="md">
+        <HeroTitle as="h1">
           Build your next <br>
           <span class="text-primary">Landing Page</span><br>
           with Shadcn Vue
