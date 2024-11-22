@@ -8,7 +8,7 @@ import {
   HeroMedia,
   HeroActions
 } from '@/components/sections/hero'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/layers/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -126,7 +126,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
       class="space-y-8"
     >
       <div class="space-y-4">
-        <Badge>Success Story</Badge>
+        <Badge class="dark:text-secondary-foreground">Success Story</Badge>
         <blockquote class="text-2xl font-serif italic">
           "This platform has transformed how we handle our analytics. The insights we've gained are invaluable."
         </blockquote>

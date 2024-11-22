@@ -7,7 +7,7 @@ import {
   HeroDescription,
   HeroActions
 } from '@/components/sections/hero'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/layers/button'
 import { Badge } from '@/components/ui/badge'
 
 // Заглушки изображений
@@ -43,7 +43,7 @@ const placeholders = {
       :style="{ backgroundImage: `url(${placeholders.abstract})` }"
     />
     <HeroContent class="relative z-10" padding="md">
-      <Badge>Limited Time Offer</Badge>
+      <Badge class="dark:text-secondary-foreground">Limited Time Offer</Badge>
       <HeroTitle>50% Off for Early Birds</HeroTitle>
       <HeroDescription>
         Join now and get exclusive access to premium features at half the price.
@@ -75,7 +75,7 @@ const placeholders = {
   <!-- Hero with overlay background -->
   <Hero layout="centered" height="screen" background="overlay">
     <HeroContent class="relative z-10" padding="md">
-      <Badge>Limited Time Offer</Badge>
+      <Badge class="dark:text-secondary-foreground">Limited Time Offer</Badge>
       <HeroTitle>50% Off for Early Birds</HeroTitle>
       <HeroDescription>
         Join now and get exclusive access to premium features at half the price.
