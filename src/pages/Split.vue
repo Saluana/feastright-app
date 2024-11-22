@@ -102,13 +102,13 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Секция 3: Изображение справа -->
-  <Hero layout="splitBox" height="nav" background="gradient">
+  <Hero height="nav" background="gradient" class="flex items-center">
     <div 
-      class="absolute inset-0 bg-cover bg-center opacity-20"
+      class="absolute inset-0 bg-cover bg-center opacity-20 w-full h-full"
       :style="{ backgroundImage: `url(${placeholders.abstract})` }"
     />
-    <HeroContent align="left" class="relative z-10 container mx-auto" padding="md">
-      <div class="py-12">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-center py-12 sm:py-16 lg:py-24 px-6 sm:px-8 lg:px-12">
+      <HeroContent align="left" class="relative z-10">
         <Badge variant="default">Premium</Badge>
         <HeroTitle class="mt-4">Enterprise Solutions</HeroTitle>
         <HeroDescription>
@@ -127,20 +127,20 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
         <HeroActions class="justify-start">
           <Button size="lg" class="mt-8">Contact Sales</Button>
         </HeroActions>
-      </div>
-    </HeroContent>
-    <HeroMedia class="relative rounded-[2rem] overflow-hidden shadow-2xl mb-12" aspectRatio="auto">
-      <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-primary/5" />
-      <img
-        :src="placeholderLight"
-        class="object-cover w-full h-full dark:hidden"
-        alt="Enterprise"
-      />
-      <img
-        :src="placeholderDark"
-        class="object-cover w-full h-full hidden dark:block"
-        alt="Enterprise"
-      />
-    </HeroMedia>
+      </HeroContent>
+      <HeroMedia class="relative overflow-hidden p-0 sm:p-4 lg:p-8" aspectRatio="auto">
+        <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-primary/5 rounded-[2rem] m-0 sm:m-4 lg:m-8" />
+        <img
+          :src="placeholderLight"
+          class="object-cover w-full h-full dark:hidden  rounded-[2rem] shadow-2xl"
+          alt="Enterprise"
+        />
+        <img
+          :src="placeholderDark"
+          class="object-cover w-full h-full hidden dark:block  rounded-[2rem] shadow-2xl"
+          alt="Enterprise"
+        />
+      </HeroMedia>
+    </div>
   </Hero>
 </template> 

@@ -12,7 +12,7 @@ export const heroVariants = cva(
       layout: {
         default: '',
         split: 'grid grid-cols-1 md:grid-cols-2 gap-0 items-center',
-        splitBox: 'container mx-auto grid grid-cols-1 md:grid-cols-2 gap-0 items-center',
+        splitBox: 'grid grid-cols-1 md:grid-cols-2 gap-0 items-center',
         centered: 'flex min-h-[inherit] items-center justify-center',
         asymmetric: 'grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8 items-center'
       },

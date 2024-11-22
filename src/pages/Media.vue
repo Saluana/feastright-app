@@ -99,23 +99,25 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
 <!-- Hero 4: with pattern background -->
-<Hero layout="splitBox" height="nav" background="gradient">
+<Hero height="nav" background="gradient" class="flex items-center">
     <div 
-      class="absolute inset-0 bg-cover bg-center opacity-20"
+      class="absolute inset-0 bg-cover bg-center opacity-20 w-full h-full"
       :style="{ backgroundImage: `url(${placeholders.abstract})` }"
     />
-    <HeroContent align="left" class="relative z-10">
-      <HeroTitle>Designed for Modern Teams</HeroTitle>
-      <HeroDescription>
-        Built with the latest technology stack to ensure maximum performance and scalability.
-      </HeroDescription>
-      <HeroActions class="justify-start">
-        <Button>Learn More</Button>
-      </HeroActions>
-    </HeroContent>
-    <HeroMedia aspectRatio="video" class="relative">
-      <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-primary/5 rounded-lg" />
-      <img :src="placeholders.abstract" class="object-cover rounded-lg" alt="Abstract" />
-    </HeroMedia>
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-center py-12 sm:py-16 lg:py-24 px-6 sm:px-8 lg:px-12">
+      <HeroContent align="left" class="relative z-10">
+        <HeroTitle>Designed for Modern Teams</HeroTitle>
+        <HeroDescription>
+          Built with the latest technology stack to ensure maximum performance and scalability.
+        </HeroDescription>
+        <HeroActions class="justify-start">
+          <Button>Learn More</Button>
+        </HeroActions>
+      </HeroContent>
+      <HeroMedia aspectRatio="video" class="relative p-0 sm:p-4 lg:p-8">
+        <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-primary/5 rounded-lg m-0 sm:m-4 lg:m-8" />
+        <img :src="placeholders.abstract" class="object-cover rounded-lg" alt="Abstract" />
+      </HeroMedia>
+    </div>
 </Hero>
 </template>
