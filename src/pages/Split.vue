@@ -132,12 +132,12 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
         <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-primary/5 rounded-[2rem] m-0 sm:m-4 lg:m-8" />
         <img
           :src="placeholderLight"
-          class="object-cover w-full h-full dark:hidden  rounded-[2rem] shadow-2xl"
+          class="object-cover w-full h-full dark:hidden  rounded-[2rem] shadow-xl"
           alt="Enterprise"
         />
         <img
           :src="placeholderDark"
-          class="object-cover w-full h-full hidden dark:block  rounded-[2rem] shadow-2xl"
+          class="object-cover w-full h-full hidden dark:block  rounded-[2rem] shadow-xl"
           alt="Enterprise"
         />
       </HeroMedia>
