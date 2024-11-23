@@ -1,36 +1,99 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('@/pages/Home.vue')
+    component: () => import('@/pages/Home.vue'),
+    meta: {
+      title: 'Home',
+      icon: 'Home'
+    }
   },
   {
     path: '/hero',
-    name: 'Hero',
-    component: () => import('@/pages/Hero.vue')
+    name: 'Hero Sections',
+    component: () => import('@/pages/Layout.vue'),
+    meta: {
+      title: 'Hero Sections',
+      description: 'Beautiful hero section components for your landing pages',
+      isGroupParent: true
+    },
+    children: [
+      {
+        path: 'base',
+        name: 'Hero Base',
+        component: () => import('@/pages/hero/Hero.vue'),
+        meta: { 
+          icon: 'Layout',
+          title: 'Hero Base',
+          description: 'Standard hero section with image and text'
+        }
+      },
+      {
+        path: 'media',
+        name: 'Hero Media',
+        component: () => import('@/pages/hero/Media.vue'),
+        meta: { 
+          icon: 'Layout',
+          title: 'Hero Media',
+          description: 'Hero section with media'
+        }
+      },
+      {
+        path: 'promo',
+        name: 'Hero Promo',
+        component: () => import('@/pages/hero/Promo.vue'),
+        meta: { 
+          icon: 'Layout',
+          title: 'Hero Promo',
+          description: 'Hero section with promo'
+        }
+      },
+      {
+        path: 'split',
+        name: 'Hero Split',
+        component: () => import('@/pages/hero/Split.vue'),
+        meta: { 
+          icon: 'ChevronsRight',
+          title: 'Hero Split',
+          description: 'Split hero section with image and text'
+        }
+      },
+      {
+        path: 'split-full',
+        name: 'Split Full',
+        component: () => import('@/pages/hero/SplitFull.vue'),
+        meta: { 
+          icon: 'ChevronsRight',
+          title: 'Split Full Hero',
+          description: 'Split full hero section with image and text'
+        }
+      }
+    ]
   },
   {
-    path: '/promo',
-    name: 'Promo',
-    component: () => import('@/pages/Promo.vue')
-  },
-  {
-    path: '/media',
-    name: 'Media',
-    component: () => import('@/pages/Media.vue')
-  },
-  {
-    path: '/split',
-    name: 'Split',
-    component: () => import('@/pages/Split.vue')
-  },
-  {
-    path: '/split-full',
-    name: 'SplitFull',
-    component: () => import('@/pages/SplitFull.vue')
+    path: '/blog',
+    name: 'Blog Sections',
+    component: () => import('@/pages/Layout.vue'),
+    meta: {
+      title: 'Blog Sections',
+      description: 'Beautiful blog section components for your landing pages',
+      isGroupParent: true
+    },
+    children: [
+      {
+        path: 'base',
+        name: 'Blog Base',
+        component: () => import('@/pages/blog/Grid.vue'),
+        meta: { 
+          icon: 'Layout',
+            title: 'Blog Base',
+          description: 'Standard blog section with image and text'
+        }
+      }
+    ]
   }
 ]
 
@@ -39,4 +102,4 @@ const router = createRouter({
   routes
 })
 
-export default router 
+export default router

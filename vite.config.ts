@@ -15,5 +15,14 @@ export default defineConfig({
     alias: {
       '@': resolve('./src')
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'sheet': ['@/components/ui/sheet']
+        }
+      }
+    }
   }
 })
