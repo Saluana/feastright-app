@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Current Page Editor</title>
+  <link rel="icon" href="./img/favicon.ico" />
+  <script src="./js/lib/tailwind.js"></script>
+  <link rel="stylesheet" href="./css/style.css" />
+  <link href="./css/quill.min.css" rel="stylesheet" />
+  <style>
+    #preview .quill-editor {
+      display: none;
+    }
+
+    .ql-toolbar.ql-snow {
+      background: #f5eedb;
+      font-size: 0.9em;
+    }
+
+    div.block-wrapper.highlight-border  {
+      outline: 3px dotted #6445e2;
+      box-shadow: 0 0 5px rgba(51, 1, 231, 0.5);
+    }
+
+    .highlight-border {
+      outline: 3px dotted #0ea5e8;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+  </style>
+      <style type="text/tailwindcss">
+        @layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+  
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+  
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+  
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+  
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+  
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+  
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+  
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+  
+    --border:240 5.9% 90%;
+    --input:240 5.9% 90%;
+    --ring:142.1 76.2% 36.3%;
+    --radius: 0.75rem;
+  }
+   
+  .dark {
+    --background:20 14.3% 4.1%;
+    --foreground:0 0% 95%;
+  
+    --card:24 9.8% 10%;
+    --card-foreground:0 0% 95%;
+  
+    --popover:0 0% 9%;
+    --popover-foreground:0 0% 95%;
+  
+    --primary:142.1 70.6% 45.3%;
+    --primary-foreground:144.9 80.4% 10%;
+  
+    --secondary:240 3.7% 15.9%;
+    --secondary-foreground:0 0% 98%;
+  
+    --muted:0 0% 15%;
+    --muted-foreground:240 5% 64.9%;
+  
+    --accent:12 6.5% 15.1%;
+    --accent-foreground:0 0% 98%;
+  
+    --destructive:0 62.8% 30.6%;
+    --destructive-foreground:0 85.7% 97.3%;
+  
+    --border:240 3.7% 15.9%;
+    --input:240 3.7% 15.9%;
+    --ring:142.4 71.8% 29.2%;
+  }
+}
+          </style>
+</head>
+
+<body class="font-sans bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
+
+  <div id="builder" class="flex h-[calc(100vh-64px)] overflow-hidden">
+    <div id="preview" class="flex-grow overflow-y-auto p-4 bg-white dark:bg-slate-900"></div>
+  </div>
+
+  <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-20">
+    <div id="editor-container" class="bg-white dark:bg-slate-900 p-4 rounded-lg w-full max-w-2xl">
+      <div>
+        <h3 class="text-2xl font-bold mb-4 text-slate-800 dark:text-white">Edit Content</h3>
+        <div id="editor-area"
+          class="bg-white dark:bg-slate-950 text-slate-800 dark:text-white rounded-b-[.5em] h-64 mb-4 code language-html"></div>
+        <div class="flex justify-end">
+          <button id="save-edit" class="px-3 py-1 bg-sky-500 text-white text-[.75em] rounded-[.5em]">Save</button>
+          <button id="cancel-edit"
+            class="ml-2 px-3 py-1 bg-slate-500 text-white text-[.75em] rounded-[.5em]">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  
+  <script defer src="./js/lib/quill.js"></script>
+  <script defer src="./js/default.js"></script>
+  <script defer src="./js/classes.js"></script>
+  <script defer src="./js/editor.js"></script>
+  <script>
+    // Get Current FontFamily
+    function safeGet(obj, path) {
+      return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    }
+    function currentFontFamily() {
+      const currentPage = JSON.parse(localStorage.getItem("currentState"));
+      //const configString = JSON.stringify(currentState.sceleton.config);
+      let config;
+
+      const configString = safeGet(currentPage, 'sceleton.config');
+
+      try {
+        config = JSON.parse(configString);
+      } catch (error) {
+        console.error('Error config process: ', error);
+        return;
+      }
+
+      const sans = safeGet(config, 'theme.fontFamily.sans');
+
+      if (sans) {
+        const fontFamily = Array.isArray(config.theme.fontFamily.sans)
+          ? config.theme.fontFamily.sans[0]
+          : config.theme.fontFamily.sans;
+        const systemFonts = ['sans-serif', 'serif', 'monospace', 'cursive', 'fantasy', 'system-ui', 'ui-sans-serif', 'ui-serif', 'ui-monospace', 'ui-rounded'];
+        if (typeof fontFamily === 'string' && !systemFonts.includes(fontFamily.toLowerCase())) {
+          return fontFamily;
+        }
+      }
+    }
+    function setFontLink() {
+      const fontFamily = currentFontFamily();
+      if (fontFamily) {
+        const linkElement = document.createElement('link');
+        linkElement.href = `https://fonts.googleapis.com/css2?family=${fontFamily}:wght@400;500;600;700&display=swap`;
+        linkElement.rel = 'stylesheet';
+        
+        const titleElement = document.querySelector('title');
+        if (titleElement) {
+          titleElement.insertAdjacentElement('afterend', linkElement);
+        } else {
+          document.head.appendChild(linkElement);
+        }
+      }
+    }
+    
+    setFontLink();
+
+    function addSectionControls(section) {
+      const controlButton = document.createElement('div');
+      controlButton.style.position = 'absolute';
+      controlButton.style.top = '5px';
+      controlButton.style.right = '5px';
+      controlButton.style.width = '20px';
+      controlButton.style.height = '20px';
+      controlButton.style.backgroundColor = 'rgba(0, 123, 255, 0.8)';
+      controlButton.style.cursor = 'pointer';
+      controlButton.style.zIndex = '1000';
+      controlButton.title = 'Select Section';
+
+      controlButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Останавливаем распространение клика, чтобы избежать открытия внутреннего div
+        handleSectionClick(section); // Обрабатываем клик по секции
+      });
+
+      section.style.position = 'relative'; // Делаем секцию позиционируемой
+      section.appendChild(controlButton);
+    }
+
+    function handleSectionClick(section) {
+      // Здесь добавьте логику для открытия секции в редакторе
+      console.log('Section clicked:', section);
+    }
+
+    function initializeSectionControls() {
+      document.querySelectorAll('section').forEach(addSectionControls);
+    }
+
+    // Вызывайте функцию при загрузке контента
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeSectionControls();
+    });
+
+
+  </script>
+</body>
+
+</html>

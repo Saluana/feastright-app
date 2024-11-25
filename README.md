@@ -2,6 +2,12 @@
 
 A modern approach to building websites using Vue 3 + Shadcn UI in a BunJS environment. This starter kit provides a robust foundation for creating landing pages, multi-page applications, and reusable UI components with a utility-first CSS approach.
 
+## 📦 NEW! Section Collector
+
+This version adds an experimental feature to add sections to the builder. 
+Click on the drop down menu in the top right corner. Click `Get UI Blocks` and add the blocks you like to the site-wide collection. Then click `Go to BuildY` to go into the builder and see the blocks ready to build pages. 
+If you want to continue browsing the site without the collector functionality, just click: `Default State`.
+
 ## Page speed Google Lighthouse score 100%
 
 [Google Lighthouse score](https://pagespeed.web.dev/analysis/https-vue-uikit-shadcn-vercel-app/6a6ivry2d8?form_factor=desktop)

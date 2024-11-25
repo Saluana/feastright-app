@@ -94,6 +94,22 @@ const routes: RouteRecordRaw[] = [
         }
       }
     ]
+  },
+  {
+    path: '/buildy/:pathMatch(.*)*',
+    name: 'Buildy',
+    component: () => import('@/pages/Layout.vue'),
+    beforeEnter: () => {
+      window.location.href = '/buildy/index.html'
+    }
+  },
+  {
+    path: '/reset/:pathMatch(.*)*',
+    name: 'Reset',
+    component: () => import('@/pages/Layout.vue'),
+    beforeEnter: () => {
+      window.location.href = '/'
+    }
   }
 ]
 

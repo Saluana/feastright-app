@@ -24,6 +24,32 @@
   </head>
   <body class="bg-background text-foreground antialiased">
     <div id="app"></div>
+    <script type="module">
+      import { SectionCollector } from './section-collector.js';
+      
+      let collector = null;
+
+      const observer = new MutationObserver((mutations, obs) => {
+        const getStartedBtn = document.getElementById('getStarted');
+        if (getStartedBtn) {
+          console.log('Button found!');
+          
+          getStartedBtn.addEventListener('click', async () => {
+            console.log('Button clicked!');
+            if (!collector) {
+              collector = new SectionCollector();
+            }
+          });
+          
+          obs.disconnect();
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

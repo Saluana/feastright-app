@@ -2,7 +2,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import { Navbar, NavbarBrand, NavbarLayer } from '@/components/sections/navbar'
 import { DarkMode } from '@/components/darkMode'
-import { Home, User, Menu, ChevronsRight, Layout, Settings, LogOut } from 'lucide-vue-next'
+import { Home, User, Menu, ChevronsRight, Layout, Grip, PanelLeftOpen, CopyCheck, LoaderCircle } from 'lucide-vue-next'
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -10,7 +10,6 @@ import {
   NavigationMenuTrigger,
   NavigationMenuContent,
   NavigationMenuLink,
-  navigationMenuTriggerStyle
 } from '@/components/ui/navigation-menu'
 import {
   DropdownMenu,
@@ -142,19 +141,27 @@ const menuDescription = 'Main navigation menu with all available sections and pa
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
-                <User class="h-5 w-5" />
-                <span class="sr-only">Profile menu</span>
+                <Grip class="!h-5 !w-5" />
+                <span class="sr-only">BuildY</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Settings class="mr-2 h-4 w-4" />
-                <span>Settings</span>
+              <DropdownMenuItem class="cursor-pointer">
+                <CopyCheck class="mr-1" />
+                <span id="getStarted">Get UI Blocks</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <LogOut class="mr-2 h-4 w-4" />
-                <span>Logout</span>
-              </DropdownMenuItem>
+              <router-link to="/buildy">
+                <DropdownMenuItem class="cursor-pointer">
+                  <PanelLeftOpen class="mr-1" />
+                  <span>Go to BuildY</span>
+                </DropdownMenuItem>
+              </router-link>
+              <router-link to="/reset">
+                <DropdownMenuItem class="cursor-pointer">
+                  <LoaderCircle class="mr-1" />
+                  <span id="defaultState">Default State</span>
+                </DropdownMenuItem>
+              </router-link>
             </DropdownMenuContent>
           </DropdownMenu>
 
