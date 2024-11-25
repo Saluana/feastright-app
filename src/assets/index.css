@@ -64,3 +64,7 @@
     --ring:142.4 71.8% 29.2%;
   }
 }
+
+html {
+  transition: background-color 0.3s ease;
+}

@@ -29,9 +29,6 @@ const toggleDarkMode = () => {
 onMounted(() => {
   const darkMode = localStorage.getItem('darkMode')
   isDark.value = darkMode === 'true'
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-  }
 })
 </script>
 

@@ -4,7 +4,7 @@
     "author": "Alexy-OS",
     "repository": "https://github.com/alexy-os/vue-shadcn-starter",
     "license": "MIT",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "private": true,
     "scripts": {
         "dev": "vite",
