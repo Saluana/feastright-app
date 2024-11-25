@@ -109,15 +109,6 @@ const menuDescription = 'Main navigation menu with all available sections and pa
           <!-- Обновляем десктопную навигацию -->
           <NavigationMenu class="hidden md:flex">
             <NavigationMenuList>
-              
-              <NavigationMenuItem class="cursor-pointer">
-                <NavigationMenuLink 
-                  :to="'/'" 
-                  :class="navigationMenuTriggerStyle()"
-                >
-                  Home
-                </NavigationMenuLink>
-              </NavigationMenuItem>
               <NavigationMenuItem v-for="parentRoute in parentRoutes" :key="parentRoute.path">
                 <NavigationMenuTrigger>{{ parentRoute.title }}</NavigationMenuTrigger>
                 <NavigationMenuContent>
