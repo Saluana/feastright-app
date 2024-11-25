@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Sun, Moon } from 'lucide-vue-next'
-import { ref, onMounted, type HTMLAttributes } from 'vue'
+import { ref, type HTMLAttributes } from 'vue'
 import { cn } from '@/lib/utils'
 import { type DarkModeVariants, darkModeVariants } from '.'
 
@@ -13,23 +13,13 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'default'
 })
 
-const isDark = ref(false)
+const isDark = ref(document.documentElement.classList.contains('dark'))
 
 const toggleDarkMode = () => {
   isDark.value = !isDark.value
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-    localStorage.setItem('darkMode', 'true')
-  } else {
-    document.documentElement.classList.remove('dark')
-    localStorage.setItem('darkMode', 'false')
-  }
+  document.documentElement.classList.toggle('dark', isDark.value)
+  localStorage.setItem('darkMode', String(isDark.value))
 }
-
-onMounted(() => {
-  const darkMode = localStorage.getItem('darkMode')
-  isDark.value = darkMode === 'true'
-})
 </script>
 
 <template>
