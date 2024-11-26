@@ -131,6 +131,15 @@ export class SectionCollector {
             right: CONFIG.styles.menu.position.right
         });
 
+        // Для меню оставляем только stopPropagation
+        menu.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        });
+
+        menu.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+        });
+
         const htmlBtn = this.createButton('HTML', () => this.saveAsHtml(section), 
             CONFIG.styles.menu.buttons.base + ' ' + CONFIG.styles.menu.buttons.html
         );
@@ -149,7 +158,23 @@ export class SectionCollector {
         const button = document.createElement('button');
         button.textContent = text;
         button.className = className;
-        button.addEventListener('click', onClick);
+        
+        // Обработчик клика должен выполнить действие до остановки события
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            await onClick(); // Дожидаемся выполнения действия
+        });
+
+        // Touch события нужны только для предотвращения всплытия
+        button.addEventListener('touchstart', (e) => {
+            e.stopPropagation(); // Убрали preventDefault
+        });
+
+        button.addEventListener('touchend', (e) => {
+            e.stopPropagation(); // Убрали preventDefault
+        });
+
         return button;
     }
 
@@ -187,15 +212,23 @@ export class SectionCollector {
     }
 
     async saveToStorage(section) {
+        // Отменяем все существующие таймеры
+        if (this.menuTimeout) {
+            clearTimeout(this.menuTimeout);
+        }
+
+        // Удаляем все существующие меню для этой секции
+        const existingMenus = section.querySelectorAll('.section-collector-menu');
+        existingMenus.forEach(menu => menu.remove());
+
+        // Предотвращаем создание нового меню сразу после сохранения
+        section.classList.remove(CONFIG.styles.section.highlight);
+
         const sectionId = section.dataset.sectionId;
         const heading = section.querySelector('h1, h2, h3')?.textContent.trim() || 'Untitled Section';
         
         // Создаем клон секции для очистки
         const cleanSection = section.cloneNode(true);
-        
-        // Удаляем интерфейс коллектора
-        const menu = cleanSection.querySelector('.section-collector-menu');
-        if (menu) menu.remove();
         
         // Очищаем стили, добавленные коллектором
         cleanSection.style.removeProperty('background-color');
@@ -234,6 +267,19 @@ export class SectionCollector {
             localStorage.setItem(CONFIG.storageKey, JSON.stringify(currentState));
             console.log('Successfully saved section:', sectionId);
             section.style.opacity = CONFIG.styles.section.inactiveOpacity;
+            
+            // Временно отключаем обработчики событий
+            const tempDisable = () => {
+                section.removeEventListener('touchstart', this.handleTouchStart);
+                section.removeEventListener('touchend', this.handleTouchEnd);
+                
+                setTimeout(() => {
+                    section.addEventListener('touchstart', this.handleTouchStart);
+                    section.addEventListener('touchend', this.handleTouchEnd);
+                }, 500); // Даем время для завершения всех текущих событий
+            };
+            
+            tempDisable();
         } catch (e) {
             console.error('Error saving to localStorage:', e);
         }
