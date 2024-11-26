@@ -384,7 +384,7 @@ export class SectionCollector {
         // Устанавливаем новый таймер на 4 секунды
         this.menuTimeout = setTimeout(() => {
             this.handleMouseLeave(event);
-        }, 4000);
+        }, 2500);
     }
 }
 
