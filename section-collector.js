@@ -89,6 +89,7 @@ export class SectionCollector {
         
         section.addEventListener('mouseenter', this.handleMouseEnter);
         section.addEventListener('mouseleave', this.handleMouseLeave);
+        section.addEventListener('click', this.handleMouseEnter);
         
         this.boundSections.add(section);
     }
@@ -98,6 +99,7 @@ export class SectionCollector {
         
         section.removeEventListener('mouseenter', this.handleMouseEnter);
         section.removeEventListener('mouseleave', this.handleMouseLeave);
+        section.removeEventListener('click', this.handleMouseEnter);
         
         this.boundSections.delete(section);
     }
