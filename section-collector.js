@@ -7,14 +7,11 @@ export class SectionCollector {
         this.storedSections = this.getStoredSections();
         this.boundSections = new Set();
         this.headingCounts = new Map(); // Для отслеживания количества одинаковых секций
-        this.menuTimeout = null;
         
         // Bind methods
         this.initialize = this.initialize.bind(this);
         this.handleMouseEnter = this.handleMouseEnter.bind(this);
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
-        this.handleTouchStart = this.handleTouchStart.bind(this);
-        this.handleTouchEnd = this.handleTouchEnd.bind(this);
         
         // Автоматически инициализируем при создании
         this.initialize();
@@ -92,9 +89,6 @@ export class SectionCollector {
         
         section.addEventListener('mouseenter', this.handleMouseEnter);
         section.addEventListener('mouseleave', this.handleMouseLeave);
-        section.addEventListener('touchstart', this.handleTouchStart);
-        section.addEventListener('touchend', this.handleTouchEnd);
-        section.addEventListener('touchcancel', this.handleTouchEnd);
         
         this.boundSections.add(section);
     }
@@ -104,9 +98,6 @@ export class SectionCollector {
         
         section.removeEventListener('mouseenter', this.handleMouseEnter);
         section.removeEventListener('mouseleave', this.handleMouseLeave);
-        section.removeEventListener('touchstart', this.handleTouchStart);
-        section.removeEventListener('touchend', this.handleTouchEnd);
-        section.removeEventListener('touchcancel', this.handleTouchEnd);
         
         this.boundSections.delete(section);
     }
@@ -118,9 +109,6 @@ export class SectionCollector {
             this.cleanupSection(section);
         });
         this.boundSections.clear();
-        if (this.menuTimeout) {
-            clearTimeout(this.menuTimeout);
-        }
     }
 
     createFloatingMenu(section) {
@@ -129,15 +117,6 @@ export class SectionCollector {
         Object.assign(menu.style, {
             top: CONFIG.styles.menu.position.top,
             right: CONFIG.styles.menu.position.right
-        });
-
-        // Для меню оставляем только stopPropagation
-        menu.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-        });
-
-        menu.addEventListener('touchend', (e) => {
-            e.stopPropagation();
         });
 
         const htmlBtn = this.createButton('HTML', () => this.saveAsHtml(section), 
@@ -158,23 +137,7 @@ export class SectionCollector {
         const button = document.createElement('button');
         button.textContent = text;
         button.className = className;
-        
-        // Обработчик клика должен выполнить действие до остановки события
-        button.addEventListener('click', async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            await onClick(); // Дожидаемся выполнения действия
-        });
-
-        // Touch события нужны только для предотвращения всплытия
-        button.addEventListener('touchstart', (e) => {
-            e.stopPropagation(); // Убрали preventDefault
-        });
-
-        button.addEventListener('touchend', (e) => {
-            e.stopPropagation(); // Убрали preventDefault
-        });
-
+        button.addEventListener('click', onClick);
         return button;
     }
 
@@ -212,23 +175,15 @@ export class SectionCollector {
     }
 
     async saveToStorage(section) {
-        // Отменяем все существующие таймеры
-        if (this.menuTimeout) {
-            clearTimeout(this.menuTimeout);
-        }
-
-        // Удаляем все существующие меню для этой секции
-        const existingMenus = section.querySelectorAll('.section-collector-menu');
-        existingMenus.forEach(menu => menu.remove());
-
-        // Предотвращаем создание нового меню сразу после сохранения
-        section.classList.remove(CONFIG.styles.section.highlight);
-
         const sectionId = section.dataset.sectionId;
         const heading = section.querySelector('h1, h2, h3')?.textContent.trim() || 'Untitled Section';
         
         // Создаем клон секции для очистки
         const cleanSection = section.cloneNode(true);
+        
+        // Удаляем интерфейс коллектора
+        const menu = cleanSection.querySelector('.section-collector-menu');
+        if (menu) menu.remove();
         
         // Очищаем стили, добавленные коллектором
         cleanSection.style.removeProperty('background-color');
@@ -267,19 +222,6 @@ export class SectionCollector {
             localStorage.setItem(CONFIG.storageKey, JSON.stringify(currentState));
             console.log('Successfully saved section:', sectionId);
             section.style.opacity = CONFIG.styles.section.inactiveOpacity;
-            
-            // Временно отключаем обработчики событий
-            const tempDisable = () => {
-                section.removeEventListener('touchstart', this.handleTouchStart);
-                section.removeEventListener('touchend', this.handleTouchEnd);
-                
-                setTimeout(() => {
-                    section.addEventListener('touchstart', this.handleTouchStart);
-                    section.addEventListener('touchend', this.handleTouchEnd);
-                }, 500); // Даем время для завершения всех текущих событий
-            };
-            
-            tempDisable();
         } catch (e) {
             console.error('Error saving to localStorage:', e);
         }
@@ -412,25 +354,6 @@ export class SectionCollector {
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    handleTouchStart(event) {
-        event.preventDefault();
-        this.handleMouseEnter(event);
-    }
-
-    handleTouchEnd(event) {
-        event.preventDefault();
-        
-        // Очищаем предыдущий таймер, если он существует
-        if (this.menuTimeout) {
-            clearTimeout(this.menuTimeout);
-        }
-        
-        // Устанавливаем новый таймер на 4 секунды
-        this.menuTimeout = setTimeout(() => {
-            this.handleMouseLeave(event);
-        }, 2500);
     }
 }
 
