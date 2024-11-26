@@ -7,6 +7,7 @@ export class SectionCollector {
         this.storedSections = this.getStoredSections();
         this.boundSections = new Set();
         this.headingCounts = new Map(); // Для отслеживания количества одинаковых секций
+        this.menuTimeout = null;
         
         // Bind methods
         this.initialize = this.initialize.bind(this);
@@ -117,6 +118,9 @@ export class SectionCollector {
             this.cleanupSection(section);
         });
         this.boundSections.clear();
+        if (this.menuTimeout) {
+            clearTimeout(this.menuTimeout);
+        }
     }
 
     createFloatingMenu(section) {
@@ -371,7 +375,16 @@ export class SectionCollector {
 
     handleTouchEnd(event) {
         event.preventDefault();
-        this.handleMouseLeave(event);
+        
+        // Очищаем предыдущий таймер, если он существует
+        if (this.menuTimeout) {
+            clearTimeout(this.menuTimeout);
+        }
+        
+        // Устанавливаем новый таймер на 4 секунды
+        this.menuTimeout = setTimeout(() => {
+            this.handleMouseLeave(event);
+        }, 4000);
     }
 }
 
