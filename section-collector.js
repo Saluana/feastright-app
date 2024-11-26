@@ -12,6 +12,8 @@ export class SectionCollector {
         this.initialize = this.initialize.bind(this);
         this.handleMouseEnter = this.handleMouseEnter.bind(this);
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
+        this.handleTouchStart = this.handleTouchStart.bind(this);
+        this.handleTouchEnd = this.handleTouchEnd.bind(this);
         
         // Автоматически инициализируем при создании
         this.initialize();
@@ -89,6 +91,9 @@ export class SectionCollector {
         
         section.addEventListener('mouseenter', this.handleMouseEnter);
         section.addEventListener('mouseleave', this.handleMouseLeave);
+        section.addEventListener('touchstart', this.handleTouchStart);
+        section.addEventListener('touchend', this.handleTouchEnd);
+        section.addEventListener('touchcancel', this.handleTouchEnd);
         
         this.boundSections.add(section);
     }
@@ -98,6 +103,9 @@ export class SectionCollector {
         
         section.removeEventListener('mouseenter', this.handleMouseEnter);
         section.removeEventListener('mouseleave', this.handleMouseLeave);
+        section.removeEventListener('touchstart', this.handleTouchStart);
+        section.removeEventListener('touchend', this.handleTouchEnd);
+        section.removeEventListener('touchcancel', this.handleTouchEnd);
         
         this.boundSections.delete(section);
     }
@@ -354,6 +362,16 @@ export class SectionCollector {
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    handleTouchStart(event) {
+        event.preventDefault();
+        this.handleMouseEnter(event);
+    }
+
+    handleTouchEnd(event) {
+        event.preventDefault();
+        this.handleMouseLeave(event);
     }
 }
 
