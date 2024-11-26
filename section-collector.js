@@ -144,7 +144,12 @@ export class SectionCollector {
     }
 
     async handleMouseEnter(event) {
-        const section = event.target;
+        // Проверяем, что клик был именно по секции, а не по вложенным элементам
+        if (event.type === 'click' && event.target !== event.currentTarget) {
+            return;
+        }
+
+        const section = event.currentTarget;
         if (await this.checkIfStored(section)) return;
         
         section.classList.add(CONFIG.styles.section.highlight);
@@ -180,12 +185,11 @@ export class SectionCollector {
         const sectionId = section.dataset.sectionId;
         const heading = section.querySelector('h1, h2, h3')?.textContent.trim() || 'Untitled Section';
         
-        // Создаем клон секции для очистки
-        const cleanSection = section.cloneNode(true);
+        // Сначала удаляем все меню из секции
+        section.querySelectorAll('.section-collector-menu').forEach(menu => menu.remove());
         
-        // Удаляем интерфейс коллектора
-        const menu = cleanSection.querySelector('.section-collector-menu');
-        if (menu) menu.remove();
+        // Создаем клон уже очищенной секции
+        const cleanSection = section.cloneNode(true);
         
         // Очищаем стили, добавленные коллектором
         cleanSection.style.removeProperty('background-color');
@@ -224,6 +228,9 @@ export class SectionCollector {
             localStorage.setItem(CONFIG.storageKey, JSON.stringify(currentState));
             console.log('Successfully saved section:', sectionId);
             section.style.opacity = CONFIG.styles.section.inactiveOpacity;
+            
+            // Отключаем обработчики событий
+            this.cleanupSection(section);
         } catch (e) {
             console.error('Error saving to localStorage:', e);
         }
