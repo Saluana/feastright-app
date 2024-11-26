@@ -4,12 +4,13 @@
     "author": "Alexy-OS",
     "repository": "https://github.com/alexy-os/vue-shadcn-starter",
     "license": "MIT",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vue-tsc && vite build",
-        "preview": "vite preview"
+        "build": "vue-tsc --noEmit && vite build",
+        "preview": "vite preview",
+        "build:prod": "vue-tsc --noEmit && vite build --mode production"
     },
     "type": "module",
     "dependencies": {

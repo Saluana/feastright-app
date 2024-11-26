@@ -1,12 +1,12 @@
 // Configuration
 const CONFIG = {
-    // Основные настройки
+    // Main settings
     storageKey: 'currentState',
     
-    // Визуальные настройки
+    // Visual settings
     styles: {
         section: {
-            highlight: 'bg-primary/20', // Подсветка при наведении
+            highlight: 'bg-primary/20', // Highlight on hover
             activeOpacity: '1',
             inactiveOpacity: '0.5'
         },

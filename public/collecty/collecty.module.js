@@ -1,30 +1,30 @@
-import { CONFIG } from './buildy.config.js';
+import { CONFIG } from './collecty.config.js';
 
-export class SectionCollector {
+export class SectionCollecty {
     constructor() {
         this.isActive = false;
         this.sections = [];
         this.storedSections = this.getStoredSections();
         this.boundSections = new Set();
-        this.headingCounts = new Map(); // Для отслеживания количества одинаковых секций
+        this.headingCounts = new Map(); // To track the count of identical sections
         
         // Bind methods
         this.initialize = this.initialize.bind(this);
         this.handleMouseEnter = this.handleMouseEnter.bind(this);
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
         
-        // Автоматически инициализируем при создании
+        // Automatically initialize on creation
         this.initialize();
     }
 
     initialize() {
-        console.log('Initializing SectionCollector');
+        console.log('Initializing SectionCollecty');
         this.isActive = true;
         
-        // Наблюдае за изменениями в DOM
+        // Observe DOM changes
         this.observeDOM();
         
-        // Инициализируем существующие секции
+        // Initialize existing sections
         this.initializeSections();
     }
 
@@ -37,9 +37,9 @@ export class SectionCollector {
             let needsReinitialization = false;
 
             mutations.forEach((mutation) => {
-                // Проверяем добавленные узлы
+                // Check added nodes
                 mutation.addedNodes.forEach(node => {
-                    // Проверяем, является ли узел элементом
+                    // Check if the node is an element
                     if (node.nodeType === Node.ELEMENT_NODE) {
                         if (node.nodeName === 'SECTION' || node.querySelector('section')) {
                             needsReinitialization = true;
@@ -47,7 +47,7 @@ export class SectionCollector {
                     }
                 });
 
-                // Проверяем удаленные узлы
+                // Check removed nodes
                 mutation.removedNodes.forEach(node => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
                         if (node.nodeName === 'SECTION' || node.querySelector('section')) {
@@ -77,7 +77,7 @@ export class SectionCollector {
     async initializeSection(section) {
         if (this.boundSections.has(section)) return;
 
-        // Генерируем ID, если его еще нет
+        // Generate ID if it doesn't exist
         if (!section.dataset.sectionId) {
             section.dataset.sectionId = this.generateSectionId(section);
         }
@@ -104,7 +104,7 @@ export class SectionCollector {
         this.boundSections.delete(section);
     }
 
-    // При необходимости можно добавить метод destroy
+    // If necessary, you can add a destroy method
     destroy() {
         this.domObserver?.disconnect();
         this.boundSections.forEach(section => {
@@ -115,7 +115,7 @@ export class SectionCollector {
 
     createFloatingMenu(section) {
         const menu = document.createElement('div');
-        menu.className = 'section-collector-menu ' + CONFIG.styles.menu.wrapper;
+        menu.className = 'section-collecty-menu ' + CONFIG.styles.menu.wrapper;
         Object.assign(menu.style, {
             top: CONFIG.styles.menu.position.top,
             right: CONFIG.styles.menu.position.right
@@ -144,7 +144,7 @@ export class SectionCollector {
     }
 
     async handleMouseEnter(event) {
-        // Проверяем, что клик был именно по секции, а не по вложенным элементам
+        // Check if the click was on the section, not on nested elements
         if (event.type === 'click' && event.target !== event.currentTarget) {
             return;
         }
@@ -160,7 +160,7 @@ export class SectionCollector {
         const section = event.target;
         section.classList.remove(CONFIG.styles.section.highlight);
         
-        const menu = section.querySelector('.section-collector-menu');
+        const menu = section.querySelector('.section-collecty-menu');
         if (menu) menu.remove();
     }
 
@@ -185,18 +185,18 @@ export class SectionCollector {
         const sectionId = section.dataset.sectionId;
         const heading = section.querySelector('h1, h2, h3')?.textContent.trim() || 'Untitled Section';
         
-        // Сначала удаляем все меню из секции
-        section.querySelectorAll('.section-collector-menu').forEach(menu => menu.remove());
+        // First, remove all menus from the section
+        section.querySelectorAll('.section-collecty-menu').forEach(menu => menu.remove());
         
-        // Создаем клон уже очищенной секции
+        // Create a clone of the already cleaned section
         const cleanSection = section.cloneNode(true);
         
-        // Очищаем стили, добавленные коллектором
+        // Clean up styles added by the collecty
         cleanSection.style.removeProperty('background-color');
         cleanSection.style.removeProperty('opacity');
         cleanSection.classList.remove(CONFIG.styles.section.highlight);
         
-        // Очищаем от служебных атрибутов
+        // Clean up service attributes
         this.cleanNode(cleanSection);
         
         let currentState = this.getStoredSections();
@@ -217,7 +217,7 @@ export class SectionCollector {
             };
         }
 
-        // Сохраняем только очищенный HTML
+        // Save only the cleaned HTML
         currentState.blocks[sectionId] = {
             id: sectionId,
             title: heading,
@@ -229,7 +229,7 @@ export class SectionCollector {
             console.log('Successfully saved section:', sectionId);
             section.style.opacity = CONFIG.styles.section.inactiveOpacity;
             
-            // Отключаем обработчики событий
+            // Disable event handlers
             this.cleanupSection(section);
         } catch (e) {
             console.error('Error saving to localStorage:', e);
@@ -257,31 +257,31 @@ export class SectionCollector {
         return stored.blocks && stored.blocks[sectionId];
     }
 
-    // Добавим метод для форматирования HTML
+    // Add a method for formatting HTML
     formatHtml(html) {
         const div = document.createElement('div');
         div.innerHTML = html.trim();
         
-        // Очищаем от служебных атрибутов
+        // Clean up service attributes
         this.cleanNode(div.firstElementChild);
         
-        // Сначала минифицируем HTML
+        // First, minify HTML
         const minified = this.minifyHtml(div.innerHTML);
         
-        // Затем форматируем
+        // Then, pretty print
         return this.prettyPrint(minified);
     }
 
     minifyHtml(html) {
         return html
-            .replace(/\s+/g, ' ') // Заменяем множественные пробелы на один
-            .replace(/>\s+</g, '><') // Убираем пробелы между тегами
-            .replace(/\s+>/g, '>') // Убираем пробелы перед закрывающей скобкой
-            .replace(/<\s+/g, '<') // Убираем пробелы после открывающей скобки
-            .replace(/\s+\/>/g, '/>') // Убираем пробелы перед самозакрывающимся тегом
-            .replace(/"\s+/g, '"') // Убираем пробелы после кавычек
-            .replace(/\s+"/g, '"') // Убираем пробелы перед кавычками
-            .replace(/\s+([\w-]+)=/g, ' $1=') // Оставляем один пробел перед атрибутами
+            .replace(/\s+/g, ' ') // Replace multiple spaces with one
+            .replace(/>\s+</g, '><') // Remove spaces between tags
+            .replace(/\s+>/g, '>') // Remove spaces before closing bracket
+            .replace(/<\s+/g, '<') // Remove spaces after opening bracket
+            .replace(/\s+\/>/g, '/>') // Remove spaces before self-closing tag
+            .replace(/"\s+/g, '"') // Remove spaces after quotes
+            .replace(/\s+"/g, '"') // Remove spaces before quotes
+            .replace(/\s+([\w-]+)=/g, ' $1=') // Leave one space before attributes
             .trim();
     }
 
@@ -289,22 +289,22 @@ export class SectionCollector {
         let formatted = '';
         let indent = 0;
         
-        // Разбиваем HTML на теги и текст
+        // Split HTML into tags and text
         const tokens = html.split(/(<\/?[^>]+>)/g);
         
         tokens.forEach(token => {
             if (!token.trim()) return;
             
-            // Уменьшаем отступ для закрывающих тегов
+            // Decrease indent for closing tags
             if (token.startsWith('</')) {
                 indent -= CONFIG.formatting.indentSize;
             }
             
-            // Добавляем отступ
+            // Add indent
             const indentString = ' '.repeat(Math.max(0, indent));
             formatted += indentString + token.trim() + '\n';
             
-            // Увеличиваем отступ для открывающих тегов
+            // Increase indent for opening tags
             if (token.startsWith('<') && 
                 !token.startsWith('</') && 
                 !token.endsWith('/>') && 
@@ -319,44 +319,44 @@ export class SectionCollector {
     cleanNode(node) {
         if (!node) return;
         
-        if (node.nodeType === 1) { // Если это элемент
+        if (node.nodeType === 1) { // If it's an element
             Array.from(node.attributes).forEach(attr => {
-                // Сохраняем только необходимые атрибуты
+                // Save only necessary attributes
                 if (attr.name.startsWith('data-v-') || 
                     (attr.name.startsWith('data-') && attr.name !== 'data-section-id') ||
                     attr.name.startsWith('v-') ||
                     attr.name === 'style' ||
                     attr.name === 'class' && (
-                        attr.value.includes('section-collector') ||
+                        attr.value.includes('section-collecty') ||
                         attr.value.includes(CONFIG.styles.section.highlight)
                     )) {
                     node.removeAttribute(attr.name);
                 }
             });
             
-            // Рекурсивно обрабатываем дочерние элементы
+            // Recursively process child elements
             Array.from(node.children).forEach(child => this.cleanNode(child));
         }
     }
 
     generateSectionId(section) {
-        // Получаем базовый ключ из заголовка или первого параграфа
+        // Get the base key from the heading or first paragraph
         let baseKey = section.querySelector('h1, h2, h3')?.textContent.trim() || 
                      section.querySelector('p')?.textContent.trim()?.slice(0, 30) || 
                      'section';
         
-        // Нормализуем ключ
+        // Normalize the key
         baseKey = baseKey.toLowerCase().replace(/[^a-z0-9]+/g, '_');
         
-        // Получаем и увеличиваем счетчик для этого ключа
+        // Get and increase the counter for this key
         const count = this.headingCounts.get(baseKey) || 0;
         this.headingCounts.set(baseKey, count + 1);
         
-        // Формируем финальный ID
+        // Form the final ID
         return count > 0 ? `${baseKey}_${count}` : baseKey;
     }
 
-    // Генерируем хеш на основе контента секции
+    // Generate a hash based on the section content
     async generateContentHash(content) {
         const encoder = new TextEncoder();
         const data = encoder.encode(content);
@@ -366,4 +366,4 @@ export class SectionCollector {
     }
 }
 
-export default SectionCollector;
+export default SectionCollecty;
