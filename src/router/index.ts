@@ -89,8 +89,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/blog/Grid.vue'),
         meta: { 
           icon: 'Layout',
-            title: 'Blog Base',
+          title: 'Blog Base',
           description: 'Standard blog section with image and text'
+        }
+      },
+      {
+        path: 'lists',
+        name: 'Blog Lists',
+        component: () => import('@/pages/blog/GridLists.vue'),
+        meta: { 
+          icon: 'Layout',
+          title: 'Blog Lists',
+          description: 'Blog section with lists'
         }
       }
     ]

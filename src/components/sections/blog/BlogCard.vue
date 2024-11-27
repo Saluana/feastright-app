@@ -11,17 +11,27 @@ interface Props {
   date?: string
   image?: string
   href?: string
+  layout?: 'default' | 'horizontal'
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  layout: 'default'
+})
 
-const placeholderLight = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2Q1ZjRkYyIvPjwvc3ZnPg=='
-const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAxMGUwNCIvPjwvc3ZnPg=='
+const placeholderLight = 'https://images.unsplash.com/photo-1542125387-c71274d94f0a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80'
+const placeholderDark = 'https://images.unsplash.com/photo-1542125387-c71274d94f0a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80'
 </script>
 
 <template>
-  <div :class="cn('group relative overflow-hidden rounded-lg border shadow hover:shadow-xl', props.class)">
-    <div class="aspect-video w-full overflow-hidden">
+  <div :class="cn(
+    'group relative overflow-hidden rounded-lg border-glow shadow hover:shadow-xl transition-all',
+    props.layout === 'horizontal' ? 'sm:flex' : '',
+    props.class
+  )">
+    <div :class="cn(
+      'overflow-hidden h-full',
+      props.layout === 'horizontal' ? 'sm:w-56 h-44 flex-shrink-0' : 'aspect-video w-full'
+    )">
       <img 
         :src="props.image || placeholderLight" 
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 dark:hidden"
@@ -33,18 +43,25 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
         :alt="props.title"
       />
     </div>
-    <div class="absolute inset-0 bg-gradient-to-t from-background/80 to-background/0" />
-    <div class="absolute bottom-0 p-6">
-      <div class="mb-2 flex items-center gap-2">
-        <Badge v-if="props.category" variant="secondary">{{ props.category }}</Badge>
-        <span v-if="props.date" class="text-sm text-muted-foreground">{{ props.date }}</span>
+
+    <div :class="cn(
+      'flex flex-col',
+      props.layout === 'horizontal' 
+        ? 'p-6' 
+        : 'absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10 p-6'
+    )">
+      <div class="mb-2 flex items-center gap-2 mt-auto">
+        <Badge v-if="props.category" variant="secondary" class="text-black dark:text-white">{{ props.category }}</Badge>
+        <span v-if="props.date" class="text-sm text-white/80">{{ props.date }}</span>
       </div>
-      <h3 class="mb-2 text-xl font-semibold text-foreground">{{ props.title }}</h3>
-      <p class="mb-4 text-sm text-muted-foreground">{{ props.description }}</p>
+      
+      <h3 class="text-xl font-semibold text-white group-hover:text-primary">{{ props.title }}</h3>
+      <p class="mt-2 text-white/90">{{ props.description }}</p>
+      
       <a 
         v-if="props.href"
         :href="props.href"
-        class="inline-flex items-center text-sm font-medium text-primary hover:underline"
+        class="mt-4 inline-flex items-center text-sm font-medium text-primary hover:text-white hover:underline"
       >
         Read more
         <svg

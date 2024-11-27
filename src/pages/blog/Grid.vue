@@ -24,6 +24,13 @@ const posts = [
     category: 'Design',
     date: '2024-03-13',
     href: '#'
+  },
+  {
+    title: 'The Future of Web Development',
+    description: 'Exploring the latest trends in web development and where it is going.',
+    category: 'Development',
+    date: '2024-03-12',
+    href: '#'
   }
 ]
 </script>
@@ -31,34 +38,47 @@ const posts = [
 <template>
   <MainNavigation />
   <Container>
+    <div class="my-16" />
+    <h2 class="text-2xl font-bold mb-4">Grid Layout</h2>
     <!-- Grid Layout -->
-    <BlogGrid class="mb-16">
+    <BlogGrid 
+      class="min-h-[45vh] mb-16"
+    >
       <BlogCard
-        v-for="post in posts"
+        v-for="post in posts.slice(0, 3)"
         :key="post.title"
         v-bind="post"
-        class="h-[400px]"
       />
     </BlogGrid>
 
+    <div class="mb-16" />
+    <h2 class="text-2xl font-bold mb-4">Featured Layout</h2>
     <!-- Featured Layout -->
-    <BlogGrid layout="featured" :columns="2" class="mb-16">
+    <BlogGrid 
+      :columns="2" 
+      class="min-h-[40vh] mb-16"
+      layout="featured"
+    >
       <BlogCard
         v-for="post in posts.slice(0, 2)"
         :key="post.title"
         v-bind="post"
-        class="h-[400px]"
       />
     </BlogGrid>
 
-    <!-- Single Column Layout -->
-    <BlogGrid layout="list" :columns="1">
+    <div class="mb-32">
+      <h2 class="text-2xl font-bold mb-4">Single Column Layout</h2>
+      <!-- Single Column Layout -->
+      <BlogGrid 
+        :columns="4"
+        class="min-h-[50vh]"
+    >
       <BlogCard
         v-for="post in posts"
         :key="post.title"
         v-bind="post"
-        class="h-[300px]"
       />
-    </BlogGrid>
+      </BlogGrid>
+    </div>
   </Container>
 </template> 

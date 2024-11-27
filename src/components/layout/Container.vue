@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import type { HTMLAttributes } from 'vue'
 
 const containerVariants = cva(
-  'mx-auto w-full',
+  'container mx-auto',
   {
     variants: {
       size: {
@@ -16,9 +16,9 @@ const containerVariants = cva(
       },
       padding: {
         none: '',
-        sm: 'px-4',
-        md: 'px-6',
-        lg: 'px-8',
+        sm: 'px-4 md:px-6 lg:px-8',
+        md: 'px-6 md:px-8 lg:px-12',
+        lg: 'px-8 md:px-12 lg:px-16',
       }
     },
     defaultVariants: {

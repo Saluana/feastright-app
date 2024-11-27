@@ -6,15 +6,16 @@ import Section from '@/components/layout/Section.vue'
 
 interface Props {
   class?: HTMLAttributes['class']
-  layout?: 'default' | 'grid' | 'featured' | 'list'
+  layout?: 'default' | 'grid' | 'featured' | 'list' | 'horizontal'
   padding?: 'none' | 'sm' | 'md' | 'lg'
   columns?: 1 | 2 | 3 | 4
 }
 
 const props = withDefaults(defineProps<Props>(), {
   layout: 'grid',
-  padding: 'md',
-  columns: 3
+  padding: 'none',
+  columns: 3,
+  class: 'm'
 })
 </script>
 
