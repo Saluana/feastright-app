@@ -5,7 +5,6 @@
 }
 
 @layer components {
-  /* Статичный эффект свечения */
   .border-glow {
     @apply relative rounded-2xl bg-transparent;
   }
@@ -39,10 +38,9 @@
     );
   }
 
-  /* Анимированный эффект (предыдущий код) */
   .border-glow-animated {
-    @apply relative rounded-2xl;
-    border: 1px solid hsl(var(--primary) / 0.3);
+    @apply relative rounded-xl;
+    border: 2px solid hsl(var(--primary) / 0.1);
     background: transparent;
   }
 
