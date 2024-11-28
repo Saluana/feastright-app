@@ -1,13 +1,12 @@
 const defaultConfig = `{
     "darkMode": "class",
-    "content": [],
     "theme": {
+        "fontFamily": {
+            "sans": ["Nunito", "sans-serif"]
+        },
         "container": {
             "center": true,
-            "padding": "2rem",
-            "screens": {
-                "2xl": "1400px"
-            }
+            "padding": "2rem"
         },
         "extend": {
             "colors": {
@@ -50,50 +49,64 @@ const defaultConfig = `{
                 "lg": "var(--radius)",
                 "md": "calc(var(--radius) - 2px)",
                 "sm": "calc(var(--radius) - 4px)"
-            },
-            "keyframes": {
-                "accordion-down": {
-                    "from": {
-                        "height": 0
-                    },
-                    "to": {
-                        "height": "var(--radix-accordion-content-height)"
-                    }
-                },
-                "accordion-up": {
-                    "from": {
-                        "height": "var(--radix-accordion-content-height)"
-                    },
-                    "to": {
-                        "height": 0
-                    }
-                },
-                "collapsible-down": {
-                    "from": {
-                        "height": 0
-                    },
-                    "to": {
-                        "height": "var(--radix-collapsible-content-height)"
-                    }
-                },
-                "collapsible-up": {
-                    "from": {
-                        "height": "var(--radix-collapsible-content-height)"
-                    },
-                    "to": {
-                        "height": 0
-                    }
-                }
-            },
-            "animation": {
-                "accordion-down": "accordion-down 0.2s ease-out",
-                "accordion-up": "accordion-up 0.2s ease-out",
-                "collapsible-down": "collapsible-down 0.2s ease-in-out",
-                "collapsible-up": "collapsible-up 0.2s ease-in-out"
             }
         }
     }
 }`;
+
+const tailwindStylesDefault = `@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 142.1 76.2% 36.3%;
+    --radius: 0.75rem;
+  }
+  
+  .dark {
+    --background: 20 14.3% 4.1%;
+    --foreground: 0 0% 95%;
+    --card: 24 9.8% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 142.1 70.6% 45.3%;
+    --primary-foreground: 144.9 80.4% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 142.4 71.8% 29.2%;
+    --border-color-dark: 240 3.7% 21.9%;
+  }
+
+  .dark .border {
+    border: 1px solid hsl(var(--border-color-dark));
+  }
+}`;
+
+const bodyClassesDefault = `font-sans bg-background text-foreground antialiased`;
 
 const headSnippetDefault = `<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NyA0MCIgZmlsbD0iIzBlYTVlOSI+DQogICAgPHBhdGggZD0iTTIzLjUgNi41QzE3LjUgNi41IDEzLjc1IDkuNSAxMi4yNSAxNS41QzE0LjUgMTIuNSAxNy4xMjUgMTEuMzc1IDIwLjEyNSAxMi4xMjVDMjEuODM2NyAxMi41NTI5IDIzLjA2MDEgMTMuNzk0NyAyNC40MTQyIDE1LjE2OTJDMjYuNjIwMiAxNy40MDg0IDI5LjE3MzQgMjAgMzQuNzUgMjBDNDAuNzUgMjAgNDQuNSAxNyA0NiAxMUM0My43NSAxNCA0MS4xMjUgMTUuMTI1IDM4LjEyNSAxNC4zNzVDMzYuNDEzMyAxMy45NDcxIDM1LjE4OTkgMTIuNzA1MyAzMy44MzU3IDExLjMzMDhDMzEuNjI5NyA5LjA5MTU4IDI5LjA3NjYgNi41IDIzLjUgNi41Wk0xMi4yNSAyMEM2LjI1IDIwIDIuNSAyMyAxIDI5QzMuMjUgMjYgNS44NzUgMjQuODc1IDguODc1IDI1LjYyNUMxMC41ODY3IDI2LjA1MjkgMTEuODEwMSAyNy4yOTQ3IDEzLjE2NDIgMjguNjY5M0MxNS4zNzAyIDMwLjkwODQgMTcuOTIzNCAzMy41IDIzLjUgMzMuNUMyOS41IDMzLjUgMzMuMjUgMzAuNSAzNC43NSAyNC41QzMyLjUgMjcuNSAyOS44NzUgMjguNjI1IDI2Ljg3NSAyNy44NzVDMjUuMTYzMyAyNy40NDcxIDIzLjkzOTkgMjYuMjA1MyAyMi41ODU4IDI0LjgzMDdDMjAuMzc5OCAyMi41OTE2IDE3LjgyNjYgMjAgMTIuMjUgMjBaIj48L3BhdGg+DQo8L3N2Zz4=">`;
   

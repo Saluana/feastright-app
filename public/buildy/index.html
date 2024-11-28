@@ -12,72 +12,79 @@
   <script src="./js/lib/lucide.min.js"></script>
   <link rel="stylesheet" href="./css/style.css" />
   <style type="text/tailwindcss">
-    @layer base {
-        :root {
-            --background: 0 0% 100%;
-            --foreground: 240 10% 3.9%;
-        
-            --card: 0 0% 100%;
-            --card-foreground: 240 10% 3.9%;
-        
-            --popover: 0 0% 100%;
-            --popover-foreground: 240 10% 3.9%;
-        
-            --primary: 142.1 76.2% 36.3%;
-            --primary-foreground: 355.7 100% 97.3%;
-        
-            --secondary: 240 4.8% 95.9%;
-            --secondary-foreground: 240 5.9% 10%;
-        
-            --muted: 240 4.8% 95.9%;
-            --muted-foreground: 240 3.8% 46.1%;
-        
-            --accent: 240 4.8% 95.9%;
-            --accent-foreground: 240 5.9% 10%;
-        
-            --destructive: 0 84.2% 60.2%;
-            --destructive-foreground: 0 0% 98%;
-        
-            --border:240 5.9% 90%;
-            --input:240 5.9% 90%;
-            --ring:142.1 76.2% 36.3%;
-            --radius: 0.75rem;
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+  
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+  
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+  
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+  
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+  
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+  
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+  
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+  
+    --border:240 5.9% 90%;
+    --input:240 5.9% 90%;
+    --ring:142.1 76.2% 36.3%;
+    --radius: 0.75rem;
+  }
+   
+  .dark {
+    --background:20 14.3% 4.1%;
+    --foreground:0 0% 95%;
+  
+    --card:24 9.8% 10%;
+    --card-foreground:0 0% 95%;
+  
+    --popover:0 0% 9%;
+    --popover-foreground:0 0% 95%;
+  
+    --primary:142.1 70.6% 45.3%;
+    --primary-foreground:144.9 80.4% 10%;
+  
+    --secondary:240 3.7% 15.9%;
+    --secondary-foreground:0 0% 98%;
+  
+    --muted:0 0% 15%;
+    --muted-foreground:240 5% 64.9%;
+  
+    --accent:12 6.5% 15.1%;
+    --accent-foreground:0 0% 98%;
+  
+    --destructive:0 62.8% 30.6%;
+    --destructive-foreground:0 85.7% 97.3%;
+  
+    --border:240 3.7% 15.9%;
+    --input:240 3.7% 15.9%;
+    --ring:142.4 71.8% 29.2%;
+
+    --border-color-dark:240 3.7% 21.9%;
+
+    .border {
+      border: 1px solid hsl(var(--border-color-dark));
         }
-        
-        .dark {
-            --background:20 14.3% 4.1%;
-            --foreground:0 0% 95%;
-        
-            --card:24 9.8% 10%;
-            --card-foreground:0 0% 95%;
-        
-            --popover:0 0% 9%;
-            --popover-foreground:0 0% 95%;
-        
-            --primary:142.1 70.6% 45.3%;
-            --primary-foreground:144.9 80.4% 10%;
-        
-            --secondary:240 3.7% 15.9%;
-            --secondary-foreground:0 0% 98%;
-        
-            --muted:0 0% 15%;
-            --muted-foreground:240 5% 64.9%;
-        
-            --accent:12 6.5% 15.1%;
-            --accent-foreground:0 0% 98%;
-        
-            --destructive:0 62.8% 30.6%;
-            --destructive-foreground:0 85.7% 97.3%;
-        
-            --border:240 3.7% 15.9%;
-            --input:240 3.7% 15.9%;
-            --ring:142.4 71.8% 29.2%;
-        }
+      }
     }
-      </style>
+    
+  </style>
 </head>
 
-<body class="font-sans bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
+<body class="font-sans bg-background text-foreground antialiased">
   <nav
     class="sticky top-0 w-full bg-neutral-50 dark:bg-slate-900 shadow-md z-20 border-b border-slate-300 dark:border-slate-700">
     <div class="px-4">
@@ -185,7 +192,7 @@
         </div>
       </div>
     </div>
-    <div id="preview" class="flex-grow overflow-y-auto p-4 bg-white dark:bg-slate-900"></div>
+    <div id="preview" class="flex-grow overflow-y-auto p-4 font-sans bg-background text-foreground antialiased"></div>
   </div>
   
   <div id="sceletonModal" class="modal fixed inset-0 right-0 bg-black bg-opacity-75 flex-shrink-0 transition-all duration-300 ease-in-out hidden z-50"></div>
@@ -217,7 +224,7 @@
   </div>
 
   <div id="fullscreenModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-75">
-    <div class="relative bg-white dark:bg-slate-900 w-full h-full overflow-y-auto">
+    <div class="relative bg-background text-foreground antialiased w-full h-full overflow-y-auto">
       <button id="closeFullscreenButton" class="fixed top-0 left-0 p-1 bg-slate-900 text-slate-100 z-50"
         title="Close Fullscreen">
         <i data-lucide="minimize-2" class="w-4 h-4"></i>

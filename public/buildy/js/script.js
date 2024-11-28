@@ -25,6 +25,7 @@ class ExportPage extends PageSkeleton {
     super(config);
     this.styles = '';
     this.useDevStyles = config.useDevStyles;
+    this.tailwindStyles = config.tailwindStyles;
   }
 
   async generateStyles() {
@@ -45,149 +46,13 @@ class ExportPage extends PageSkeleton {
 
   getAfterHead() {
     if (this.useDevStyles) {
-      const tailwindConfig = {
-        darkMode: "class",
-        content: [],
-        theme: {
-          container: {
-            center: true,
-            padding: "2rem",
-            screens: {
-              "2xl": "1400px"
-            }
-          },
-          borderRadius: {
-            DEFAULT: "var(--radius)",
-            none: "0",
-            sm: "calc(var(--radius) - 4px)",
-            md: "calc(var(--radius) - 2px)",
-            lg: "var(--radius)",
-            xl: "calc(var(--radius) + 4px)",
-            "2xl": "calc(var(--radius) + 8px)",
-            full: "9999px",
-          },
-          extend: {
-            colors: {
-              border: "hsl(var(--border))",
-              input: "hsl(var(--input))",
-              ring: "hsl(var(--ring))",
-              background: "hsl(var(--background))",
-              foreground: "hsl(var(--foreground))",
-              primary: {
-                DEFAULT: "hsl(var(--primary))",
-                foreground: "hsl(var(--primary-foreground))"
-              },
-              secondary: {
-                DEFAULT: "hsl(var(--secondary))",
-                foreground: "hsl(var(--secondary-foreground))"
-              },
-              destructive: {
-                DEFAULT: "hsl(var(--destructive))",
-                foreground: "hsl(var(--destructive-foreground))"
-              },
-              muted: {
-                DEFAULT: "hsl(var(--muted))",
-                foreground: "hsl(var(--muted-foreground))"
-              },
-              accent: {
-                DEFAULT: "hsl(var(--accent))",
-                foreground: "hsl(var(--accent-foreground))"
-              },
-              popover: {
-                DEFAULT: "hsl(var(--popover))",
-                foreground: "hsl(var(--popover-foreground))"
-              },
-              card: {
-                DEFAULT: "hsl(var(--card))",
-                foreground: "hsl(var(--card-foreground))"
-              }
-            },
-            borderRadius: {
-              xl: "calc(var(--radius) + 4px)",
-              lg: "var(--radius)",
-              md: "calc(var(--radius) - 2px)",
-              sm: "calc(var(--radius) - 4px)"
-            },
-            keyframes: {
-              "accordion-down": {
-                from: { height: 0 },
-                to: { height: "var(--radix-accordion-content-height)" }
-              },
-              "accordion-up": {
-                from: { height: "var(--radix-accordion-content-height)" },
-                to: { height: 0 }
-              },
-              "collapsible-down": {
-                from: { height: 0 },
-                to: { height: "var(--radix-collapsible-content-height)" }
-              },
-              "collapsible-up": {
-                from: { height: "var(--radix-collapsible-content-height)" },
-                to: { height: 0 }
-              }
-            },
-            animation: {
-              "accordion-down": "accordion-down 0.2s ease-out",
-              "accordion-up": "accordion-up 0.2s ease-out",
-              "collapsible-down": "collapsible-down 0.2s ease-in-out",
-              "collapsible-up": "collapsible-up 0.2s ease-in-out"
-            }
-          }
-        }
-      };
+      const tailwindConfig = this.config.tailwindConfig;
 
       return `
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
           tailwind.config = ${JSON.stringify(tailwindConfig)};
-        </script>
-        <style type="text/tailwindcss">
-          @layer base {
-            :root {
-              --background: 0 0% 100%;
-              --foreground: 240 10% 3.9%;
-              --card: 0 0% 100%;
-              --card-foreground: 240 10% 3.9%;
-              --popover: 0 0% 100%;
-              --popover-foreground: 240 10% 3.9%;
-              --primary: 142.1 76.2% 36.3%;
-              --primary-foreground: 355.7 100% 97.3%;
-              --secondary: 240 4.8% 95.9%;
-              --secondary-foreground: 240 5.9% 10%;
-              --muted: 240 4.8% 95.9%;
-              --muted-foreground: 240 3.8% 46.1%;
-              --accent: 240 4.8% 95.9%;
-              --accent-foreground: 240 5.9% 10%;
-              --destructive: 0 84.2% 60.2%;
-              --destructive-foreground: 0 0% 98%;
-              --border: 240 5.9% 90%;
-              --input: 240 5.9% 90%;
-              --ring: 142.1 76.2% 36.3%;
-              --radius: 0.75rem;
-            }
-            .dark {
-              --background: 20 14.3% 4.1%;
-              --foreground: 0 0% 95%;
-              --card: 24 9.8% 10%;
-              --card-foreground: 0 0% 95%;
-              --popover: 0 0% 9%;
-              --popover-foreground: 0 0% 95%;
-              --primary: 142.1 70.6% 45.3%;
-              --primary-foreground: 144.9 80.4% 10%;
-              --secondary: 240 3.7% 15.9%;
-              --secondary-foreground: 0 0% 98%;
-              --muted: 0 0% 15%;
-              --muted-foreground: 240 5% 64.9%;
-              --accent: 12 6.5% 15.1%;
-              --accent-foreground: 0 0% 98%;
-              --destructive: 0 62.8% 30.6%;
-              --destructive-foreground: 0 85.7% 97.3%;
-              --border: 240 3.7% 15.9%;
-              --input: 240 3.7% 15.9%;
-              --ring: 142.4 71.8% 29.2%;
-            }
-          }
-        </style>`;
+        </script>`;
     } else {
       return `<style>${this.styles}</style>`;
     }
@@ -220,8 +85,9 @@ pageSceletonSetter.setDefaultValues({
   title: 'My Website',
   description: 'Welcome to my website',
   headSnippet: headSnippetDefault,
+  tailwindStyles: tailwindStylesDefault,
   bodyStartSnippet: bodyScriptDefault,
-  bodyClasses: 'font-sans bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100'
+  bodyClasses: bodyClassesDefault
 });
 
 const defaultState = {
@@ -391,7 +257,7 @@ function initializeBlockList() {
   Object.entries(blocks).forEach(([blockType, { content, title }]) => {
     const blockElement = document.createElement("div");
     blockElement.className =
-      "block bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-700 rounded mb-2 cursor-move text-gray-800 dark:text-white  relative overflow-hidden aspect-[16/9]";
+      "block font-sans bg-background text-foreground antialiased border border-gray-300 dark:border-gray-700 rounded mb-2 cursor-move text-gray-800 dark:text-white  relative overflow-hidden aspect-[16/9]";
     blockElement.setAttribute("draggable", "true");
     blockElement.setAttribute("buildy-block", blockType);
 
@@ -604,14 +470,22 @@ async function exportHtml() {
   const useDevStylesCheckbox = document.getElementById('useDevStyles');
   const useDevStyles = useDevStylesCheckbox ? useDevStylesCheckbox.checked : false;
 
-  const ExportConfig = {
-    darkMode: true,
-    title: pageTitle,
-    layout: currentState.layout,
-    tailwindConfig: savedConfig,
-    content: cleanContent,
-    useDevStyles: useDevStyles  // Используем значение напрямую из чекбокса
-  };
+  // Преобразуем savedConfig в объект JavaScript, если это стока
+  const tailwindConfig = typeof savedConfig === 'string' 
+    ? JSON.parse(savedConfig)
+    : savedConfig;
+
+    const formattedConfig = formatTailwindConfigForExport(tailwindConfig);
+  
+    const ExportConfig = {
+      darkMode: true,
+      title: pageTitle,
+      layout: currentState.layout,
+      tailwindConfig: formattedConfig, // Теперь это строка в формате "tailwind.config = {...}"
+      content: cleanContent,
+      useDevStyles: useDevStyles,
+      tailwindStyles: pageSceletonSetter.getSavedValue('tailwindStyles')
+    };
 
   const htmlContent = new ExportPage(ExportConfig);
   const uglyHtml = await htmlContent.generate();
@@ -815,76 +689,13 @@ async function generateTailwindStylesForLayout(layout, tailwind, body) {
   await new Promise(resolve => {
     iframe.onload = resolve;
     iframe.srcdoc = `
-      <html>
+      <html lang="${pageSceletonSetter.getSavedValue('lang')}">
         <head>
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
           tailwind.config = ${tailwind};
         </script>
-          <style type="text/tailwindcss">
-    @layer base {
-        :root {
-            --background: 0 0% 100%;
-            --foreground: 240 10% 3.9%;
-        
-            --card: 0 0% 100%;
-            --card-foreground: 240 10% 3.9%;
-        
-            --popover: 0 0% 100%;
-            --popover-foreground: 240 10% 3.9%;
-        
-            --primary: 142.1 76.2% 36.3%;
-            --primary-foreground: 355.7 100% 97.3%;
-        
-            --secondary: 240 4.8% 95.9%;
-            --secondary-foreground: 240 5.9% 10%;
-        
-            --muted: 240 4.8% 95.9%;
-            --muted-foreground: 240 3.8% 46.1%;
-        
-            --accent: 240 4.8% 95.9%;
-            --accent-foreground: 240 5.9% 10%;
-        
-            --destructive: 0 84.2% 60.2%;
-            --destructive-foreground: 0 0% 98%;
-        
-            --border:240 5.9% 90%;
-            --input:240 5.9% 90%;
-            --ring:142.1 76.2% 36.3%;
-            --radius: 0.75rem;
-        }
-        
-        .dark {
-            --background:20 14.3% 4.1%;
-            --foreground:0 0% 95%;
-        
-            --card:24 9.8% 10%;
-            --card-foreground:0 0% 95%;
-        
-            --popover:0 0% 9%;
-            --popover-foreground:0 0% 95%;
-        
-            --primary:142.1 70.6% 45.3%;
-            --primary-foreground:144.9 80.4% 10%;
-        
-            --secondary:240 3.7% 15.9%;
-            --secondary-foreground:0 0% 98%;
-        
-            --muted:0 0% 15%;
-            --muted-foreground:240 5% 64.9%;
-        
-            --accent:12 6.5% 15.1%;
-            --accent-foreground:0 0% 98%;
-        
-            --destructive:0 62.8% 30.6%;
-            --destructive-foreground:0 85.7% 97.3%;
-        
-            --border:240 3.7% 15.9%;
-            --input:240 3.7% 15.9%;
-            --ring:142.4 71.8% 29.2%;
-        }
-    }
-      </style>
+        ${pageSceletonSetter.getSavedValue('headSnippet')}
         </head>
         <body class="${body}">
           <div id="content"></div>
@@ -949,3 +760,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log('currentState:', currentState);
 });
+
+function formatTailwindConfigForExport(configObject) {
+  function processValue(value) {
+    if (Array.isArray(value)) {
+      return value.map(item => processValue(item));
+    }
+    
+    if (value && typeof value === 'object') {
+      return processObject(value);
+    }
+    
+    if (typeof value === 'string') {
+      // Улучшенная обработка calc() выражений
+      return value.replace(/calc\((.*?)\)/g, (match, contents) => {
+        // Обрабатываем содержимое calc()
+        let processedContents = contents
+          // Сначала нормализуем var()
+          .replace(/var\s*\(\s*--[^)]+\s*\)/g, match => match.replace(/\s+/g, ''))
+          // Добавляем пробелы вокруг операторов, но не внутри var()
+          .replace(/([^-])([-+*/])([^-])/g, '$1 $2 $3')
+          // Удаляем лишние пробелы
+          .replace(/\s+/g, ' ')
+          .trim();
+        
+        return `calc(${processedContents})`;
+      });
+    }
+    
+    return value;
+  }
+
+  function processObject(obj) {
+    const result = {};
+    for (const [key, value] of Object.entries(obj)) {
+      result[key] = processValue(value);
+    }
+    return result;
+  }
+
+  try {
+    const preparedConfig = JSON.parse(JSON.stringify(configObject));
+    const processedConfig = processObject(preparedConfig);
+    
+    // Преобразуем в строку с сохранением форматирования
+    return `tailwind.config = ${JSON.stringify(processedConfig, null, 2)
+      // Восстанавливаем пробелы после сериализации
+      .replace(/"calc\((.*?)\)"/g, (match, contents) => {
+        return `"calc(${contents
+          .replace(/\\s+/g, ' ')
+          .replace(/([^-])([-+*/])([^-])/g, '$1 $2 $3')
+        })"`;
+      })}`;
+  } catch (error) {
+    console.error('Error formatting Tailwind config:', error);
+    return `tailwind.config = ${JSON.stringify(configObject, null, 2)}`;
+  }
+}

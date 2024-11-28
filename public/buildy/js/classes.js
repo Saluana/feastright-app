@@ -20,13 +20,32 @@ class PageSkeleton {
 
   getHead() {
     return `
-${this.getBeforeHead()}
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${this.config.title}</title>
-${this.getAfterTitle()}
-${this.getAfterHead()}
-      `;
+      ${this.getBeforeHead()}
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${this.config.title}</title>
+      ${this.getAfterTitle()}
+      <script src="https://cdn.tailwindcss.com"></script>
+      <script>
+        ${this.config.tailwindConfig}
+      </script>
+      ${this.getTailwindStyles()}
+      <style>
+        :root {
+          color-scheme: light dark;
+        }
+        
+        html.dark {
+          color-scheme: dark;
+        }
+      </style>
+    `;
+  }
+
+  getTailwindStyles() {
+    return this.config.tailwindStyles 
+      ? `<style type="text/tailwindcss">${this.config.tailwindStyles}</style>`
+      : '';
   }
 
   getAfterTitle() {
@@ -41,21 +60,37 @@ ${this.getAfterHead()}
 
   getAfterHead() {
     if (this.config.useDevStyles) {
+      const configObject = typeof this.config.tailwindConfig === 'string' 
+        ? JSON.parse(this.config.tailwindConfig)
+        : this.config.tailwindConfig;
+
+      configObject.safelist = [
+        {
+          pattern: /^dark:/,
+        }
+      ];
+
       return `
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = ${this.config.tailwindConfig};
-</script>`;
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+          tailwind.config = ${JSON.stringify(configObject)};
+        </script>
+        <style>
+          :root {
+            color-scheme: light dark;
+          }
+          
+          html.dark {
+            color-scheme: dark;
+          }
+        </style>`;
     } else {
-      return `
-<style>
-  ${this.config.styles || ''}
-</style>`;
+      return `<style>${this.config.styles || ''}</style>`;
     }
   }
 
   getBodyClasses() {
-    return "font-sans bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100";
+    return this.config.bodyClasses || bodyClassesDefault;
   }
 
   getContent() {
@@ -64,11 +99,18 @@ ${this.getAfterHead()}
 
   getScripts() {
     return `
-        <script>
-          ${this.getDarkModeToggleScript()}
-          ${this.getOffCanvasMenuScript()}
-        </script>
-      `;
+      <script>
+        // Check dark mode preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+        
+        ${this.getDarkModeToggleScript()}
+        ${this.getOffCanvasMenuScript()}
+      </script>
+    `;
   }
 
   getDarkModeToggleScript() {
@@ -205,11 +247,8 @@ class PageSceletonSetter {
       { key: "title", type: "text", label: "Title" },
       { key: "description", type: "textarea", label: "Description" },
       { key: "headSnippet", type: "textarea", label: "Head Snippet" },
-      {
-        key: "bodyStartSnippet",
-        type: "textarea",
-        label: "Body Start Snippet",
-      },
+      { key: "tailwindStyles", type: "textarea", label: "Tailwind Styles" },
+      { key: "bodyStartSnippet", type: "textarea", label: "Body Start Snippet" },
       { key: "bodyClasses", type: "text", label: "Body Classes" },
       { key: "useDevStyles", type: "checkbox", label: "Use Development Styles" },
     ];
