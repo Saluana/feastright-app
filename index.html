@@ -12,6 +12,9 @@
       (function() {
         const theme = localStorage.getItem('darkMode');
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (!theme && systemTheme) {
+          localStorage.setItem('darkMode', 'true');
+        }
         if (theme === 'true' || (!theme && systemTheme)) {
           document.documentElement.classList.add('dark');
         }

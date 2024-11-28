@@ -18,12 +18,30 @@
   <meta name="mobile-web-app-capable" content="yes">
   <script>
     (function() {
-      const theme = localStorage.getItem('darkMode');
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (theme === 'true' || (!theme && systemTheme)) {
-        document.documentElement.classList.add('dark');
+      try {
+        // Получаем текущее состояние темы
+        const theme = localStorage.getItem('darkMode');
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // Если тема явно не установлена, устанавливаем значение на основе системных настроек
+        if (!theme && systemTheme) {
+          localStorage.setItem('darkMode', 'true');
+        }
+        
+        // Применяем тему
+        if (theme === 'true' || (!theme && systemTheme)) {
+          document.documentElement.classList.add('dark');
+          document.querySelector('meta[name="theme-color"]')
+                  .setAttribute('content', '#000000');
+        }
+      } catch (e) {
+        // В случае ошибки используем системные настройки
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('darkMode', 'true');
+        }
       }
-    })(); 
+    })();
   </script>
   <script src="./js/lib/tailwind.js"></script>
   <script src="./js/lib/lucide.min.js"></script>
