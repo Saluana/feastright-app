@@ -2,7 +2,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import { Navbar, NavbarBrand, NavbarLayer } from '@/components/sections/navbar'
 import { DarkMode } from '@/components/darkMode'
-import { Home, User, Menu, ChevronsRight, Layout, Grip, PanelLeftOpen, CopyCheck, LoaderCircle } from 'lucide-vue-next'
+import { Home, User, Menu, ChevronsRight, PackageCheck, Grip, PanelLeftOpen, CopyCheck, LoaderCircle } from 'lucide-vue-next'
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -101,8 +101,8 @@ const menuDescription = 'Main navigation menu with all available sections and pa
       <NavbarLayer position="start" class="flex-1">
         <div class="flex items-center gap-6">
           <NavbarBrand>
-            <Layout class="w-6 h-6" />
-            <span class="font-semibold">Brand</span>
+            <PackageCheck class="w-6 h-6" />
+            <span class="font-semibold">BuildY</span>
           </NavbarBrand>
           
           <!-- Обновляем десктопную навигацию -->
@@ -187,8 +187,8 @@ const menuDescription = 'Main navigation menu with all available sections and pa
               <SheetHeader class="p-4 sheet-header border-b-[0.3px] border-gradient shadow-glow">
                 <SheetTitle class="flex items-center gap-2 text-base mb-2">
                   <NavbarBrand>
-                    <Layout class="w-6 h-6" />
-                    <span class="font-semibold">Brand</span>
+                    <PackageCheck class="w-6 h-6" />
+                    <span class="font-semibold">BuildY</span>
                   </NavbarBrand>
                 </SheetTitle>
                 <SheetDescription class="text-sm text-muted-foreground">
