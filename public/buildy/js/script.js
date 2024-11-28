@@ -565,7 +565,22 @@ function fullscreenModal() {
   const fullscreenPreview = document.getElementById("fullscreenPreview");
 
   fullscreenButton.addEventListener("click", function () {
-    fullscreenPreview.innerHTML = preview.innerHTML;
+    // Создаем временный контейнер и копируем содержимое
+    const tempContainer = preview.cloneNode(true);
+    
+    // Удаляем все элементы управления
+    tempContainer.querySelectorAll('.block-controls').forEach(el => el.remove());
+    
+    // Удаляем классы block-wrapper и относящиеся к ним стили
+    tempContainer.querySelectorAll('.block-wrapper').forEach(wrapper => {
+      const content = wrapper.firstElementChild;
+      if (content) {
+        wrapper.parentNode.replaceChild(content, wrapper);
+      }
+    });
+    
+    // Копируем очищенный контент
+    fullscreenPreview.innerHTML = tempContainer.innerHTML;
     fullscreenModal.classList.remove("hidden");
   });
 

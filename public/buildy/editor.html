@@ -20,13 +20,47 @@
     }
 
     div.block-wrapper.highlight-border  {
-      outline: 3px dotted #6445e2;
-      box-shadow: 0 0 5px rgba(51, 1, 231, 0.5);
+      outline: 3px solid #6445e2;
+      box-shadow: 0 0 10px rgba(51, 1, 231, 0.3);
+      position: relative;
     }
 
     .highlight-border {
       outline: 3px dotted #0ea5e8;
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+    }
+
+    /* Добавим полупрозрачный оверлей при наведении */
+    div.block-wrapper:hover::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(100, 69, 226, 0.1);
+      z-index: 10;
+      cursor: pointer;
+    }
+
+    /* Стиль для кнопки редактирования */
+    .edit-section-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #6445e2;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 11;
+      cursor: pointer;
+    }
+
+    div.block-wrapper:hover .edit-section-button {
+      opacity: 1;
     }
   </style>
       <style type="text/tailwindcss">
