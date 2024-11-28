@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      data-color-mode="light"
+      data-light-theme="light"
+      data-dark-theme="dark">
 
 <head>
   <meta charset="utf-8" />
@@ -8,6 +11,15 @@
   <meta name="description"
     content="Create fasty Landing pages with TailwindCSS. Dark Mode and customizer Config included." />
   <link rel="icon" href="./img/favicon.ico" />
+  <script>
+    (function() {
+      const theme = localStorage.getItem('darkMode');
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (theme === 'true' || (!theme && systemTheme)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
   <script src="./js/lib/tailwind.js"></script>
   <script src="./js/lib/lucide.min.js"></script>
   <link rel="stylesheet" href="./css/style.css" />
@@ -81,6 +93,30 @@
       }
     }
     
+  </style>
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+    
+    body, #preview {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: 20 14.3% 4.1%;
+        --foreground: 0 0% 95%;
+      }
+    }
+
+    .dark {
+      --background: 20 14.3% 4.1%;
+      --foreground: 0 0% 95%;
+    }
   </style>
 </head>
 

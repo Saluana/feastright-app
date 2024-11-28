@@ -24,7 +24,7 @@ class ExportPage extends PageSkeleton {
   constructor(config) {
     super(config);
     this.styles = '';
-    this.useDevStyles = config.useDevStyles;
+    this.useDevStyles = String(config.useDevStyles) === 'true';
     this.tailwindStyles = config.tailwindStyles;
   }
 
@@ -46,13 +46,14 @@ class ExportPage extends PageSkeleton {
 
   getAfterHead() {
     if (this.useDevStyles) {
-      const tailwindConfig = this.config.tailwindConfig;
-
       return `
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
-          tailwind.config = ${JSON.stringify(tailwindConfig)};
-        </script>`;
+          ${this.config.tailwindConfig}
+        </script>
+        <style type="text/tailwindcss">
+          ${this.tailwindStyles}
+        </style>`;
     } else {
       return `<style>${this.styles}</style>`;
     }
@@ -87,7 +88,8 @@ pageSceletonSetter.setDefaultValues({
   headSnippet: headSnippetDefault,
   tailwindStyles: tailwindStylesDefault,
   bodyStartSnippet: bodyScriptDefault,
-  bodyClasses: bodyClassesDefault
+  bodyClasses: bodyClassesDefault,
+  useDevStyles: false
 });
 
 const defaultState = {
@@ -461,35 +463,31 @@ async function exportHtml() {
     .map((blockWrapper) => blockWrapper.firstElementChild.outerHTML)
     .join("\n");
 
-  savedConfig = savedConfig
-    .replace(/>\s+</g, '><')
-    .replace(/\s+/g, '')
-    .trim();
-
-  // Получаем значение чекбокса напрямую из DOM
-  const useDevStylesCheckbox = document.getElementById('useDevStyles');
-  const useDevStyles = useDevStylesCheckbox ? useDevStylesCheckbox.checked : false;
-
-  // Преобразуем savedConfig в объект JavaScript, если это стока
+  const useDevStyles = String(pageSceletonSetter.getSavedValue('useDevStyles')) === 'true';
+  const tailwindStyles = pageSceletonSetter.getSavedValue('tailwindStyles');
+  
+  // Получаем конфиг
+  const savedConfig = tailwindConfigSetter.getSavedValue();
   const tailwindConfig = typeof savedConfig === 'string' 
     ? JSON.parse(savedConfig)
     : savedConfig;
-
-    const formattedConfig = formatTailwindConfigForExport(tailwindConfig);
   
-    const ExportConfig = {
-      darkMode: true,
-      title: pageTitle,
-      layout: currentState.layout,
-      tailwindConfig: formattedConfig, // Теперь это строка в формате "tailwind.config = {...}"
-      content: cleanContent,
-      useDevStyles: useDevStyles,
-      tailwindStyles: pageSceletonSetter.getSavedValue('tailwindStyles')
-    };
+  // Используем formatTailwindConfigForExport для правильного форматирования
+  const formattedConfig = formatTailwindConfigForExport(tailwindConfig);
+  
+  const ExportConfig = {
+    darkMode: true,
+    title: pageTitle,
+    layout: currentState.layout,
+    tailwindConfig: formattedConfig,
+    content: cleanContent,
+    useDevStyles: useDevStyles,
+    tailwindStyles: tailwindStyles
+  };
 
   const htmlContent = new ExportPage(ExportConfig);
   const uglyHtml = await htmlContent.generate();
-
+  
   // PrettY
   let prettyHtml = prettier.format(uglyHtml, {
     parser: "html",
@@ -686,6 +684,8 @@ async function generateTailwindStylesForLayout(layout, tailwind, body) {
   iframe.style.display = 'none';
   document.body.appendChild(iframe);
   
+  const tailwindStyles = pageSceletonSetter.getSavedValue('tailwindStyles');
+  
   await new Promise(resolve => {
     iframe.onload = resolve;
     iframe.srcdoc = `
@@ -695,6 +695,9 @@ async function generateTailwindStylesForLayout(layout, tailwind, body) {
         <script>
           tailwind.config = ${tailwind};
         </script>
+        <style type="text/tailwindcss">
+          ${tailwindStyles}
+        </style>
         ${pageSceletonSetter.getSavedValue('headSnippet')}
         </head>
         <body class="${body}">
@@ -817,3 +820,15 @@ function formatTailwindConfigForExport(configObject) {
     return `tailwind.config = ${JSON.stringify(configObject, null, 2)}`;
   }
 }
+
+function saveUseDevStyles(value) {
+  localStorage.setItem('useDevStyles', value);
+}
+
+// При изменении чекбокса
+document.getElementById('useDevStyles').addEventListener('change', (e) => {
+  const currentState = JSON.parse(localStorage.getItem('currentState')) || {};
+  if (!currentState.sceleton) currentState.sceleton = {};
+  currentState.sceleton.useDevStyles = e.target.checked;
+  localStorage.setItem('currentState', JSON.stringify(currentState));
+});

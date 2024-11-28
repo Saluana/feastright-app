@@ -6,7 +6,10 @@ class PageSkeleton {
   generate() {
     return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      data-color-mode="light"
+      data-light-theme="light"
+      data-dark-theme="dark">
   <head>
     ${this.getHead()}
   </head>
@@ -24,17 +27,21 @@ class PageSkeleton {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${this.config.title}</title>
-      ${this.getAfterTitle()}
-      <script src="https://cdn.tailwindcss.com"></script>
       <script>
-        ${this.config.tailwindConfig}
+        (function() {
+          const theme = localStorage.getItem('darkMode');
+          const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (theme === 'true' || (!theme && systemTheme)) {
+              document.documentElement.classList.add('dark');
+          }
+        })();
       </script>
-      ${this.getTailwindStyles()}
+      ${this.getAfterTitle()}
+      ${this.getAfterHead()}
       <style>
         :root {
           color-scheme: light dark;
         }
-        
         html.dark {
           color-scheme: dark;
         }
