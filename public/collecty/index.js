@@ -1,8 +1,21 @@
 import { SectionCollecty } from './collecty.module.js';
 
+// Функция для проверки URL параметров
+function shouldAutoStart() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.has('lets') && urlParams.get('lets') === 'go';
+}
+
 // Ждем полной загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
     let collecty = null;
+    
+    // Автоматический запуск по URL параметру
+    if (shouldAutoStart()) {
+        console.log('Auto-starting Collecty via URL parameter');
+        collecty = new SectionCollecty();
+        return;
+    }
     
     // Используем IntersectionObserver вместо MutationObserver для лучшей производительности
     const startButtonObserver = new IntersectionObserver((entries) => {

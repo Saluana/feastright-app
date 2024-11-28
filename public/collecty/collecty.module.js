@@ -77,19 +77,19 @@ export class SectionCollecty {
     async initializeSection(section) {
         if (this.boundSections.has(section)) return;
 
-        // Generate ID if it doesn't exist
         if (!section.dataset.sectionId) {
             section.dataset.sectionId = this.generateSectionId(section);
         }
         
         const isStored = await this.checkIfStored(section);
-        section.style.opacity = isStored ? 
-            CONFIG.styles.section.inactiveOpacity : 
-            CONFIG.styles.section.activeOpacity;
         
-        section.addEventListener('mouseenter', this.handleMouseEnter);
-        section.addEventListener('mouseleave', this.handleMouseLeave);
-        section.addEventListener('click', this.handleMouseEnter);
+        section.style.opacity = isStored ? CONFIG.styles.section.inactiveOpacity : CONFIG.styles.section.activeOpacity;
+        
+        if (!isStored) {
+            section.addEventListener('mouseenter', this.handleMouseEnter);
+            section.addEventListener('mouseleave', this.handleMouseLeave);
+            section.addEventListener('click', this.handleMouseEnter);
+        }
         
         this.boundSections.add(section);
     }
@@ -113,7 +113,7 @@ export class SectionCollecty {
         this.boundSections.clear();
     }
 
-    createFloatingMenu(section) {
+    async createFloatingMenu(section) {
         const menu = document.createElement('div');
         menu.className = 'section-collecty-menu ' + CONFIG.styles.menu.wrapper;
         Object.assign(menu.style, {
@@ -121,39 +121,40 @@ export class SectionCollecty {
             right: CONFIG.styles.menu.position.right
         });
 
-        const htmlBtn = this.createButton('HTML', () => this.saveAsHtml(section), 
-            CONFIG.styles.menu.buttons.base + ' ' + CONFIG.styles.menu.buttons.html
-        );
+        const isStored = await this.checkIfStored(section);
+        const button = document.createElement('button');
+        button.className = CONFIG.styles.menu.button;
         
-        const saveBtn = this.createButton('Save', () => this.saveToStorage(section),
-            CONFIG.styles.menu.buttons.base + ' ' + CONFIG.styles.menu.buttons.save
-        );
+        if (isStored) {
+            button.innerHTML = `
+                Saved 
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 2 2 4-4"/><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/><path d="m7.5 4.27 9 5.15"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" x2="12" y1="22" y2="12"/></svg>
+            `;
+            button.disabled = true;
+        } else {
+            button.innerHTML = `
+                Save Block
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg>
+            `;
+            button.addEventListener('click', () => this.saveToStorage(section));
+        }
         
-        menu.appendChild(htmlBtn);
-        menu.appendChild(saveBtn);
-        
+        menu.appendChild(button);
         return menu;
     }
 
-    createButton(text, onClick, className) {
-        const button = document.createElement('button');
-        button.textContent = text;
-        button.className = className;
-        button.addEventListener('click', onClick);
-        return button;
-    }
-
     async handleMouseEnter(event) {
-        // Check if the click was on the section, not on nested elements
         if (event.type === 'click' && event.target !== event.currentTarget) {
             return;
         }
 
         const section = event.currentTarget;
-        if (await this.checkIfStored(section)) return;
+        const isStored = await this.checkIfStored(section);
+        if (isStored) return;
         
         section.classList.add(CONFIG.styles.section.highlight);
-        section.appendChild(this.createFloatingMenu(section));
+        const menu = await this.createFloatingMenu(section);
+        section.appendChild(menu);
     }
 
     handleMouseLeave(event) {
@@ -164,39 +165,20 @@ export class SectionCollecty {
         if (menu) menu.remove();
     }
 
-    saveAsHtml(section) {
-        const cleanSection = section.cloneNode(true);
-        this.cleanNode(cleanSection);
-        
-        const sectionId = section.dataset.sectionId;
-        const heading = cleanSection.querySelector('h1, h2, h3')?.textContent.trim() || 'section';
-        const fileName = `section-${heading}-${sectionId}.html`;
-        
-        const formattedHtml = this.formatHtml(cleanSection.outerHTML);
-        const blob = new Blob([formattedHtml], { type: 'text/html' });
-        
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = fileName;
-        link.click();
-    }
-
     async saveToStorage(section) {
         const sectionId = section.dataset.sectionId;
         const heading = section.querySelector('h1, h2, h3')?.textContent.trim() || 'Untitled Section';
         
-        // First, remove all menus from the section
+        // Remove all menus from the section
         section.querySelectorAll('.section-collecty-menu').forEach(menu => menu.remove());
         
-        // Create a clone of the already cleaned section
+        // Create a clone of the section
         const cleanSection = section.cloneNode(true);
         
-        // Clean up styles added by the collecty
+        // Clean up styles and service attributes
         cleanSection.style.removeProperty('background-color');
         cleanSection.style.removeProperty('opacity');
         cleanSection.classList.remove(CONFIG.styles.section.highlight);
-        
-        // Clean up service attributes
         this.cleanNode(cleanSection);
         
         let currentState = this.getStoredSections();
@@ -217,11 +199,10 @@ export class SectionCollecty {
             };
         }
 
-        // Save only the cleaned HTML
         currentState.blocks[sectionId] = {
             id: sectionId,
             title: heading,
-            content: this.formatHtml(cleanSection.outerHTML)
+            content: cleanSection.outerHTML
         };
 
         try {
@@ -231,6 +212,10 @@ export class SectionCollecty {
             
             // Disable event handlers
             this.cleanupSection(section);
+            
+            // Update the menu to show saved state
+            const menu = this.createFloatingMenu(section);
+            section.appendChild(menu);
         } catch (e) {
             console.error('Error saving to localStorage:', e);
         }
@@ -254,66 +239,7 @@ export class SectionCollecty {
         if (!sectionId) return false;
         
         const stored = this.getStoredSections();
-        return stored.blocks && stored.blocks[sectionId];
-    }
-
-    // Add a method for formatting HTML
-    formatHtml(html) {
-        const div = document.createElement('div');
-        div.innerHTML = html.trim();
-        
-        // Clean up service attributes
-        this.cleanNode(div.firstElementChild);
-        
-        // First, minify HTML
-        const minified = this.minifyHtml(div.innerHTML);
-        
-        // Then, pretty print
-        return this.prettyPrint(minified);
-    }
-
-    minifyHtml(html) {
-        return html
-            .replace(/\s+/g, ' ') // Replace multiple spaces with one
-            .replace(/>\s+</g, '><') // Remove spaces between tags
-            .replace(/\s+>/g, '>') // Remove spaces before closing bracket
-            .replace(/<\s+/g, '<') // Remove spaces after opening bracket
-            .replace(/\s+\/>/g, '/>') // Remove spaces before self-closing tag
-            .replace(/"\s+/g, '"') // Remove spaces after quotes
-            .replace(/\s+"/g, '"') // Remove spaces before quotes
-            .replace(/\s+([\w-]+)=/g, ' $1=') // Leave one space before attributes
-            .trim();
-    }
-
-    prettyPrint(html) {
-        let formatted = '';
-        let indent = 0;
-        
-        // Split HTML into tags and text
-        const tokens = html.split(/(<\/?[^>]+>)/g);
-        
-        tokens.forEach(token => {
-            if (!token.trim()) return;
-            
-            // Decrease indent for closing tags
-            if (token.startsWith('</')) {
-                indent -= CONFIG.formatting.indentSize;
-            }
-            
-            // Add indent
-            const indentString = ' '.repeat(Math.max(0, indent));
-            formatted += indentString + token.trim() + '\n';
-            
-            // Increase indent for opening tags
-            if (token.startsWith('<') && 
-                !token.startsWith('</') && 
-                !token.endsWith('/>') && 
-                !token.includes('</')) {
-                indent += CONFIG.formatting.indentSize;
-            }
-        });
-        
-        return formatted;
+        return Boolean(stored.blocks && stored.blocks[sectionId]);
     }
 
     cleanNode(node) {
