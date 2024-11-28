@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button'
         </HeroDescription>
         <HeroActions>
           <router-link to="/buildy">
-            <Button size="lg">Get Started</Button>
+            <Button size="lg" class="text-white">Get Started</Button>
           </router-link>
           <a href="/?lets=go">
             <Button size="lg" variant="outline">Get UI Blocks</Button>

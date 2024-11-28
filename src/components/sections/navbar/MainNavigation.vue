@@ -2,7 +2,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import { Navbar, NavbarBrand, NavbarLayer } from '@/components/sections/navbar'
 import { DarkMode } from '@/components/darkMode'
-import { Home, User, Menu, ChevronsRight, PackageCheck, Grip, PanelLeftOpen, CopyCheck, LoaderCircle } from 'lucide-vue-next'
+import { Home, User, Menu, ChevronsRight, PackageCheck, PanelLeftOpen, CopyCheck, LoaderCircle, EllipsisVertical } from 'lucide-vue-next'
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -138,10 +138,25 @@ const menuDescription = 'Main navigation menu with all available sections and pa
         <div class="flex items-center gap-2">
           <DarkMode />
 
+        <!-- Мобильное меню -->
+        <Sheet>
+          <SheetTrigger as-child>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              class="md:hidden"
+              :aria-controls="sheetId"
+              aria-label="Open navigation menu"
+            >
+              <Menu class="!h-6 !w-6" />
+              <span class="sr-only">Toggle menu</span>
+            </Button>
+          </SheetTrigger>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
-                <Grip class="!h-5 !w-5" />
+                <EllipsisVertical class="!h-5 !w-5" />
                 <span class="sr-only">BuildY</span>
               </Button>
             </DropdownMenuTrigger>
@@ -164,21 +179,6 @@ const menuDescription = 'Main navigation menu with all available sections and pa
               </router-link>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <!-- Мобильное меню -->
-          <Sheet>
-            <SheetTrigger as-child>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                class="md:hidden"
-                :aria-controls="sheetId"
-                aria-label="Open navigation menu"
-              >
-                <Menu class="h-5 w-5" />
-                <span class="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
             
             <SheetContent 
               class="w-[300px] p-0 sheet-content border-r border-secondary-foreground/20 shadow-glow "
