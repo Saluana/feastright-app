@@ -100,7 +100,7 @@ const menuDescription = 'Main navigation menu with all available sections and pa
     <div class="flex container mx-auto px-2 md:px-4 lg:px-8">
       <NavbarLayer position="start" class="flex-1">
         <div class="flex items-center gap-6">
-          <NavbarBrand>
+          <NavbarBrand class="text-primary">
             <PackageCheck class="w-6 h-6" />
             <span class="font-semibold">BuildY</span>
           </NavbarBrand>
