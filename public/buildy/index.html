@@ -11,6 +11,11 @@
   <meta name="description"
     content="Create fasty Landing pages with TailwindCSS. Dark Mode and customizer Config included." />
   <link rel="icon" href="./img/favicon.ico" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <script>
     (function() {
       const theme = localStorage.getItem('darkMode');
@@ -18,7 +23,7 @@
       if (theme === 'true' || (!theme && systemTheme)) {
         document.documentElement.classList.add('dark');
       }
-    })();
+    })(); 
   </script>
   <script src="./js/lib/tailwind.js"></script>
   <script src="./js/lib/lucide.min.js"></script>
