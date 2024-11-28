@@ -25,8 +25,12 @@ import { Button } from '@/components/ui/button'
           Beautiful and accessible components that you can copy and paste into your apps.
         </HeroDescription>
         <HeroActions>
-          <Button size="lg">Get Started</Button>
-          <Button size="lg" variant="outline">Learn More</Button>
+          <router-link to="/buildy">
+            <Button size="lg">Get Started</Button>
+          </router-link>
+          <a href="/?lets=go">
+            <Button size="lg" variant="outline">Get UI Blocks</Button>
+          </a>
         </HeroActions>
       </HeroContent>
     </Hero>
