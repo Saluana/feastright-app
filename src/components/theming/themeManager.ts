@@ -4,7 +4,7 @@ export const currentTheme = ref('')
 
 export const initializeTheme = () => {
   const currentState = JSON.parse(localStorage.getItem('currentState') || '{}')
-  const storedTheme = currentState?.sceleton?.theme || 'zinc'
+  const storedTheme = currentState?.sceleton?.theme || 'green'
   const storedRadius = currentState?.sceleton?.radius || '0.5rem'
   
   currentTheme.value = storedTheme

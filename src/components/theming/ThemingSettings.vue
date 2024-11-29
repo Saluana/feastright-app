@@ -7,11 +7,11 @@ import { Palette } from 'lucide-vue-next'
 import { initializeTheme, currentTheme, applyThemeClass } from './themeManager'
 
 const colors = [
-  'zinc',
+  /*'zinc',
   'slate', 
   'stone',
   'gray',
-  'neutral',
+  'neutral',*/
   'red',
   'rose',
   'orange',
