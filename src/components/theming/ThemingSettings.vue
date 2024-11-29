@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Palette } from 'lucide-vue-next'
-import { initializeTheme, currentTheme, applyThemeClass } from './themeManager'
+import { initializeTheme, currentTheme, applyThemeClass, generateTailwindStyles } from './themeManager'
 
 const colors = [
   /*'zinc',
@@ -22,7 +22,7 @@ const colors = [
 
 const radii = ['0', '0.3rem', '0.5rem', '0.75rem', '1rem']
 
-const selectedColor = ref(currentTheme.value || 'zinc')
+const selectedColor = ref(currentTheme.value || 'green')
 const selectedRadius = ref(JSON.parse(localStorage.getItem('currentState') || '{}')?.sceleton?.radius || '0.5rem')
 
 const updateTheme = async () => {
@@ -33,6 +33,7 @@ const updateTheme = async () => {
   currentTheme.value = selectedColor.value
   currentState.sceleton.theme = selectedColor.value
   currentState.sceleton.radius = selectedRadius.value
+  currentState.sceleton.tailwindStyles = generateTailwindStyles(selectedColor.value, selectedRadius.value)
   
   document.documentElement.style.setProperty('--radius', selectedRadius.value)
   
@@ -59,15 +60,15 @@ onMounted(() => {
     
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>Настройка темы</DialogTitle>
+        <DialogTitle>Theme Settings</DialogTitle>
         <DialogDescription>
-          Настройте внешний вид приложения, выбрав цветовую схему и радиус скругления углов.
+          Adjust the appearance of the application by selecting a color scheme and corner radius.
         </DialogDescription>
       </DialogHeader>
       
       <div class="grid gap-4 py-4">
         <div class="space-y-2">
-          <Label>Цветовая схема</Label>
+          <Label>Color scheme</Label>
           <div class="grid grid-cols-3 gap-2">
             <Button 
               v-for="color in colors"
@@ -86,7 +87,7 @@ onMounted(() => {
         </div>
 
         <div class="space-y-2">
-          <Label>Скругление углов</Label>
+          <Label>Rounded</Label>
           <div class="grid grid-cols-5 gap-2">
             <Button
               v-for="radius in radii" 

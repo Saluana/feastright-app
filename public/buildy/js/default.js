@@ -77,14 +77,14 @@ const tailwindStylesDefault = `@layer base {
     --ring: 142.1 76.2% 36.3%;
     --radius: 0.75rem;
   }
-  
+
   .dark {
     --background: 20 14.3% 4.1%;
     --foreground: 0 0% 95%;
-    --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
     --popover: 0 0% 9%;
     --popover-foreground: 0 0% 95%;
+    --card: 24 9.8% 10%;
+    --card-foreground: 0 0% 95%;
     --primary: 142.1 70.6% 45.3%;
     --primary-foreground: 144.9 80.4% 10%;
     --secondary: 240 3.7% 15.9%;
@@ -139,7 +139,7 @@ const defaultBlocks = {
       </h2>
       <p class="text-lg text-secondary-foreground dark:text-secondary-foreground/90 sm:text-xl max-w-4xl">Just click the button: Build LeGo<br />and build with blocks that click together flawlessly</p>
       <div class="flex flex-wrap items-center justify-center gap-4">
-        <button type="button" onclick="window.location.href='https://vue-uikit-shadcn.vercel.app/?'+new URLSearchParams({lets:'go'}).toString()" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font bold font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background/50 shadow-sm hover:bg-accent hover:text-accent-foreground h-12 rounded-lg px-12">
+        <button type="button" onclick="window.location.href='/?'+new URLSearchParams({lets:'go'}).toString()" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font bold font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background/50 shadow-sm hover:bg-accent hover:text-accent-foreground h-12 rounded-lg px-12">
           Build a LeGo
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="!w-5 !h-5 inline animate-pulse inline"><rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/></svg>
         </button>
