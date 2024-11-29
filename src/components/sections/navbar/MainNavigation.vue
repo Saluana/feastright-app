@@ -2,7 +2,8 @@
 import { useRouter, useRoute } from 'vue-router'
 import { Navbar, NavbarBrand, NavbarLayer } from '@/components/sections/navbar'
 import { DarkMode } from '@/components/darkMode'
-import { Home, User, Menu, ChevronsRight, PackageCheck, PanelLeftOpen, CopyCheck, LoaderCircle, EllipsisVertical } from 'lucide-vue-next'
+import { ThemingSettings } from '@/components/theming'
+import { Home, Menu, ChevronsRight, PackageCheck, PanelLeftOpen, CopyCheck, LoaderCircle, EllipsisVertical } from 'lucide-vue-next'
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -137,6 +138,7 @@ const menuDescription = 'Main navigation menu with all available sections and pa
       <NavbarLayer position="end">
         <div class="flex items-center gap-2">
           <DarkMode />
+          <ThemingSettings />
 
         <!-- Мобильное меню -->
         <Sheet>

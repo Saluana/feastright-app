@@ -2,7 +2,8 @@ import { createApp } from 'vue'
 import '@/assets/index.css'
 import App from './App.vue'
 import router from './router'
-import { initializeTheme } from './utils/theme'
+import { initializeTheme } from '@/components/theming/themeManager'
+import './components/theming/themes.css'
 
 // Initialize theme before mounting the app
 initializeTheme()
