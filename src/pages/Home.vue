@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button'
           Beautiful and accessible components that you can copy and paste into your apps.
         </HeroDescription>
         <HeroActions>
-          <a href="https://vue-uikit-shadcn.vercel.app/buildy/">
+          <a href="https://vue-uikit-shadcn.vercel.app/buildy">
             <Button size="lg" class="text-white">Get Started</Button>
           </a>
           <a href="https://vue-uikit-shadcn.vercel.app/?lets=go">

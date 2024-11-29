@@ -3,7 +3,12 @@ const animate = require("tailwindcss-animate")
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  safelist: ["dark"],
+  safelist: [
+    {
+      pattern: /^(theme-|bg-)(zinc|slate|stone|gray|neutral|red|rose|orange|green|blue|violet)/,
+      variants: ['dark', 'hover', 'focus', 'lg', 'active', 'disabled'],
+    }
+  ],
   prefix: "",
   
   content: [
@@ -11,12 +16,10 @@ module.exports = {
     './components/**/*.{ts,tsx,vue}',
     './app/**/*.{ts,tsx,vue}',
     './src/**/*.{ts,tsx,vue}',
-	],
+    './src/components/theming/themes.css'
+  ],
   
   theme: {
-    fontFamily: {
-      sans: ['Nunito', 'sans-serif'],
-    },
     container: {
       center: true,
       padding: "2rem",
@@ -65,38 +68,8 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: 0 },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
-        },
-        "collapsible-down": {
-          from: { height: 0 },
-          to: { height: 'var(--radix-collapsible-content-height)' },
-        },
-        "collapsible-up": {
-          from: { height: 'var(--radix-collapsible-content-height)' },
-          to: { height: 0 },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "collapsible-down": "collapsible-down 0.2s ease-in-out",
-        "collapsible-up": "collapsible-up 0.2s ease-in-out",
-      },
-      boxShadow: {
-        'glow-sm': '0 1px 3px 0 rgb(var(--primary) / 0.1), 0 1px 2px -1px rgb(var(--primary) / 0.1)',
-        'glow': '0 1px 3px 0 rgb(var(--primary) / 0.1), 0 1px 2px -1px rgb(var(--primary) / 0.1), 0 0 0 1px rgb(var(--primary) / 0.05)',
-        'glow-md': '0 4px 6px -1px rgb(var(--primary) / 0.15), 0 2px 4px -2px rgb(var(--primary) / 0.15)',
-        'glow-lg': '0 10px 15px -3px rgb(var(--primary) / 0.15), 0 4px 6px -4px rgb(var(--primary) / 0.15)',
-      },
-    },
+      }
+    }
   },
   plugins: [animate],
 }
