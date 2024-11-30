@@ -1,3 +1,27 @@
+class BaseDataSetter {
+  constructor() {
+    this.fields = [];
+  }
+
+  loadSavedState() {
+    const storedState = localStorage.getItem("currentState");
+    let currentState = {};
+    if (storedState && storedState !== "undefined") {
+      try {
+        currentState = JSON.parse(storedState);
+      } catch (error) {
+        console.error("Error parsing stored state:", error);
+      }
+    }
+    return currentState;
+  }
+
+  getSavedValue(key) {
+    const currentState = this.loadSavedState();
+    return currentState.sceleton?.[key] || "";
+  }
+}
+
 class PageSkeleton {
   constructor(config) {
     this.config = config;
@@ -181,8 +205,9 @@ class PageSkeleton {
   }
 }
 
-class UniversalDataSetter {
+class UniversalDataSetter extends BaseDataSetter {
   constructor(buttonId, modalId, textareaId, saveButtonId, key) {
+    super();
     this.button = document.getElementById(buttonId);
     this.modal = document.getElementById(modalId);
     this.textarea = document.getElementById(textareaId);
@@ -190,7 +215,6 @@ class UniversalDataSetter {
     this.key = key;
 
     this.initEventListeners();
-    this.loadSavedState();
   }
 
   initEventListeners() {
@@ -210,8 +234,31 @@ class UniversalDataSetter {
   }
 
   loadSavedState() {
-    const currentState = JSON.parse(localStorage.getItem("currentState")) || {};
-    this.textarea.value = currentState.sceleton?.[this.key] || "";
+    const storedState = localStorage.getItem("currentState");
+    let currentState = {};
+    if (storedState && storedState !== "undefined") {
+      try {
+        currentState = JSON.parse(storedState);
+      } catch (error) {
+        console.error("Error parsing stored state:", error);
+      }
+    }
+    this.fields.forEach((field) => {
+      const element = document.getElementById(field.key);
+      if (element) {
+        let value = currentState.sceleton?.[field.key];
+        
+        if (field.type === "checkbox") {
+          element.checked = value || false;
+        } else {
+          // Для конфигурации преобразуем объект в строку
+          if (field.key === 'config' && typeof value === 'object') {
+            value = JSON.stringify(value, null, 2);
+          }
+          element.value = value || "";
+        }
+      }
+    });
   }
 
   saveData() {
@@ -345,17 +392,23 @@ class PageSceletonSetter {
     this.fields.forEach((field) => {
       const element = document.getElementById(field.key);
       if (element) {
+        let value = currentState.sceleton?.[field.key];
+        
         if (field.type === "checkbox") {
-          element.checked = currentState.sceleton?.[field.key] || false;
+          element.checked = value || false;
         } else {
-          element.value = currentState.sceleton?.[field.key] || "";
+          // Для конфигурации преобразуем объект в строку
+          if (field.key === 'config' && typeof value === 'object') {
+            value = JSON.stringify(value, null, 2);
+          }
+          element.value = value || "";
         }
       }
     });
   }
 
   saveData(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     let data = {};
     this.fields.forEach((field) => {
       const element = document.getElementById(field.key);
@@ -363,13 +416,22 @@ class PageSceletonSetter {
         if (field.type === "checkbox") {
           data[field.key] = element.checked;
         } else {
-          data[field.key] = element.value;
+          // Для поля конфигурации пробуем распарсить JSON
+          if (field.key === 'config') {
+            try {
+              data[field.key] = JSON.parse(element.value);
+            } catch (error) {
+              data[field.key] = element.value;
+            }
+          } else {
+            data[field.key] = element.value;
+          }
         }
       }
     });
     this.updateLocalStorage(data);
     this.modal.classList.add("hidden");
-    location.reload();
+    return data;
   }
 
   updateLocalStorage(data) {

@@ -85,15 +85,16 @@ const updateTheme = async () => {
   if (!currentState.sceleton) currentState.sceleton = {}
   if (!currentState.sceleton.config) currentState.sceleton.config = {}
   
-  currentState.sceleton.config = {
-    ...currentState.sceleton.config,
+  const themeConfig = {
+    darkMode: 'class',
     theme: {
-      fontFamily: { sans: [selectedFont.value, 'sans-serif'] }
-    },
-    darkMode: 'class'
+      fontFamily: {
+        sans: [selectedFont.value, 'sans-serif']
+      }
+    }
   }
   
-  currentTheme.value = selectedColor.value
+  currentState.sceleton.config = themeConfig
   currentState.sceleton.theme = selectedColor.value
   currentState.sceleton.radius = selectedRadius.value
   currentState.sceleton.tailwindStyles = generateTailwindStyles(selectedColor.value, selectedRadius.value)
@@ -102,7 +103,10 @@ const updateTheme = async () => {
   await loadFont(selectedFont.value)
   
   document.documentElement.style.setProperty('--radius', selectedRadius.value)
-  localStorage.setItem('currentState', JSON.stringify(currentState))
+  
+  const serializedState = JSON.stringify(currentState, null, 2)
+  localStorage.setItem('currentState', serializedState)
+  
   applyThemeClass(selectedColor.value)
 }
 

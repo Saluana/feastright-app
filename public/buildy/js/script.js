@@ -184,8 +184,13 @@ function setupBlockDragAndDrop() {
 }
 
 // Configuration
-const tailwindConfigSetter = new UniversalDataSetter('config-btn', 'config-modal', 'config-textarea', 'save-config', 'config');
-tailwindConfigSetter.setDefaultValue(defaultConfig);
+const tailwindConfigSetter = new UniversalDataSetter(
+  'config-btn',
+  'config-modal', 
+  'config-textarea',
+  'save-config',
+  'config'
+);
 
 function applyTailwindConfig() {
   const config = tailwindConfigSetter.getSavedValue();
@@ -206,9 +211,20 @@ function applyTailwindConfig() {
   }
   scriptElement.textContent = `tailwind.config = ${JSON.stringify(configObject)};`;
 }
+
+// Добавляем обработчик события
 tailwindConfigSetter.saveButton.addEventListener('click', () => {
-  tailwindConfigSetter.saveData();
-  applyTailwindConfig();
+  const data = tailwindConfigSetter.saveData();
+  if (data.config) {
+    try {
+      const configObject = typeof data.config === 'object' 
+        ? data.config 
+        : JSON.parse(data.config);
+      applyTailwindConfig(configObject);
+    } catch (error) {
+      console.error('Ошибка применения конфигурации:', error);
+    }
+  }
   location.reload();
 });
 
@@ -666,7 +682,6 @@ function applyCurrentFontFamily() {
     title.textContent = pageTitle || 'My Website';
     head.appendChild(title);
   }
-
   const fontFamily = currentFontFamily();
   if (fontFamily) {
     const fontLink = document.createElement('link');
@@ -760,6 +775,8 @@ async function generateTailwindStylesForLayout(layout, tailwind, body) {
 
 // Initialize the application
 document.addEventListener("DOMContentLoaded", () => {
+
+  tailwindConfigSetter.setDefaultValue(defaultConfig);
 
   // Dark mode initialization
   const isDarkMode = localStorage.getItem("darkMode") === "true";
@@ -860,3 +877,4 @@ document.getElementById('useDevStyles').addEventListener('change', (e) => {
   currentState.sceleton.useDevStyles = e.target.checked;
   localStorage.setItem('currentState', JSON.stringify(currentState));
 });
+
