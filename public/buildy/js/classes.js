@@ -320,6 +320,7 @@ class PageSceletonSetter {
     this.initModal();
     this.initEventListeners();
     this.loadSavedState();
+    this.initializeTailwindStyles();
   }
 
   initModal() {
@@ -385,10 +386,16 @@ class PageSceletonSetter {
     if (storedState && storedState !== "undefined") {
       try {
         currentState = JSON.parse(storedState);
+        if (!currentState.sceleton?.tailwindStyles) {
+          if (!currentState.sceleton) currentState.sceleton = {};
+          currentState.sceleton.tailwindStyles = tailwindStylesDefault;
+          localStorage.setItem('currentState', JSON.stringify(currentState));
+        }
       } catch (error) {
         console.error("Error parsing stored state:", error);
       }
     }
+    
     this.fields.forEach((field) => {
       const element = document.getElementById(field.key);
       if (element) {
@@ -397,7 +404,6 @@ class PageSceletonSetter {
         if (field.type === "checkbox") {
           element.checked = value || false;
         } else {
-          // Для конфигурации преобразуем объект в строку
           if (field.key === 'config' && typeof value === 'object') {
             value = JSON.stringify(value, null, 2);
           }
@@ -416,7 +422,6 @@ class PageSceletonSetter {
         if (field.type === "checkbox") {
           data[field.key] = element.checked;
         } else {
-          // Для поля конфигурации пробуем распарсить JSON
           if (field.key === 'config') {
             try {
               data[field.key] = JSON.parse(element.value);
@@ -474,5 +479,28 @@ class PageSceletonSetter {
     });
     localStorage.setItem("currentState", JSON.stringify(currentState));
     this.loadSavedState();
+  }
+
+  initializeTailwindStyles() {
+    const storedState = localStorage.getItem('currentState');
+    let tailwindStylesValue;
+    
+    if (storedState) {
+      try {
+        const parsedState = JSON.parse(storedState);
+        tailwindStylesValue = parsedState.sceleton?.tailwindStyles;
+      } catch (error) {
+        console.error('Error parsing stored tailwindStyles:', error);
+      }
+    }
+    
+    if (!tailwindStylesValue) {
+      tailwindStylesValue = tailwindStylesDefault;
+    }
+    
+    const tailwindStylesTextarea = document.getElementById('tailwindStyles');
+    if (tailwindStylesTextarea) {
+      tailwindStylesTextarea.value = tailwindStylesValue;
+    }
   }
 }

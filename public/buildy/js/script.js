@@ -192,7 +192,6 @@ const tailwindConfigSetter = new UniversalDataSetter(
   'config'
 );
 
-// Add new function to initialize config textarea
 function initializeConfigTextarea() {
     const configTextarea = document.getElementById('config-textarea');
     const storedConfig = localStorage.getItem('currentState');
