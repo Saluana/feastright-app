@@ -1,4 +1,5 @@
 import { SectionCollecty } from './collecty.module.js';
+import { CONFIG } from './collecty.config.js';
 
 // Функция для проверки URL параметров
 function shouldAutoStart() {
@@ -25,10 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Button found!');
                 
                 getStartedBtn.addEventListener('click', () => {
-                    console.log('Button clicked!');
-                    if (!collecty) {
-                        collecty = new SectionCollecty();
+                    console.log('Button clicked! Initializing fresh Collecty instance...');
+                    
+                    // Очищаем предыдущее состояние
+                    if (collecty) {
+                        collecty.destroy();
+                        collecty = null;
                     }
+                    
+                    // Принудительно очищаем хранилище
+                    localStorage.removeItem(CONFIG.collectyState);
+                    localStorage.removeItem(CONFIG.storageKey);
+                    
+                    // Создаем новый экземпляр
+                    collecty = new SectionCollecty();
                 });
                 
                 startButtonObserver.disconnect();
