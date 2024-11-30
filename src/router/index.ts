@@ -120,6 +120,11 @@ const routes: RouteRecordRaw[] = [
     beforeEnter: () => {
       window.location.href = '/'
     }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    redirect: '/'
   }
 ]
 
