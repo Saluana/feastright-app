@@ -126,12 +126,16 @@ export class SectionCollecty {
         this.boundSections.forEach(section => {
             this.cleanupSection(section);
         });
-        this.boundButtons.forEach(button => {
-            this.cleanupNavbarButton(button);
-        });
         this.boundSections.clear();
         this.boundButtons.clear();
-        localStorage.removeItem(CONFIG.collectyState);
+        
+        // Очищаем только текущее состояние секций
+        const currentState = this.getStoredSections();
+        if (currentState.blocks) {
+            currentState.blocks = {};
+            currentState.layout = [];
+            localStorage.setItem(CONFIG.storageKey, JSON.stringify(currentState));
+        }
     }
 
     async createFloatingMenu(section) {
