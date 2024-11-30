@@ -61,6 +61,7 @@ class PageSkeleton {
         })();
       </script>
       ${this.getAfterTitle()}
+      ${this.getTailwindStyles()}
       ${this.getAfterHead()}
       <style>
         :root {
@@ -74,9 +75,10 @@ class PageSkeleton {
   }
 
   getTailwindStyles() {
-    return this.config.tailwindStyles 
-      ? `<style type="text/tailwindcss">${this.config.tailwindStyles}</style>`
-      : '';
+    const currentState = JSON.parse(localStorage.getItem('currentState')) || {};
+    const styles = currentState.sceleton?.tailwindStyles || tailwindStylesDefault;
+    
+    return `<style type="text/tailwindcss">${styles}</style>`;
   }
 
   getAfterTitle() {

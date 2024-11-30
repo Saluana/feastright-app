@@ -761,7 +761,8 @@ async function generateTailwindStylesForLayout(layout, tailwind, body) {
   iframe.style.display = 'none';
   document.body.appendChild(iframe);
   
-  const tailwindStyles = pageSceletonSetter.getSavedValue('tailwindStyles');
+  // Получаем стили из localStorage или используем значение по умолчанию
+  const tailwindStyles = getTailwindStyles();
   
   await new Promise(resolve => {
     iframe.onload = resolve;
@@ -841,6 +842,9 @@ document.addEventListener("DOMContentLoaded", () => {
   fullscreenModal();
 
   console.log('currentState:', currentState);
+
+  // Применить стили
+  applyTailwindStyles();
 });
 
 function formatTailwindConfigForExport(configObject) {
@@ -911,4 +915,26 @@ document.getElementById('useDevStyles').addEventListener('change', (e) => {
   currentState.sceleton.useDevStyles = e.target.checked;
   localStorage.setItem('currentState', JSON.stringify(currentState));
 });
+
+// Добавить функцию для получения стилей
+function getTailwindStyles() {
+  const currentState = JSON.parse(localStorage.getItem('currentState')) || {};
+  return currentState.sceleton?.tailwindStyles || tailwindStylesDefault;
+}
+
+// Добавить функцию для применения стилей
+function applyTailwindStyles() {
+  const styles = getTailwindStyles();
+  
+  // Найти существующий или создать новый тег стилей
+  let styleElement = document.getElementById('tailwind-styles');
+  if (!styleElement) {
+    styleElement = document.createElement('style');
+    styleElement.id = 'tailwind-styles';
+    styleElement.setAttribute('type', 'text/tailwindcss');
+    document.head.appendChild(styleElement);
+  }
+  
+  styleElement.textContent = styles;
+}
 

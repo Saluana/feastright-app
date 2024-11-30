@@ -218,11 +218,12 @@ export class SectionCollecty {
                 layout: [],
                 sceleton: {
                     lang: "en",
-                    title: "My Website",
-                    description: "Welcome to my website",
+                    title: "My Great Page",
+                    description: "Welcome to personally UI Kit BuildY",
                     headSnippet: "",
                     bodyStartSnippet: "",
-                    bodyClasses: "font-sans bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100",
+                    bodyClasses: "font-sans bg-background text-foreground antialiased",
+                    tailwindStyles: "",
                     config: "{}"
                 }
             };
