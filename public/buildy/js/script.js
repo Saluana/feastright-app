@@ -192,6 +192,41 @@ const tailwindConfigSetter = new UniversalDataSetter(
   'config'
 );
 
+// Add new function to initialize config textarea
+function initializeConfigTextarea() {
+    const configTextarea = document.getElementById('config-textarea');
+    const storedConfig = localStorage.getItem('currentState');
+    
+    let configValue;
+    
+    if (storedConfig) {
+        try {
+            const parsedState = JSON.parse(storedConfig);
+            configValue = parsedState.sceleton?.config;
+        } catch (error) {
+            console.error('Error parsing stored config:', error);
+        }
+    }
+    
+    // If no valid config found, use default
+    if (!configValue) {
+        configValue = defaultConfig;
+    }
+    
+    // Format the config value if it's an object
+    const formattedConfig = typeof configValue === 'object' 
+        ? JSON.stringify(configValue, null, 2)
+        : configValue;
+        
+    configTextarea.value = formattedConfig;
+}
+
+// Modify the config button click handler
+configBtn.addEventListener('click', () => {
+    initializeConfigTextarea();
+    configModal.classList.remove('hidden');
+});
+
 function applyTailwindConfig() {
   const config = tailwindConfigSetter.getSavedValue();
   let configObject;
