@@ -61,7 +61,6 @@ class PageSkeleton {
         })();
       </script>
       ${this.getAfterTitle()}
-      ${this.getTailwindStyles()}
       ${this.getAfterHead()}
       <style>
         :root {
