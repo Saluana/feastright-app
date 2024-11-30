@@ -338,7 +338,7 @@ export class SectionCollecty {
         `;
 
         button.addEventListener('click', () => {
-            window.location.href = '/buildy';
+            window.location.href = '/buildy/';
         });
 
         const darkModeButton = navbarEnd.querySelector('[data-dark-mode]');
