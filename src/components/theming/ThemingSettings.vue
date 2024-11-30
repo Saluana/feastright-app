@@ -85,16 +85,68 @@ const updateTheme = async () => {
   if (!currentState.sceleton) currentState.sceleton = {}
   if (!currentState.sceleton.config) currentState.sceleton.config = {}
   
-  const themeConfig = {
-    darkMode: 'class',
+  // Загружаем базовую конфигурацию
+  const defaultConfig = {
+    darkMode: "class",
     theme: {
       fontFamily: {
-        sans: [selectedFont.value, 'sans-serif']
+        sans: [selectedFont.value, "sans-serif"]
+      },
+      container: {
+        center: true,
+        padding: "2rem"
+      },
+      extend: {
+        colors: {
+          border: "hsl(var(--border))",
+          input: "hsl(var(--input))",
+          ring: "hsl(var(--ring))",
+          background: "hsl(var(--background))",
+          foreground: "hsl(var(--foreground))",
+          primary: {
+            DEFAULT: "hsl(var(--primary))",
+            foreground: "hsl(var(--primary-foreground))"
+          },
+          secondary: {
+            DEFAULT: "hsl(var(--secondary))",
+            foreground: "hsl(var(--secondary-foreground))"
+          },
+          destructive: {
+            DEFAULT: "hsl(var(--destructive))",
+            foreground: "hsl(var(--destructive-foreground))"
+          },
+          muted: {
+            DEFAULT: "hsl(var(--muted))",
+            foreground: "hsl(var(--muted-foreground))"
+          },
+          accent: {
+            DEFAULT: "hsl(var(--accent))",
+            foreground: "hsl(var(--accent-foreground))"
+          },
+          popover: {
+            DEFAULT: "hsl(var(--popover))",
+            foreground: "hsl(var(--popover-foreground))"
+          },
+          card: {
+            DEFAULT: "hsl(var(--card))",
+            foreground: "hsl(var(--card-foreground))"
+          }
+        },
+        borderRadius: {
+          xl: "calc(var(--radius) + 4px)",
+          lg: "var(--radius)",
+          md: "calc(var(--radius) - 2px)",
+          sm: "calc(var(--radius) - 4px)"
+        }
       }
     }
   }
+
+  // Обновляем только шрифт в конфигурации
+  currentState.sceleton.config = defaultConfig
+  currentState.sceleton.config.theme.fontFamily.sans = [selectedFont.value, "sans-serif"]
   
-  currentState.sceleton.config = themeConfig
+  currentTheme.value = selectedColor.value
   currentState.sceleton.theme = selectedColor.value
   currentState.sceleton.radius = selectedRadius.value
   currentState.sceleton.tailwindStyles = generateTailwindStyles(selectedColor.value, selectedRadius.value)
