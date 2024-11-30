@@ -124,13 +124,20 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    redirect: '/'
+    component: () => import('@/pages/Layout.vue'),
+    beforeEnter: (to) => {
+      console.log('Caught unknown route:', to.fullPath)
+      return { path: '/' }
+    }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || { top: 0, behavior: 'smooth' }
+  }
 })
 
 export default router
