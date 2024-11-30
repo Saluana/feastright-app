@@ -1,7 +1,9 @@
 import { ref } from 'vue'
 import { themes } from './themes'
+import { useFont } from '@/composables/useFont'
 
 export const currentTheme = ref('')
+const { loadFont, updateFontLink } = useFont()
 
 export const generateTailwindStyles = (theme: string, radius: string) => {
   const themeConfig = themes.find(t => t.name === theme)
@@ -31,13 +33,30 @@ export const initializeTheme = () => {
   const currentState = JSON.parse(localStorage.getItem('currentState') || '{}')
   const storedTheme = currentState?.sceleton?.theme || 'green'
   const storedRadius = currentState?.sceleton?.radius || '0.5rem'
+  const storedFont = currentState?.sceleton?.config?.theme?.fontFamily?.sans?.[0] || 'Nunito'
   
   if (!currentState.sceleton) currentState.sceleton = {}
+  if (!currentState.sceleton.config) currentState.sceleton.config = {}
+  
+  currentState.sceleton.config = {
+    ...currentState.sceleton.config,
+    theme: {
+      fontFamily: { sans: [storedFont, 'sans-serif'] }
+    },
+    darkMode: 'class'
+  }
+  
+  currentState.sceleton.theme = storedTheme
+  currentState.sceleton.radius = storedRadius
   currentState.sceleton.tailwindStyles = generateTailwindStyles(storedTheme, storedRadius)
-  localStorage.setItem('currentState', JSON.stringify(currentState))
   
   currentTheme.value = storedTheme
   document.documentElement.style.setProperty('--radius', storedRadius)
+  
+  updateFontLink(storedFont)
+  loadFont(storedFont)
+  
+  localStorage.setItem('currentState', JSON.stringify(currentState))
   applyThemeClass(storedTheme)
 }
 

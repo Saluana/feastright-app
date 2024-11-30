@@ -154,33 +154,6 @@ const menuDescription = 'Main navigation menu with all available sections and pa
               <span class="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <EllipsisVertical class="!h-5 !w-5" />
-                <span class="sr-only">BuildY</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem class="cursor-pointer">
-                <CopyCheck class="mr-1" />
-                <span id="getStarted">Get UI Blocks</span>
-              </DropdownMenuItem>
-              <router-link to="/buildy">
-                <DropdownMenuItem class="cursor-pointer">
-                  <PanelLeftOpen class="mr-1" />
-                  <span>Go to BuildY</span>
-                </DropdownMenuItem>
-              </router-link>
-              <router-link to="/reset">
-                <DropdownMenuItem class="cursor-pointer">
-                  <LoaderCircle class="mr-1" />
-                  <span id="defaultState">Default State</span>
-                </DropdownMenuItem>
-              </router-link>
-            </DropdownMenuContent>
-          </DropdownMenu>
             
             <SheetContent 
               class="w-[300px] p-0 sheet-content border-r border-secondary-foreground/20 shadow-glow "

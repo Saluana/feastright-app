@@ -64,5 +64,8 @@ export default defineConfig({
     hmr: {
       overlay: false
     }
+  },
+  optimizeDeps: {
+    include: ['@/composables/useFont']
   }
 })
