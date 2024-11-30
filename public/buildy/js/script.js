@@ -189,15 +189,23 @@ tailwindConfigSetter.setDefaultValue(defaultConfig);
 
 function applyTailwindConfig() {
   const config = tailwindConfigSetter.getSavedValue();
+  let configObject;
+  
+  try {
+    configObject = typeof config === 'object' ? config : JSON.parse(config);
+  } catch (error) {
+    console.error('Ошибка применения конфигурации Tailwind:', error);
+    return;
+  }
+
   let scriptElement = document.getElementById('tailwind-config');
   if (!scriptElement) {
     scriptElement = document.createElement('script');
     scriptElement.id = 'tailwind-config';
     document.head.appendChild(scriptElement);
   }
-  scriptElement.textContent = `tailwind.config = ${config};`;
+  scriptElement.textContent = `tailwind.config = ${JSON.stringify(configObject)};`;
 }
-
 tailwindConfigSetter.saveButton.addEventListener('click', () => {
   tailwindConfigSetter.saveData();
   applyTailwindConfig();
@@ -677,15 +685,14 @@ function currentFontFamily() {
   let config;
 
   try {
-    config = JSON.parse(configString);
+    // Проверяем, является ли configString уже объектом
+    config = typeof configString === 'object' ? configString : JSON.parse(configString);
   } catch (error) {
-    console.error('Error config process: ', error);
-    return;
+    console.error('Ошибка обработки конфигурации: ', error);
+    return null;
   }
 
   const sans = safeGet(config, 'theme.fontFamily.sans');
-
-  console.log('config: ', config);
 
   if (sans) {
     const fontFamily = Array.isArray(config.theme.fontFamily.sans)
@@ -696,6 +703,7 @@ function currentFontFamily() {
       return fontFamily;
     }
   }
+  return null;
 }
 
 // Generate current Layout TailwindCSS Style

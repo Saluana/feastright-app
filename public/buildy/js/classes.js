@@ -230,7 +230,17 @@ class UniversalDataSetter {
 
   getSavedValue() {
     const currentState = JSON.parse(localStorage.getItem("currentState")) || {};
-    return currentState.sceleton?.[this.key] || "";
+    const value = currentState.sceleton?.[this.key];
+    
+    if (typeof value === 'object') {
+      return value;
+    }
+    
+    try {
+      return value ? JSON.parse(value) : "";
+    } catch (e) {
+      return value || "";
+    }
   }
 
   setDefaultValue(defaultValue) {

@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Palette, CopyCheck, PanelLeftOpen, LoaderCircle } from 'lucide-vue-next'
+import { Palette, CopyCheck, Puzzle, LoaderCircle } from 'lucide-vue-next'
 import { initializeTheme, currentTheme, applyThemeClass, generateTailwindStyles } from './themeManager'
 import { useFont } from '@/composables/useFont'
 import { useRouter } from 'vue-router'
@@ -20,6 +20,7 @@ const isOpen = ref(false)
 const sheetContent = {
   header: {
     title: 'Settings & Collections',
+    btntitle: 'Go to BuildY',
     description: 'Manage application appearance and UI collections access.'
   },
   collections: {
@@ -33,16 +34,13 @@ const sheetContent = {
           // Implement your collection saving logic here
           isOpen.value = false
         },
-      },
-      {
-        icon: PanelLeftOpen,
-        label: 'Go to BuildY',
-        action: () => router.push('/buildy'),
+        class: 'text-primary bg-primary/10 border-2 border-primary'
       },
       {
         icon: LoaderCircle,
         label: 'Reset Settings',
         action: () => router.push('/reset'),
+        class: 'border-2 border-secondary-foreground/50'
       }
     ]
   },
@@ -63,8 +61,10 @@ const sheetContent = {
         label: 'Font Family',
         type: 'font',
         options: [
+          // sans-serif Playfair, 
+          // sans
           'Nunito', 'Inter', 'Roboto', 'Lato', 'Lexend', 'Urbanist',
-          'Kanit', 'Fira Sans', 'Karla', 'Prompt', 'Saira', 'Geologica', 'Bai Jamjuree', 'Niramit', 'Livvic', 'Exo', 'K2D', 'Montserrat', 'Open Sans', 'Rubik', 'Work Sans', 'Mulish', 'Barlow', 'Heebo', 'Titillium Web', 'Libre Franklin', 'Josefin Sans', 'Jost', 'Outfit', 'Figtree', 'Overpass', 'Chivo', 'Alegreya Sans', 'Fahkwang'
+          'Kanit', 'Fira Sans', 'Karla', 'Prompt', 'Saira', 'Geologica', 'Bai Jamjuree', 'Niramit', 'Livvic', 'Exo', 'K2D', 'Jura', 'Philosopher', 'Montserrat', 'Open Sans', 'Rubik', 'Oswald','Work Sans', 'Mulish', 'Barlow', 'Heebo', 'Titillium Web', 'Libre Franklin', 'Josefin Sans', 'Jost', 'Outfit', 'Figtree', 'Overpass', 'Chivo', 'Alegreya Sans', 'Fahkwang'
         ]
       }
     ]
@@ -118,32 +118,48 @@ onMounted(() => {
 <template>
   <Sheet v-model:open="isOpen">
     <SheetTrigger as-child>
-      <Button variant="ghost" class="rounded-full p-3">
-        <Palette />
+      <Button variant="ghost" class="items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 w-9">
+        <Palette class="!w-[1.1rem] !h-[1.1rem]" />
       </Button>
     </SheetTrigger>
-    
-    <SheetContent class="w-full sm:w-[400px] max-w-[calc(100vw-32px)] p-0">
-      <ScrollArea class="h-full">
-        <div class="p-6">
-          <SheetHeader>
-            <SheetTitle>{{ sheetContent.header.title }}</SheetTitle>
-            <SheetDescription>
+    <SheetContent class="w-full sm:w-[400px] max-w-[calc(100vw-32px)] border-secondary-foreground/20 p-0">
+      <!-- Static header section -->
+      <div class="p-6">
+        <SheetHeader>
+          <SheetTitle>{{ sheetContent.header.title }}</SheetTitle>
+          <SheetDescription class="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              class="shrink-0 text-primary bg-primary/20 hover:bg-accent hover:text-accent-foreground"
+              :title="sheetContent.header.btntitle"
+              @click="router.push('/buildy')"
+            >
+              <Puzzle class="h-4 w-4" />
+            </Button>
+            <p class="text-sm text-left">
               {{ sheetContent.header.description }}
-            </SheetDescription>
-          </SheetHeader>
-          
-          <div class="space-y-6 py-6">
+            </p>
+          </SheetDescription>
+        </SheetHeader>
+      </div>
+
+      <!-- Scrollable content -->
+      <ScrollArea class="h-[calc(100%-120px)]"> <!-- Adjust height to account for header -->
+        <div class="p-6">
+          <div class="space-y-6">
             <!-- Collections Section -->
             <div class="space-y-4">
-              <h4 class="text-sm font-medium">{{ sheetContent.collections.title }}</h4>
-              <div class="grid gap-2">
+              <h4 class="text-sm font-bold">{{ sheetContent.collections.title }}</h4>
+              <div class="grid grid-cols-2 gap-2">
                 <Button 
-                  v-for="item in sheetContent.collections.items"
+                  v-for="item in sheetContent.collections.items.filter(item => item.label !== 'Go to BuildY')"
                   :key="item.label"
                   :id="item.id"
                   variant="outline"
-                  class="justify-start"
+                  :class="[
+                    'justify-start',
+                    item.class
+                  ]"
                   @click="item.action"
                 >
                   <component :is="item.icon" class="mr-2 h-4 w-4" />
@@ -156,7 +172,7 @@ onMounted(() => {
 
             <!-- Theme Settings Section -->
             <div class="space-y-4">
-              <h4 class="text-sm font-medium">{{ sheetContent.theme.title }}</h4>
+              <h4 class="text-sm font-bold">{{ sheetContent.theme.title }}</h4>
               <div class="space-y-4">
                 <template v-for="section in sheetContent.theme.sections" :key="section.label">
                   <div class="space-y-2">

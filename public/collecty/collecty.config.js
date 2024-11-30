@@ -2,6 +2,7 @@
 const CONFIG = {
     // Main settings
     storageKey: 'currentState',
+    collectyState: 'collectyInitialized',
     
     // Visual settings
     styles: {

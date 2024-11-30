@@ -6,12 +6,15 @@ export class SectionCollecty {
         this.sections = [];
         this.storedSections = this.getStoredSections();
         this.boundSections = new Set();
+        this.boundButtons = new Set();
         this.headingCounts = new Map(); // To track the count of identical sections
         
         // Bind methods
         this.initialize = this.initialize.bind(this);
         this.handleMouseEnter = this.handleMouseEnter.bind(this);
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
+        this.initializeNavbarButton = this.initializeNavbarButton.bind(this);
+        this.cleanupNavbarButton = this.cleanupNavbarButton.bind(this);
         
         // Automatically initialize on creation
         this.initialize();
@@ -20,6 +23,12 @@ export class SectionCollecty {
     initialize() {
         console.log('Initializing SectionCollecty');
         this.isActive = true;
+        
+        // Initialize navbar button first
+        const navbarEnd = document.querySelector('[data-navbar-end]');
+        if (navbarEnd) {
+            this.initializeNavbarButton(navbarEnd);
+        }
         
         // Observe DOM changes
         this.observeDOM();
@@ -37,21 +46,28 @@ export class SectionCollecty {
             let needsReinitialization = false;
 
             mutations.forEach((mutation) => {
-                // Check added nodes
                 mutation.addedNodes.forEach(node => {
-                    // Check if the node is an element
                     if (node.nodeType === Node.ELEMENT_NODE) {
+                        // Проверяем секции
                         if (node.nodeName === 'SECTION' || node.querySelector('section')) {
                             needsReinitialization = true;
+                        }
+                        // Проверяем навбар
+                        const navbarEnd = node.querySelector('[data-navbar-end]') || 
+                                        (node.matches('[data-navbar-end]') ? node : null);
+                        if (navbarEnd) {
+                            this.initializeNavbarButton(navbarEnd);
                         }
                     }
                 });
 
-                // Check removed nodes
                 mutation.removedNodes.forEach(node => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
                         if (node.nodeName === 'SECTION' || node.querySelector('section')) {
                             this.cleanupSection(node);
+                        }
+                        if (node.querySelector('[data-buildy-button]')) {
+                            this.cleanupNavbarButton(node);
                         }
                     }
                 });
@@ -110,7 +126,12 @@ export class SectionCollecty {
         this.boundSections.forEach(section => {
             this.cleanupSection(section);
         });
+        this.boundButtons.forEach(button => {
+            this.cleanupNavbarButton(button);
+        });
         this.boundSections.clear();
+        this.boundButtons.clear();
+        localStorage.removeItem(CONFIG.collectyState);
     }
 
     async createFloatingMenu(section) {
@@ -150,7 +171,11 @@ export class SectionCollecty {
 
         const section = event.currentTarget;
         const isStored = await this.checkIfStored(section);
-        if (isStored) return;
+        
+        if (isStored) {
+            section.style.opacity = CONFIG.styles.section.inactiveOpacity;
+            return;
+        }
         
         section.classList.add(CONFIG.styles.section.highlight);
         const menu = await this.createFloatingMenu(section);
@@ -214,8 +239,8 @@ export class SectionCollecty {
             this.cleanupSection(section);
             
             // Update the menu to show saved state
-            const menu = this.createFloatingMenu(section);
-            section.appendChild(menu);
+            const menu = await this.createFloatingMenu(section);
+            if (menu) section.appendChild(menu);
         } catch (e) {
             console.error('Error saving to localStorage:', e);
         }
@@ -239,7 +264,14 @@ export class SectionCollecty {
         if (!sectionId) return false;
         
         const stored = this.getStoredSections();
-        return Boolean(stored.blocks && stored.blocks[sectionId]);
+        const isStored = Boolean(stored.blocks && stored.blocks[sectionId]);
+        
+        if (isStored) {
+            section.style.opacity = CONFIG.styles.section.inactiveOpacity;
+            this.cleanupSection(section);
+        }
+        
+        return isStored;
     }
 
     cleanNode(node) {
@@ -289,6 +321,35 @@ export class SectionCollecty {
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    initializeNavbarButton(navbarEnd) {
+        if (!navbarEnd || this.boundButtons.has(navbarEnd)) return;
+
+        const button = document.createElement('button');
+        button.setAttribute('data-buildy-button', '');
+        button.className = 'inline-flex items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary bg-primary/20 hover:bg-accent hover:text-accent-foreground h-9 w-9';
+        button.title = 'Go to BuildY';
+        
+        button.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-puzzle">
+                <path d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"/>
+            </svg>
+        `;
+
+        button.addEventListener('click', () => {
+            window.location.href = '/buildy';
+        });
+
+        const darkModeButton = navbarEnd.querySelector('[data-dark-mode]');
+        if (darkModeButton) {
+            darkModeButton.parentNode.insertBefore(button, darkModeButton);
+            this.boundButtons.add(navbarEnd);
+        }
+    }
+
+    cleanupNavbarButton(node) {
+        this.boundButtons.delete(node);
     }
 }
 

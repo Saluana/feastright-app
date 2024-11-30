@@ -3,7 +3,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { Navbar, NavbarBrand, NavbarLayer } from '@/components/sections/navbar'
 import { DarkMode } from '@/components/darkMode'
 import { ThemingSettings } from '@/components/theming'
-import { Home, Menu, ChevronsRight, PackageCheck, PanelLeftOpen, CopyCheck, LoaderCircle, EllipsisVertical } from 'lucide-vue-next'
+import { Home, ChevronsRight, PackageCheck, AlignRight } from 'lucide-vue-next'
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -12,12 +12,6 @@ import {
   NavigationMenuContent,
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -38,7 +32,7 @@ import { Separator } from '@/components/ui/separator'
 import { defineAsyncComponent } from 'vue'
 
 const router = useRouter()
-const route = useRoute()
+// const route = useRoute()
 
 interface RouteChild {
   name: string
@@ -135,9 +129,10 @@ const menuDescription = 'Main navigation menu with all available sections and pa
       </NavbarLayer>
 
       <!-- Правая часть: кнопки -->
-      <NavbarLayer position="end">
-        <div class="flex items-center gap-2">
-          <DarkMode />
+      <NavbarLayer position="end" data-navbar-end>
+        <div class="flex items-center gap-1 md:gap-2">
+          
+          <DarkMode data-dark-mode />
           <ThemingSettings />
 
         <!-- Мобильное меню -->
@@ -150,7 +145,7 @@ const menuDescription = 'Main navigation menu with all available sections and pa
               :aria-controls="sheetId"
               aria-label="Open navigation menu"
             >
-              <Menu class="!h-6 !w-6" />
+            <AlignRight class="!w-[1.5rem] !h-[1.5rem]" />
               <span class="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
