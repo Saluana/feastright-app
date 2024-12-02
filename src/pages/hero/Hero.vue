@@ -38,7 +38,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   <!-- Hero 2: Split with image --> 
   <Hero layout="split" height="medium" spacing="md">
       <HeroContent align="left" padding="md">
-        <HeroTitle>Transform your workflow</HeroTitle>
+        <HeroTitle>Transform your workflow One</HeroTitle>
         <HeroDescription>
           Streamline your development process with our integrated tools and components.
         </HeroDescription>
@@ -91,7 +91,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
         />
       </HeroMedia>
       <HeroContent align="left" padding="md">
-        <HeroTitle>Transform your workflow</HeroTitle>
+        <HeroTitle>Transform your workflow Two</HeroTitle>
         <HeroDescription>
           Streamline your development process with our integrated tools and components.
         </HeroDescription>

@@ -1,4 +1,4 @@
-const preview = document.getElementById("preview"), previewContainer = document.getElementById("preview"), modalOverlay = document.getElementById("modal-overlay"); let currentElement = null, currentState = JSON.parse(localStorage.getItem("currentState")) || { blocks: {}, layout: [], sceleton: { config: defaultConfig } }; currentState.blocks && 0 !== Object.keys(currentState.blocks).length || (currentState.blocks = defaultBlocks), currentState.sceleton && currentState.sceleton.config || (currentState.sceleton = currentState.sceleton || {}, currentState.sceleton.config = defaultConfig); let blocks = currentState.blocks; const savedConfig = currentState.sceleton?.config || defaultConfig; function applyBodyClasses() { document.body.className = currentState.sceleton.bodyClasses; } function applyTailwindConfig(config) {
+const preview = document.getElementById("preview"), previewContainer = document.getElementById("preview"), modalOverlay = document.getElementById("modal-overlay"); let currentElement = null, currentState = JSON.parse(localStorage.getItem("currentState")) || { blocks: {}, layout: [], sceleton: { config: defaultConfig }, editory: {} }; currentState.blocks && 0 !== Object.keys(currentState.blocks).length || (currentState.blocks = defaultBlocks), currentState.sceleton && currentState.sceleton.config || (currentState.sceleton = currentState.sceleton || {}, currentState.sceleton.config = defaultConfig); let blocks = currentState.blocks; const savedConfig = currentState.sceleton?.config || defaultConfig; function applyBodyClasses() { document.body.className = currentState.sceleton.bodyClasses; } function applyTailwindConfig(config) {
     if (!config) {
         console.warn('No config provided, using default');
         config = defaultConfig;
@@ -31,10 +31,20 @@ const preview = document.getElementById("preview"), previewContainer = document.
     }
 } 
 
-function initializeBlockList() { Object.entries(blocks).forEach(([e, { content: t, title: n }]) => { const r = document.createElement("div"), o = document.createElement("div"); o.className = "relative w-full h-full"; const i = document.createElement("div"), c = document.createElement("div"); c.innerHTML = t || e, i.appendChild(c), o.appendChild(i), r.appendChild(o) }) } function getBlockType(e) { for (const [t, n] of Object.entries(blocks)) { const r = document.createElement("div"); r.innerHTML = n.content.trim(); const o = r.firstElementChild; if (o.id && e.id && o.id === e.id) return t; if (n.title && n.title === e.getAttribute("buildy")) return t; if (o.outerHTML.trim() === e.outerHTML.trim()) return t } return "unknown" } function saveCurrentState() { currentState.layout = Array.from(preview.children).map(e => { return { type: getBlockType(e.firstElementChild), content: e.firstElementChild.outerHTML } }), localStorage.setItem("currentState", JSON.stringify(currentState))
-  
-  // Update styles after saving state
-  applyTailwindStyles();
+function initializeBlockList() { Object.entries(blocks).forEach(([e, { content: t, title: n }]) => { const r = document.createElement("div"), o = document.createElement("div"); o.className = "relative w-full h-full"; const i = document.createElement("div"), c = document.createElement("div"); c.innerHTML = t || e, i.appendChild(c), o.appendChild(i), r.appendChild(o) }) } function getBlockType(e) { for (const [t, n] of Object.entries(blocks)) { const r = document.createElement("div"); r.innerHTML = n.content.trim(); const o = r.firstElementChild; if (o.id && e.id && o.id === e.id) return t; if (o.outerHTML.trim() === e.outerHTML.trim()) return t } return "unknown" } function saveCurrentState() { currentState.layout = Array.from(preview.children).map((element, index) => {
+        const existingBlock = currentState.layout[index] || {};
+        
+        return {
+            type: existingBlock.type || getBlockType(element.firstElementChild),
+            content: element.firstElementChild.outerHTML,
+            editory: {
+                revision: new Date().toISOString()
+            }
+        };
+    });
+    
+    localStorage.setItem("currentState", JSON.stringify(currentState));
+    applyTailwindStyles();
 } 
 
 function loadSavedState() {
@@ -49,7 +59,6 @@ function loadSavedState() {
                 const wrapper = document.createElement("div");
                 wrapper.className = "block-wrapper relative border border-gray-200 dark:border-gray-800";
                 wrapper.innerHTML = item.content;
-                wrapper.firstElementChild.setAttribute("buildy", blocks[item.type].title);
                 preview.appendChild(wrapper);
             }
         });

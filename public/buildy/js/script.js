@@ -273,12 +273,13 @@ function getBlockType(element) {
       return type;
     }
 
+    /* // experimentally delete the attribute
     if (
       blockData.title &&
       blockData.title === element.getAttribute("buildy")
     ) {
       return type;
-    }
+    }*/
 
     if (blockElement.outerHTML.trim() === element.outerHTML.trim()) {
       return type;
@@ -306,7 +307,7 @@ function loadSavedState() {
           "block-wrapper relative border border-gray-200 dark:border-gray-800";
         blockWrapper.innerHTML = item.content;
         const blockElement = blockWrapper.firstElementChild;
-        blockElement.setAttribute("buildy", blocks[item.type].title);
+        //blockElement.setAttribute("buildy", blocks[item.type].title);
         const controls = createBlockControls();
         blockWrapper.appendChild(controls);
         preview.appendChild(blockWrapper);
@@ -447,10 +448,11 @@ function addBlockToPreview(blockType) {
   blockWrapper.className = "block-wrapper relative border border-gray-200 dark:border-gray-800";
   blockWrapper.innerHTML = uniqueContent;
 
+  /*// experimentally delete the attribute
   const firstChild = blockWrapper.firstElementChild;
   if (firstChild) {
     firstChild.setAttribute("buildy", title);
-  }
+  }*/
 
   const controls = createBlockControls();
   blockWrapper.appendChild(controls);
