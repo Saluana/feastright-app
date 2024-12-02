@@ -13,6 +13,7 @@ dist-ssr
 *.local
 .manual/
 htmlTest/
+scripts/
 .vscode/
 bun.lockb
 tsconfig.tsbuildinfo
