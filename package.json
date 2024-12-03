@@ -4,7 +4,7 @@
     "author": "Alexy-OS",
     "repository": "https://github.com/alexy-os/vue-shadcn-starter",
     "license": "MIT",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "private": true,
     "scripts": {
         "dev": "vite",
@@ -20,6 +20,7 @@
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.1",
         "lucide-vue-next": "^0.456.0",
+        "pinia": "^2.2.8",
         "radix-vue": "^1.9.9",
         "tailwind-merge": "^2.5.4",
         "tailwindcss-animate": "^1.0.7",

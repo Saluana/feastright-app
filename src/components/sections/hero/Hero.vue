@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
+import { computed, provide, ref, onMounted } from 'vue'
 import { cn } from '@/lib/utils'
 import Section from '@/components/layout/Section.vue'
 import { heroVariants } from './variants'
+import { Collecty, CollectyTrigger, CollectyIndicator } from '@/components/collecty'
+import { useCollecty } from '@/composables/useCollecty'
+import type { SectionData } from '@/types/collecty'
 
 interface Props {
   align?: 'left' | 'center' | 'right'
@@ -11,6 +15,7 @@ interface Props {
   height?: 'auto' | 'screen' | 'large' | 'medium' | 'nav'
   spacing?: 'none' | 'sm' | 'md' | 'lg'
   class?: HTMLAttributes['class']
+  sectionKey: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -19,6 +24,56 @@ const props = withDefaults(defineProps<Props>(), {
   container: 'full',
   height: 'medium',
   spacing: 'none'
+})
+
+const { isInCollection, addToCollection, removeFromCollection } = useCollecty()
+
+// Защита от двойного срабатывания
+const isProcessing = ref(false)
+
+const sectionId = computed(() => {
+  const path = window.location.pathname.replace(/\//g, '_')
+  const id = `hero${path}_${props.sectionKey}`
+  console.log('Generated section ID:', id)
+  return id
+})
+
+const inCollection = computed(() => {
+  const result = isInCollection(sectionId.value)
+  console.log('Section in collection check:', sectionId.value, result)
+  return result
+})
+
+// Проверяем состояние при монтировании
+onMounted(() => {
+  console.log('Hero mounted, checking collection state for:', sectionId.value)
+  inCollection.value // Вызываем computed для обновления состояния
+})
+
+provide<SectionData>('section-data', {
+  id: sectionId,
+  isInCollection: inCollection,
+  toggleCollection: () => {
+    if (isProcessing.value) {
+      console.log('Operation in progress, skipping...')
+      return
+    }
+
+    isProcessing.value = true
+    console.log('Toggle collection for:', sectionId.value, 'Current state:', inCollection.value)
+
+    try {
+      if (inCollection.value) {
+        removeFromCollection(sectionId.value)
+      } else {
+        addToCollection(sectionId.value, window.location.pathname)
+      }
+    } finally {
+      setTimeout(() => {
+        isProcessing.value = false
+      }, 300)
+    }
+  }
 })
 </script>
 
@@ -34,14 +89,20 @@ const props = withDefaults(defineProps<Props>(), {
       props.class
     )"
   >
-    <div :class="cn(
-      heroVariants({ 
-        container: props.container,
-        layout: props.layout 
-      }),
-      'flex-1'
-    )">
+    <div 
+      :class="cn(
+        heroVariants({ 
+          container: props.container,
+          layout: props.layout 
+        }),
+        'flex-1'
+      )"
+    >
       <slot />
     </div>
+    <Collecty>
+      <CollectyTrigger />
+      <CollectyIndicator />
+    </Collecty>
   </Section>
 </template> 
