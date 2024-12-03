@@ -25,13 +25,16 @@
             }
         },
 
-        // Добавляем метод для очистки текущего состояния
-        clearCurrentState() {
+        // Обновляем метод очистки, сохраняя остальные объекты
+        clearCurrentStateBlocks() {
             try {
-                localStorage.setItem(CURRENT_STATE_KEY, JSON.stringify({ blocks: {} }));
-                console.log('Current state cleared');
+                const currentState = this.getCurrentState();
+                // Сохраняем текущее состояние, но очищаем blocks
+                currentState.blocks = {};
+                localStorage.setItem(CURRENT_STATE_KEY, JSON.stringify(currentState));
+                console.log('Current state blocks cleared');
             } catch (e) {
-                console.error('Error clearing current state:', e);
+                console.error('Error clearing current state blocks:', e);
             }
         }
     };
@@ -82,8 +85,8 @@
     async function processBlocks() {
         const favourites = storage.getFavourites();
         
-        // Очищаем текущее состояние перед обработкой
-        storage.clearCurrentState();
+        // Очищаем только blocks в текущем состоянии
+        storage.clearCurrentStateBlocks();
         const currentState = storage.getCurrentState();
 
         for (const item of favourites) {
