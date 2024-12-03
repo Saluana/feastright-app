@@ -31,7 +31,7 @@ const sheetContent = {
         icon: Puzzle,
         label: 'Go to BuildY',
         action: () => router.push('/buildy'),
-        class: 'bg-primary text-primary-foreground'
+        class: 'bg-primary text-white'
       },
       {
         icon: LoaderCircle,

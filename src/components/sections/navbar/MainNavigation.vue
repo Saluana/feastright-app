@@ -3,7 +3,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { Navbar, NavbarBrand, NavbarLayer } from '@/components/sections/navbar'
 import { DarkMode } from '@/components/darkMode'
 import { ThemingSettings } from '@/components/theming'
-import { Home, ChevronsRight, PackageCheck, AlignRight } from 'lucide-vue-next'
+import { Home, ChevronsRight, PackageCheck, AlignRight, Combine } from 'lucide-vue-next'
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -29,10 +29,19 @@ import {
 } from '@/components/ui/accordion'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, ref, watch, onMounted } from 'vue'
+import { useCollecty } from '@/composables/useCollecty'
 
 const router = useRouter()
 // const route = useRoute()
+
+const { collection } = useCollecty()
+const isButtonVisible = ref(false)
+
+// Следим за изменениями в коллекции
+watch(() => collection.value, (newCollection) => {
+  isButtonVisible.value = newCollection.length > 0
+}, { immediate: true, deep: true })
 
 interface RouteChild {
   name: string
@@ -131,6 +140,18 @@ const menuDescription = 'Main navigation menu with all available sections and pa
       <!-- Правая часть: кнопки -->
       <NavbarLayer position="end" data-navbar-end>
         <div class="flex items-center gap-1 md:gap-2">
+          
+          <Button 
+            v-if="isButtonVisible"
+            variant="default"
+            size="sm"
+            class="bg-primary text-white mr-2"
+            aria-label="Go to builder"
+            @click="router.push('/buildy')"
+          >
+            <Combine :stroke-width="2.5" class="!w-3.5 !h-3.5" />
+            <span class="font-base">BuildY</span>
+          </Button>
           
           <DarkMode data-dark-mode />
           <ThemingSettings />
