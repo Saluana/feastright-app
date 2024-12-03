@@ -25,7 +25,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
 <template>
   <MainNavigation />
   <!-- Секция 1: Изображение справа -->
-  <Hero layout="split" height="nav">
+  <Hero sectionKey="hero_1" layout="split" height="nav">
     <HeroContent align="left" class="container mx-auto" padding="md">
       <Badge variant="outline">New Feature</Badge>
       <HeroTitle>Transform Your Workflow</HeroTitle>
@@ -64,7 +64,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Секция 2: Изображение слева -->
-  <Hero layout="split" height="large" spacing="lg">
+  <Hero sectionKey="hero_2" layout="split" height="large" spacing="lg">
     <HeroMedia>
       <img
         :src="placeholderLight"
@@ -102,7 +102,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Секция 3: Изображение справа -->
-  <Hero height="nav" background="gradient" class="flex items-center">
+  <Hero sectionKey="hero_3" height="nav" background="gradient" class="flex items-center">
     <div 
       class="absolute inset-0 bg-cover bg-center opacity-20 w-full h-full"
       :style="{ backgroundImage: `url(${placeholders.abstract})` }"
