@@ -22,10 +22,10 @@ const placeholderLight = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWln
 const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzAxMGUwNCIvPjwvc3ZnPg=='
 </script>
 
-<template>
+<template> 
   <MainNavigation />
   <!-- Секция 1: Изображение справа -->
-  <Hero sectionKey="hero_1" layout="split" height="nav">
+  <Hero sectionKey="transform_your_workflow" layout="split" height="nav">
     <HeroContent align="left" class="container mx-auto" padding="md">
       <Badge variant="outline">New Feature</Badge>
       <HeroTitle>Transform Your Workflow</HeroTitle>
@@ -64,7 +64,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Секция 2: Изображение слева -->
-  <Hero sectionKey="hero_2" layout="split" height="large" spacing="lg">
+  <Hero sectionKey="data_driven_insights" layout="split" height="large" spacing="lg">
     <HeroMedia>
       <img
         :src="placeholderLight"
@@ -102,7 +102,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Секция 3: Изображение справа -->
-  <Hero sectionKey="hero_3" height="nav" background="gradient" class="flex items-center">
+  <Hero sectionKey="enterprise_solutions" height="nav" background="gradient" class="flex items-center">
     <div 
       class="absolute inset-0 bg-cover bg-center opacity-20 w-full h-full"
       :style="{ backgroundImage: `url(${placeholders.abstract})` }"

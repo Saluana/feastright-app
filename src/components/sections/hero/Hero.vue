@@ -33,8 +33,8 @@ const isProcessing = ref(false)
 
 const sectionId = computed(() => {
   const path = window.location.pathname.replace(/\//g, '_')
-  const id = `hero${path}_${props.sectionKey}`
-  console.log('Generated section ID:', id)
+  const id = `hero__${props.sectionKey}`
+  console.log('Generated section ID:', id, 'Path:', path)
   return id
 })
 
@@ -44,10 +44,10 @@ const inCollection = computed(() => {
   return result
 })
 
-// Проверяем состояние при монтировании
+// Проверяем состояние при монтировании и при изменении маршрута
 onMounted(() => {
   console.log('Hero mounted, checking collection state for:', sectionId.value)
-  inCollection.value // Вызываем computed для обновления состояния
+  inCollection.value
 })
 
 provide<SectionData>('section-data', {
@@ -60,7 +60,7 @@ provide<SectionData>('section-data', {
     }
 
     isProcessing.value = true
-    console.log('Toggle collection for:', sectionId.value, 'Current state:', inCollection.value)
+    console.log('Toggle collection for:', sectionId.value)
 
     try {
       if (inCollection.value) {
@@ -69,6 +69,7 @@ provide<SectionData>('section-data', {
         addToCollection(sectionId.value, window.location.pathname)
       }
     } finally {
+      // Сбрасываем флаг после небольшой задержки
       setTimeout(() => {
         isProcessing.value = false
       }, 300)
@@ -85,10 +86,13 @@ provide<SectionData>('section-data', {
         height: props.height,
         spacing: props.spacing 
       }), 
-      'flex flex-col',
+      'flex flex-col relative',
       props.class
     )"
   >
+    <Collecty class="absolute top-2 right-2 z-10">
+      <CollectyTrigger />
+    </Collecty>
     <div 
       :class="cn(
         heroVariants({ 
@@ -100,9 +104,5 @@ provide<SectionData>('section-data', {
     >
       <slot />
     </div>
-    <Collecty>
-      <CollectyTrigger />
-      <CollectyIndicator />
-    </Collecty>
   </Section>
 </template> 

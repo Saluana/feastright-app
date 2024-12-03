@@ -20,7 +20,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   <MainNavigation />
 
   <!-- Hero 1: Centered with background -->
-  <Hero sectionKey="hero_1" layout="centered" height="nav" class="bg-gradient-to-b from-muted/50 to-background dark:from-muted/10">
+  <Hero sectionKey="a_better_way_to_build_your_saas" layout="centered" height="nav" class="bg-gradient-to-b from-muted/50 to-background dark:from-muted/10">
     <HeroContent class="container mx-auto" padding="md">
       <Badge>New Features</Badge>
       <HeroTitle>A better way to build your SaaS</HeroTitle>
@@ -36,7 +36,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Hero 2: Split with image --> 
-  <Hero sectionKey="hero_2" layout="split" height="medium" spacing="md">
+  <Hero sectionKey="transform_your_workflow_one" layout="split" height="medium" spacing="md">
       <HeroContent align="left" padding="md">
         <HeroTitle>Transform your workflow One</HeroTitle>
         <HeroDescription>
@@ -62,7 +62,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Hero 3: Minimal centered -->
-  <Hero sectionKey="hero_3" layout="centered" height="medium" spacing="sm">
+  <Hero sectionKey="simple_fast_secure_" layout="centered" height="medium" spacing="sm">
     <HeroContent class="container mx-auto" padding="md">
       <HeroTitle>
         Simple. Fast. Secure.
@@ -77,7 +77,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Hero 4: Split with image -->
-  <Hero sectionKey="hero_4" layout="split" height="medium" spacing="md">
+  <Hero sectionKey="transform_your_workflow_two" layout="split" height="medium" spacing="md">
       <HeroMedia aspectRatio="video">
         <img
           :src="placeholderLight"
@@ -102,7 +102,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Hero 5: Full screen with overlay -->
-  <Hero sectionKey="hero_5" layout="centered" height="screen" class="relative">
+  <Hero sectionKey="build_the_future" layout="centered" height="screen" class="relative">
     <div class="absolute inset-0">
       <img
         :src="placeholderLight"

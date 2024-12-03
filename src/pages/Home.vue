@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
   <main>
     <MainNavigation />
     <router-view />
-    <Hero sectionKey="home_1" layout="centered" height="nav">
+    <Hero sectionKey="build_your_next_landing_page_with_shadcn_vue" layout="centered" height="nav">
       <HeroContent class="container mx-auto" padding="md">
         <HeroTitle as="h1">
           Build your next <br>

@@ -22,7 +22,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   <MainNavigation />
 
   <!-- Секция 1: Дашборд Preview -->
-  <Hero sectionKey="hero_1" layout="split" height="nav">
+  <Hero sectionKey="powerful_analytics" layout="split" height="nav">
     <HeroContent 
       align="left" 
       padding="md"
@@ -61,10 +61,10 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
         alt="Enterprise"
       />
     </HeroMedia>
-  </Hero>
+  </Hero> 
 
   <!-- Секция 2: Feature Comparison -->
-  <Hero sectionKey="hero_2" layout="split" height="nav">
+  <Hero sectionKey="basic_plan" layout="split" height="nav">
     <HeroMedia 
       rounded="none"
       class="relative h-full bg-secondary/50"

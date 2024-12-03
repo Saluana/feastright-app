@@ -30,7 +30,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   <MainNavigation />
   
   <!-- Hero 1: Medium Hero with abstract background -->
-  <Hero sectionKey="hero_1" layout="centered" height="nav" background="gradient">
+  <Hero sectionKey="50_off_for_early_birds" layout="centered" height="nav" background="gradient">
     <div 
       class="absolute inset-0 bg-cover bg-center opacity-20"
       :style="{ backgroundImage: `url(${placeholders.abstract})` }"
@@ -48,7 +48,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Hero 2: Split with image -->
-  <Hero sectionKey="hero_2" layout="split" height="screen">
+  <Hero sectionKey="transform_your_workflow" layout="split" height="screen">
       <HeroContent align="left" class="relative container mx-auto z-10" padding="md">
         <HeroTitle>Transform your workflow</HeroTitle>
         <HeroDescription>
@@ -74,7 +74,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
   <!-- Hero 3: Split with left image -->
-  <Hero sectionKey="hero_3" layout="split" height="large" spacing="lg">
+  <Hero sectionKey="transform_your_workflow_2" layout="split" height="large" spacing="lg">
       <HeroMedia aspectRatio="video">
         <img
           :src="placeholderLight" 
@@ -88,7 +88,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
         />
       </HeroMedia>
       <HeroContent align="left" class="relative container mx-auto z-10" padding="md">
-        <HeroTitle>Transform your workflow</HeroTitle>
+        <HeroTitle>Transform your workflow 2</HeroTitle>
         <HeroDescription>
           Streamline your development process with our integrated tools and components.
         </HeroDescription>
@@ -99,7 +99,7 @@ const placeholderDark = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlna
   </Hero>
 
 <!-- Hero 4: with pattern background -->
-<Hero sectionKey="hero_4" height="nav" background="gradient" class="flex items-center">
+<Hero sectionKey="designed_for_modern_teams" height="nav" background="gradient" class="flex items-center">
     <div 
       class="absolute inset-0 bg-cover bg-center opacity-20 w-full h-full"
       :style="{ backgroundImage: `url(${placeholders.abstract})` }"

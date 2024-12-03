@@ -21,7 +21,7 @@ const placeholders = {
   <MainNavigation />
 
   <!-- Large Hero with gradient overlay -->
-  <Hero sectionKey="hero_1" layout="centered" height="nav" class="bg-gradient-to-br from-primary/20 via-primary/10 to-background">
+  <Hero sectionKey="transform_your_business_with_ai_powered_solutions" layout="centered" height="nav" class="bg-gradient-to-br from-primary/20 via-primary/10 to-background">
     <div class="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.5))]" />
     <HeroContent class="relative z-10" padding="md">
       <Badge variant="outline" class="mb-4">New Release</Badge>
@@ -37,7 +37,7 @@ const placeholders = {
   </Hero>
 
   <!-- Medium Hero with abstract background -->
-  <Hero sectionKey="hero_2" layout="centered" height="screen" class="relative overflow-hidden">
+  <Hero sectionKey="50_off_for_early_birds" layout="centered" height="screen" class="relative overflow-hidden">
     <div 
       class="absolute inset-0 bg-cover bg-center opacity-20"
       :style="{ backgroundImage: `url(${placeholders.abstract})` }"
@@ -55,7 +55,7 @@ const placeholders = {
   </Hero>
 
   <!-- Full screen Hero with image background -->
-  <Hero sectionKey="hero_3" layout="centered" height="screen" class="relative">
+  <Hero sectionKey="build_the_future_today" layout="centered" height="screen" class="relative">
     <div class="absolute inset-0">
       <img :src="placeholders.abstract" class="object-cover w-full h-full" alt="Background" />
       <div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
@@ -73,10 +73,10 @@ const placeholders = {
   </Hero>
 
   <!-- Hero with overlay background -->
-  <Hero sectionKey="hero_4" layout="centered" height="screen" background="overlay">
+  <Hero sectionKey="30_off_for_early_birds" layout="centered" height="screen" background="overlay">
     <HeroContent class="relative z-10" padding="md">
       <Badge class="dark:text-secondary-foreground">Limited Time Offer</Badge>
-      <HeroTitle>50% Off for Early Birds</HeroTitle>
+      <HeroTitle>30% Off for Early Birds 2</HeroTitle>
       <HeroDescription>
         Join now and get exclusive access to premium features at half the price.
       </HeroDescription>

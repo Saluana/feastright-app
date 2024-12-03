@@ -16,7 +16,7 @@ const isActive = computed(() => sectionData?.isInCollection.value || false)
   <div
     v-if="isActive"
     :class="cn(
-      'absolute -top-1 -right-1',
+      'absolute -right-1',
       'h-2 w-2 rounded-full',
       'bg-primary',
       'transition-all duration-200',

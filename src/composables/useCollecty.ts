@@ -7,9 +7,18 @@ interface CollectyItem {
 }
 
 // Создаем глобальное состояние вне функции
-const STORAGE_KEY = 'ui-collection'
+const STORAGE_KEY = 'uiCollection'
 const globalCollection = ref<CollectyItem[]>([])
 let isInitialized = false
+
+// Функция для форматирования ID
+const formatCollectionId = (id: string): string => {
+  // Очищаем ID от префикса hero__
+  const cleanId = id.replace('hero__', '')
+  // Добавляем случайный суффикс для уникальности
+  const suffix = Math.random().toString(36).substring(2, 6)
+  return `${cleanId}_${suffix}`
+}
 
 export function useCollecty() {
   const loadCollection = () => {
@@ -23,7 +32,13 @@ export function useCollecty() {
       if (saved) {
         const items = JSON.parse(saved) as CollectyItem[]
         console.log('Loading collection:', items)
-        globalCollection.value = items
+        // Проверяем, что items это массив и все элементы имеют необходимые поля
+        if (Array.isArray(items) && items.every(item => item && item.id)) {
+          globalCollection.value = items
+        } else {
+          console.warn('Invalid collection format, resetting to empty array')
+          globalCollection.value = []
+        }
       }
     } catch (error) {
       console.error('Failed to load collection:', error)
@@ -46,20 +61,36 @@ export function useCollecty() {
   )
 
   const isInCollection = (id: string): boolean => {
-    const exists = globalCollection.value.some(item => item.id === id)
-    console.log(`Checking if ${id} is in collection:`, exists)
+    if (!id) return false
+    
+    // Очищаем ID для сравнения
+    const cleanId = id.replace('hero__', '')
+    const exists = globalCollection.value.some(item => {
+      if (!item || !item.id) return false
+      // Очищаем ID элемента от суффикса для сравнения
+      const itemBaseId = item.id.split('_').slice(0, -1).join('_')
+      return itemBaseId === cleanId
+    })
+    console.log(`Checking if ${cleanId} is in collection:`, exists)
     return exists
   }
 
   const addToCollection = (id: string, path: string) => {
+    if (!id || !path) {
+      console.warn('Invalid id or path provided')
+      return
+    }
+
     console.log('Current collection:', [...globalCollection.value])
-    console.log(`Adding to collection:`, { id, path })
+    
+    const formattedId = formatCollectionId(id)
+    console.log(`Adding to collection:`, { id: formattedId, path })
 
     if (!isInCollection(id)) {
       globalCollection.value = [
         ...globalCollection.value,
         {
-          id,
+          id: formattedId,
           path,
           timestamp: Date.now()
         }
@@ -71,27 +102,27 @@ export function useCollecty() {
   }
 
   const removeFromCollection = (id: string) => {
+    if (!id) return
+
     console.log('Current collection:', [...globalCollection.value])
     console.log(`Removing from collection: ${id}`)
     
-    globalCollection.value = globalCollection.value.filter(item => item.id !== id)
+    const cleanId = id.replace('hero__', '')
+    globalCollection.value = globalCollection.value.filter(item => {
+      if (!item || !item.id) return false
+      const itemBaseId = item.id.split('_').slice(0, -1).join('_')
+      return itemBaseId !== cleanId
+    })
     console.log('Collection after remove:', [...globalCollection.value])
   }
 
-  const clearCollection = () => {
-    console.log('Clearing collection')
-    globalCollection.value = []
-    saveCollection()
-  }
-
-  // Загружаем коллекцию только при первой инициализации
+  // Загружаем коллекцию при первой инициализации
   loadCollection()
 
   return {
     collection: computed(() => globalCollection.value),
     isInCollection,
     addToCollection,
-    removeFromCollection,
-    clearCollection
+    removeFromCollection
   }
 } 

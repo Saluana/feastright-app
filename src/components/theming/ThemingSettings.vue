@@ -19,27 +19,24 @@ const isOpen = ref(false)
 
 const sheetContent = {
   header: {
-    title: 'Settings & Collections',
+    title: 'UI BuildY',
     btntitle: 'Go to BuildY',
-    description: 'Manage application appearance and UI collections access.'
+    description: 'Manage application appearance and go to Tailwind Page Builder'
   },
   collections: {
-    title: 'UI Collections',
+    title: 'Welcome to UI BuildY',
     items: [
       {
-        id: 'getStarted',
-        icon: CopyCheck,
-        label: 'Get UI Blocks',
-        action: () => {
-          // Implement your collection saving logic here
-          isOpen.value = false
-        },
-        class: 'text-primary bg-primary/10 border-2 border-primary'
+        id: 'getBuildy',
+        icon: Puzzle,
+        label: 'Go to BuildY',
+        action: () => router.push('/buildy'),
+        class: 'bg-primary text-primary-foreground'
       },
       {
         icon: LoaderCircle,
-        label: 'Reset Settings',
-        action: () => router.push('/reset'),
+        label: 'Maintenance',
+        action: () => router.push('#'),
         class: 'border-2 border-secondary-foreground/50'
       }
     ]
@@ -182,53 +179,42 @@ onMounted(() => {
       <!-- Static header section -->
       <div class="p-6">
         <SheetHeader>
-          <SheetTitle>{{ sheetContent.header.title }}</SheetTitle>
+          <SheetTitle class="text-xl text-start">{{ sheetContent.header.title }}</SheetTitle>
           <SheetDescription class="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              class="shrink-0 text-primary bg-primary/20 hover:bg-accent hover:text-accent-foreground"
-              :title="sheetContent.header.btntitle"
-              @click="router.push('/buildy')"
-            >
-              <Puzzle class="h-4 w-4" />
-            </Button>
             <p class="text-sm text-left">
               {{ sheetContent.header.description }}
             </p>
           </SheetDescription>
         </SheetHeader>
       </div>
+      
+      <!-- BuildY Section -->
+      <div class="px-6">
+        <div class="grid grid-cols-2 gap-2">
+            <Button 
+              v-for="item in sheetContent.collections.items"
+              :key="item.label"
+              :id="item.id"
+              variant="outline"
+              :class="[
+                'justify-start',
+                item.class
+              ]"
+              @click="item.action"
+            >
+              <component :is="item.icon" class="mr-2 h-4 w-4" />
+              <span>{{ item.label }}</span>
+            </Button>
+        </div>
+      </div>
 
       <!-- Scrollable content -->
       <ScrollArea class="h-[calc(100%-120px)]"> <!-- Adjust height to account for header -->
         <div class="p-6">
           <div class="space-y-6">
-            <!-- Collections Section -->
-            <div class="space-y-4">
-              <h4 class="text-sm font-bold">{{ sheetContent.collections.title }}</h4>
-              <div class="grid grid-cols-2 gap-2">
-                <Button 
-                  v-for="item in sheetContent.collections.items.filter(item => item.label !== 'Go to BuildY')"
-                  :key="item.label"
-                  :id="item.id"
-                  variant="outline"
-                  :class="[
-                    'justify-start',
-                    item.class
-                  ]"
-                  @click="item.action"
-                >
-                  <component :is="item.icon" class="mr-2 h-4 w-4" />
-                  <span>{{ item.label }}</span>
-                </Button>
-              </div>
-            </div>
-
-            <Separator />
-
             <!-- Theme Settings Section -->
             <div class="space-y-4">
-              <h4 class="text-sm font-bold">{{ sheetContent.theme.title }}</h4>
+              <h4 class="text-lg font-bold">{{ sheetContent.theme.title }}</h4>
               <div class="space-y-4">
                 <template v-for="section in sheetContent.theme.sections" :key="section.label">
                   <div class="space-y-2">
