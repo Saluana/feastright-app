@@ -17,6 +17,44 @@ interface RecipeCardProps {
 }
 
 const props = defineProps<RecipeCardProps>()
+
+// Utility to format decimals as beautiful fractions
+function formatFraction(value: number | string): string {
+  if (typeof value === 'string') value = parseFloat(value);
+  if (isNaN(value)) return '';
+  // Map of common fractions
+  const fractionMap: Record<number, string> = {
+    0.25: '¼',
+    0.33: '⅓', 0.333: '⅓', 0.334: '⅓',
+    0.5: '½',
+    0.66: '⅔', 0.667: '⅔', 0.666: '⅔',
+    0.75: '¾',
+    0.2: '⅕', 0.4: '⅖', 0.6: '⅗', 0.8: '⅘',
+    0.125: '⅛', 0.375: '⅜', 0.625: '⅝', 0.875: '⅞',
+  };
+  const intPart = Math.floor(value);
+  const decPart = value - intPart;
+  // Find closest fraction
+  let closest = null;
+  let minDiff = 1;
+  for (const [frac, symbol] of Object.entries(fractionMap)) {
+    const diff = Math.abs(decPart - Number(frac));
+    if (diff < 0.02 && diff < minDiff) {
+      closest = symbol;
+      minDiff = diff;
+    }
+  }
+  if (intPart && closest) return `${intPart} ${closest}`;
+  if (closest) return closest;
+  if (decPart) {
+    // Fallback: show as fraction string
+    const denominator = 8;
+    const numerator = Math.round(decPart * denominator);
+    if (numerator === 0) return intPart ? intPart.toString() : '';
+    return intPart ? `${intPart} ${numerator}/${denominator}` : `${numerator}/${denominator}`;
+  }
+  return intPart.toString();
+}
 </script>
 
 <template>
@@ -85,7 +123,7 @@ const props = defineProps<RecipeCardProps>()
       <h3 class="mb-2 font-medium">Ingredients</h3>
       <ul class="list-disc list-inside space-y-1">
         <li v-for="({ name, quantity, unit }, idx) in props.recipe.ingredients" :key="idx">
-          <span class="font-medium">{{ quantity }}</span>
+          <span class="font-medium">{{ formatFraction(quantity) }}</span>
           {{ unit?.trim() || "" }} {{ name }}
         </li>
       </ul>
