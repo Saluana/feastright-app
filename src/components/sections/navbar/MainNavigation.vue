@@ -2,37 +2,15 @@
 import { useRouter, useRoute } from 'vue-router'
 import { Navbar, NavbarBrand, NavbarLayer } from '@/components/sections/navbar'
 import { DarkMode } from '@/components/darkMode'
-import { ThemingSettings } from '@/components/theming'
-import { Home, ChevronsRight, PackageCheck, AlignRight, Combine, ChefHat } from 'lucide-vue-next'
-import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-} from '@/components/ui/navigation-menu'
-import { Button } from '@/components/ui/button'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetTrigger,
-} from '@/components/ui/sheet'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
-import { defineAsyncComponent, ref, watch, onMounted } from 'vue'
+import { Home, ChevronsRight} from 'lucide-vue-next'
+import { defineAsyncComponent} from 'vue'
+import {SidebarTrigger, useSidebar} from '@/components/ui/sidebar'
+
+const {open, setOpen} = useSidebar()
 
 const router = useRouter()
 // const route = useRoute()
+
 
 
 
@@ -98,35 +76,10 @@ const menuDescription = 'Main navigation menu with all available sections and pa
       <NavbarLayer position="start" class="flex-1">
         <div class="flex items-center gap-6">
           <NavbarBrand class="text-primary">
-            <ChefHat class="w-6 h-6" />
-            <span class="font-semibold">Recipe Tool</span>
+            <SidebarTrigger class="h-6 w-6" />
+            <span @click="setOpen(!open)" class="font-semibold text-sm">{{ open ? 'Close menu' : 'Open menu' }}</span>
           </NavbarBrand>
           
-          <!-- Обновляем десктопную навигацию -->
-          <NavigationMenu class="hidden md:flex">
-            <NavigationMenuList>
-              <NavigationMenuItem v-for="parentRoute in parentRoutes" :key="parentRoute.path">
-                <NavigationMenuTrigger>{{ parentRoute.title }}</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul class="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    <li v-for="child in parentRoute.children" :key="child.path">
-                      <NavigationMenuLink as-child>
-                        <router-link
-                          :to="`${parentRoute.path}/${child.path}`"
-                          class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div class="text-sm font-medium leading-none">{{ child.title }}</div>
-                          <p v-if="child.description" class="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            {{ child.description }}
-                          </p>
-                        </router-link>
-                      </NavigationMenuLink>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
         </div>
       </NavbarLayer>
 
@@ -134,107 +87,9 @@ const menuDescription = 'Main navigation menu with all available sections and pa
       <NavbarLayer position="end" data-navbar-end>
         <div class="flex items-center gap-1 md:gap-2">
           
-
           
           <DarkMode data-dark-mode />
-          <ThemingSettings />
 
-        <!-- Мобильное меню -->
-        <Sheet>
-          <SheetTrigger as-child>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              class="md:hidden"
-              :aria-controls="sheetId"
-              aria-label="Open navigation menu"
-            >
-            <AlignRight class="!w-[1.5rem] !h-[1.5rem]" />
-              <span class="sr-only">Toggle menu</span>
-            </Button>
-          </SheetTrigger>
-            
-            <SheetContent 
-              class="w-[300px] p-0 sheet-content border-r border-secondary-foreground/20 shadow-glow "
-              side="left"
-            >
-              <SheetHeader class="p-4 sheet-header border-b-[0.3px] border-gradient shadow-glow">
-                <SheetTitle class="flex items-center gap-2 text-base mb-2">
-                  <NavbarBrand>
-                    <PackageCheck class="w-6 h-6" />
-                    <span class="font-semibold">BuildY</span>
-                  </NavbarBrand>
-                </SheetTitle>
-                <SheetDescription class="text-sm text-muted-foreground">
-                  {{ menuDescription }}
-                </SheetDescription>
-              </SheetHeader>
-              
-              <ScrollArea class="h-[calc(100vh-80px)]">
-                <div class="p-4">
-                  <router-link 
-                    to="/" 
-                    class="flex items-center gap-2 px-2 py-1.5 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground"
-                    aria-label="Go to home page"
-                  >
-                    <Home class="h-4 w-4" />
-                    <span>Home</span>
-                  </router-link>
-                  
-                  <Separator class="my-4" />
-                  
-                  <Accordion 
-                    type="single" 
-                    collapsible
-                    class="w-full"
-                  >
-                    <AccordionItem 
-                      v-for="route in parentRoutes" 
-                      :key="route.path" 
-                      :value="route.path"
-                    >
-                      <AccordionTrigger 
-                        class="text-sm no-underline"
-                        :aria-label="`Toggle ${route.title} section`"
-                      >
-                        {{ route.title }}
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div class="pl-1 py-2 space-y-1">
-                          <router-link
-                            v-for="child in route.children"
-                            :key="child.path"
-                            :to="`${route.path}/${child.path}`"
-                            class="flex items-center gap-2 px-2 py-1.5 text-sm rounded-md hover:bg-accent hover:text-accent-foreground"
-                            :class="[
-                              route.path === $route.path ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
-                            ]"
-                            :aria-label="`Go to ${child.title}`"
-                            :aria-current="route.path === $route.path ? 'page' : undefined"
-                          >
-                            <component 
-                              :is="getIcon(child.meta?.icon)" 
-                              class="h-4 w-4" 
-                              aria-hidden="true"
-                            />
-                            <div>
-                              <div>{{ child.title }}</div>
-                              <p 
-                                v-if="child.description" 
-                                class="text-xs text-muted-foreground line-clamp-1"
-                              >
-                                {{ child.description }}
-                              </p>
-                            </div>
-                          </router-link>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </div>
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
         </div>
       </NavbarLayer>
     </div>
