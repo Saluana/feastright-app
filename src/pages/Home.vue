@@ -17,10 +17,15 @@ import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
 
 const recipeUrl = ref('')
 const recipe = ref<Recipe | null>(null)
+const isRecipeModalOpen = ref(false)
 
 const importRecipe = async () => {
   recipe.value = await getRecipeFromUrl(recipeUrl.value)
   console.log(recipe.value)
+  // Open the modal when a recipe is imported
+  if (recipe.value) {
+    isRecipeModalOpen.value = true
+  }
 }
 
 </script>
@@ -52,6 +57,11 @@ const importRecipe = async () => {
         </HeroActions>
       </HeroContent>
     </Hero>
-    <RecipeCard v-if="recipe" :recipe="recipe" />
+    <RecipeCard 
+      v-if="recipe" 
+      :recipe="recipe" 
+      :open="isRecipeModalOpen" 
+      @update:open="isRecipeModalOpen = $event" 
+    />
   </main>
 </template>
