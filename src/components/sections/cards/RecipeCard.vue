@@ -99,84 +99,96 @@ function formatFraction(value: number | string): string {
           props.className
         ]"
       >
-        <CardHeader class="p-0 relative group">
-          <a :href="props.recipe.url" target="_blank" rel="noopener noreferrer" class="block overflow-hidden">
-            <AspectRatio :ratio="16 / 9" class="overflow-hidden">
-              <img
-                :src="props.recipe.images[0]"
-                :alt="props.recipe.title"
-                class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-70"></div>
-            </AspectRatio>
-            <div class="absolute bottom-4 right-4">
-              <Badge class="bg-white/90 text-primary hover:bg-white shadow-sm">
-                <ExternalLink class="h-3.5 w-3.5 mr-1" />
-                View Source
-              </Badge>
+        <!-- Hero image with overlaid information -->
+        <div class="relative overflow-hidden rounded-t-xl">
+          <AspectRatio :ratio="16 / 9" class="overflow-hidden">
+            <img
+              :src="props.recipe.images[0]"
+              :alt="props.recipe.title"
+              class="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+              loading="lazy"
+            />
+            <!-- Gradient overlay for text readability that preserves image visibility -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20"></div>
+            
+            <!-- Content overlay -->
+            <div class="absolute inset-0 flex flex-col justify-end p-6 text-white">
+              <!-- Extra text background gradient for better readability -->
+              <div class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
+              <!-- Title & Rating -->
+              <div class="space-y-2 mb-3">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-md">{{ props.recipe.title }}</h2>
+                <div class="flex items-center gap-0.5">
+                  <template v-for="(_, i) in Array(5)" :key="i">
+                    <Star
+                      :size="20"
+                      :class="[
+                        'transition-all duration-300 filter drop-shadow-md',
+                        i < Math.round(parseFloat(props.recipe.ratings.ratingValue)) 
+                          ? 'fill-yellow-300 text-yellow-300' 
+                          : 'text-gray-300'
+                      ]"
+                    />
+                  </template>
+                  <span class="ml-2 text-sm font-bold text-white drop-shadow-md">
+                    {{ props.recipe.ratings.ratingValue }} ({{ props.recipe.ratings.ratingCount }})
+                  </span>
+                </div>
+              </div>
+              
+              <!-- Meta badges -->
+              <div class="relative flex flex-wrap gap-2 mb-4">
+                <Badge class="bg-primary text-white border-none text-sm py-1 px-3 font-semibold shadow-lg">
+                  {{ props.recipe.publisher }}
+                </Badge>
+                <Badge class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
+                  <Utensils class="h-4 w-4" />
+                  {{ props.recipe.servings }} servings
+                </Badge>
+                <Badge class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
+                  <Clock class="h-4 w-4" />
+                  {{ props.recipe.totalTime }} min total
+                </Badge>
+                <Badge class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
+                  <Clock3 class="h-4 w-4" />
+                  {{ props.recipe.prepTime }}+{{ props.recipe.cookTime }} min
+                </Badge>
+                <Badge 
+                  v-for="c in props.recipe.cuisine" 
+                  :key="c"
+                  class="bg-primary text-white border-none text-sm py-1 px-3 font-semibold shadow-lg"
+                >
+                  {{ c }}
+                </Badge>
+                <Badge 
+                  v-for="c in props.recipe.categories" 
+                  :key="c"
+                  class="bg-secondary text-black dark:text-white border-none text-sm py-1 px-3 font-semibold shadow-lg"
+                >
+                  {{ c }}
+                </Badge>
+              </div>
+              
+              <!-- Description -->
+              <p class="text-sm text-gray-200 leading-snug line-clamp-2 drop-shadow-sm">{{ props.recipe.description }}</p>
+              
+              <!-- Source link -->
+              <div class="absolute top-4 right-4">
+                <a 
+                  :href="props.recipe.url" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  class="bg-primary hover:bg-primary/90 text-white text-xs px-3 py-1.5 rounded-md flex items-center gap-1.5 font-medium shadow-md transition-colors"
+                >
+                  <ExternalLink class="h-3.5 w-3.5" />
+                  Source
+                </a>
+              </div>
             </div>
-          </a>
-        </CardHeader>
-
-        <CardContent class="p-8 space-y-6">
-          <!-- Title & Rating -->
-          <div class="flex flex-col gap-2">
-            <h2 class="text-2xl font-bold tracking-tight">{{ props.recipe.title }}</h2>
-            <div class="flex items-center gap-0.5">
-              <template v-for="(_, i) in Array(5)" :key="i">
-                <Star
-                  :size="20"
-                  :class="[
-                    'transition-all duration-300',
-                    i < Math.round(parseFloat(props.recipe.ratings.ratingValue)) 
-                      ? 'fill-yellow-500 text-yellow-500' 
-                      : 'text-gray-300'
-                  ]"
-                />
-              </template>
-              <span class="ml-2 text-sm font-medium text-muted-foreground">
-                {{ props.recipe.ratings.ratingValue }} ({{ props.recipe.ratings.ratingCount }})
-              </span>
-            </div>
-          </div>
-
-          <!-- Meta -->
-          <div class="flex flex-wrap gap-3 py-2">
-            <Badge variant="secondary" class="px-3 py-1 bg-primary/10 text-primary border-primary/20 font-medium">
-              {{ props.recipe.publisher }}
-            </Badge>
-            <Badge variant="outline" class="px-3 py-1 gap-1.5 hover:bg-background/80">
-              <Utensils class="h-3.5 w-3.5" />
-              {{ props.recipe.servings }} servings
-            </Badge>
-            <Badge variant="outline" class="px-3 py-1 gap-1.5 hover:bg-background/80">
-              <Clock class="h-3.5 w-3.5" />
-              {{ props.recipe.totalTime }} min total
-            </Badge>
-            <Badge variant="outline" class="px-3 py-1 gap-1.5 hover:bg-background/80">
-              <Clock3 class="h-3.5 w-3.5" />
-              {{ props.recipe.prepTime }}+{{ props.recipe.cookTime }} min
-            </Badge>
-            <Badge 
-              v-for="c in props.recipe.cuisine" 
-              :key="c"
-              class="px-3 py-1 bg-primary/80 hover:bg-primary transition-colors"
-            >
-              {{ c }}
-            </Badge>
-            <Badge 
-              v-for="c in props.recipe.categories" 
-              :key="c" 
-              variant="secondary"
-              class="px-3 py-1 bg-secondary/80 hover:bg-secondary transition-colors"
-            >
-              {{ c }}
-            </Badge>
-          </div>
-
-          <!-- Description -->
-          <p class="text-muted-foreground leading-relaxed">{{ props.recipe.description }}</p>
+          </AspectRatio>
+        </div>
+        
+        <CardContent class="p-6 space-y-6">
 
           <Separator class="my-2" />
 
