@@ -17,7 +17,7 @@ export const navbarVariants = cva(
       },
       border: {
         none: 'border-none',
-        default: 'border-b',
+        default: 'border-none',
         gradient: 'border-b-[0.5px] border-gradient'
       },
       shadow: {

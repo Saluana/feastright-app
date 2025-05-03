@@ -3,7 +3,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { Navbar, NavbarBrand, NavbarLayer } from '@/components/sections/navbar'
 import { DarkMode } from '@/components/darkMode'
 import { ThemingSettings } from '@/components/theming'
-import { Home, ChevronsRight, PackageCheck, AlignRight, Combine } from 'lucide-vue-next'
+import { Home, ChevronsRight, PackageCheck, AlignRight, Combine, ChefHat } from 'lucide-vue-next'
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -30,18 +30,11 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { defineAsyncComponent, ref, watch, onMounted } from 'vue'
-import { useCollecty } from '@/composables/useCollecty'
 
 const router = useRouter()
 // const route = useRoute()
 
-const { collection } = useCollecty()
-const isButtonVisible = ref(false)
 
-// Следим за изменениями в коллекции
-watch(() => collection.value, (newCollection) => {
-  isButtonVisible.value = newCollection.length > 0
-}, { immediate: true, deep: true })
 
 interface RouteChild {
   name: string
@@ -100,13 +93,13 @@ const menuDescription = 'Main navigation menu with all available sections and pa
 </script>
 
 <template>
-  <Navbar class="border-b-[0.5px] border-gradient shadow-glow h-[64px]" style="--navbar-height: 64px;">
+  <Navbar class=" border-gradient h-[64px]" style="--navbar-height: 64px;">
     <div class="flex container mx-auto px-2 md:px-4 lg:px-8">
       <NavbarLayer position="start" class="flex-1">
         <div class="flex items-center gap-6">
           <NavbarBrand class="text-primary">
-            <PackageCheck class="w-6 h-6" />
-            <span class="font-semibold">BuildY</span>
+            <ChefHat class="w-6 h-6" />
+            <span class="font-semibold">Recipe Tool</span>
           </NavbarBrand>
           
           <!-- Обновляем десктопную навигацию -->
@@ -141,17 +134,7 @@ const menuDescription = 'Main navigation menu with all available sections and pa
       <NavbarLayer position="end" data-navbar-end>
         <div class="flex items-center gap-1 md:gap-2">
           
-          <Button 
-            v-if="isButtonVisible"
-            variant="default"
-            size="sm"
-            class="bg-primary text-white mr-2"
-            aria-label="Go to builder"
-            @click="router.push('/buildy')"
-          >
-            <Combine :stroke-width="2.5" class="!w-3.5 !h-3.5" />
-            <span class="font-base">BuildY</span>
-          </Button>
+
           
           <DarkMode data-dark-mode />
           <ThemingSettings />

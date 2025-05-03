@@ -3,11 +3,10 @@ import { MainNavigation } from '@/components/sections/navbar'
 import {
   Hero,
   HeroContent,
-  HeroTitle,
-  HeroDescription,
   HeroActions
 } from '@/components/sections/hero'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 </script>
 
 <template>
@@ -16,20 +15,13 @@ import { Button } from '@/components/ui/button'
     <router-view />
     <Hero sectionKey="build_your_next_landing_page_with_shadcn_vue" layout="centered" height="nav">
       <HeroContent class="container mx-auto" padding="md">
-        <HeroTitle as="h1">
-          Build your next <br>
-          <span class="text-primary">Landing Page</span><br>
-          with Shadcn Vue
-        </HeroTitle>
-        <HeroDescription>
-          Beautiful and accessible components that you can copy and paste into your apps.
-        </HeroDescription>
+        <Input class="max-w-[42rem] h-[48px] text-lg" placeholder="Enter recipe URL" />
         <HeroActions>
           <a href="#">
-            <Button size="lg" class="text-white">Get Started</Button>
+            <Button size="lg" class="text-white">Import recipe</Button>
           </a>
           <a href="#">
-            <Button size="lg" variant="outline">Get UI Blocks</Button>
+            <Button size="lg" variant="outline">I'm feeling lucky</Button>
           </a>
         </HeroActions>
       </HeroContent>

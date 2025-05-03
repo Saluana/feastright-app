@@ -90,9 +90,7 @@ provide<SectionData>('section-data', {
       props.class
     )"
   >
-    <Collecty class="absolute top-2 right-2 z-10">
-      <CollectyTrigger />
-    </Collecty>
+
     <div 
       :class="cn(
         heroVariants({ 
