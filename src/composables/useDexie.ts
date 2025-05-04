@@ -1,0 +1,140 @@
+// db.ts
+import Dexie, { type EntityTable } from 'dexie';
+import { type Recipe } from './useRecipeImporter';
+
+interface History {
+    id?: number;
+    recipeId: number;
+    url: string;
+    title: string;
+    createdAt: Date;
+}
+
+interface Favourite {
+    id?: number;
+    recipeId: number;
+    title: string;
+    url: string;
+    createdAt: Date;
+}
+
+interface RecipeData extends Recipe {
+    id?: number;
+}
+
+interface Collections {
+    id?: number;
+    name: string;
+    recipes: number[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const db = new Dexie('RecipeDatabase') as Dexie & {
+  recipes: EntityTable<RecipeData, 'id'>
+  history: EntityTable<History, 'id'>
+  favourites: EntityTable<Favourite, 'id'>
+  collections: EntityTable<Collections, 'id'>
+};
+
+// Schema declaration:
+db.version(1).stores({
+  recipes: '++id, title, url, image, description, publisher, video, servings, prepTime, cookTime, totalTime, cuisine, categories, nutrition, ingredients, instructions, ratings, meta, favicon, hostUrl',
+  history: '++id, recipeId, url, title, createdAt',
+  favourites: '++id, recipeId, title, url, createdAt',
+  collections: '++id, name, recipes, createdAt, updatedAt',
+});
+
+function clone<T>(obj: T): T {
+    return JSON.parse(JSON.stringify(obj))
+}
+
+async function addRecipe(recipe: RecipeData): Promise<number | undefined> {
+    const existingRecipe = await getRecipeByURL(recipe.url)
+    if (existingRecipe.length > 0) {
+        return existingRecipe[0].id; 
+    }
+
+    return await db.recipes.add(clone(recipe))
+}
+
+async function addHistory(recipe: RecipeData) {
+    if (!recipe.id) {
+        throw new Error('Recipe ID is required')
+    }
+
+    await db.history.add({
+        recipeId: recipe.id,
+        url: recipe.url,
+        title: recipe.title,
+        createdAt: new Date()
+    })
+}
+
+async function addFavourite(recipe: RecipeData) {
+    if (!recipe.id) {
+        throw new Error('Recipe ID is required')
+    }
+
+    await db.favourites.add({
+        recipeId: recipe.id,
+        title: recipe.title,
+        url: recipe.url,
+        createdAt: new Date()
+    })
+}
+
+async function addCollection(collection: Collections) {
+    await db.collections.add(clone(collection))
+}
+
+async function getHistory() {
+    return db.history.toArray()
+}
+
+async function getFavourites() {
+    return db.favourites.toArray()
+}
+
+async function getCollections() {
+    return db.collections.toArray()
+}
+
+async function getRecipes() {
+    return db.recipes.toArray()
+}
+
+async function batchGetRecipes(ids: number[]) {
+    return db.recipes.bulkGet(ids)
+}
+
+async function getRecipeById(id: number) {
+    return db.recipes.get(id)
+}
+
+async function getRecipeByURL(url: string) {
+    return db.recipes.where('url').equals(url).toArray()
+}
+
+async function deleteRecipeById(id: number) {
+    return db.transaction('rw', db.recipes, db.history, db.favourites, async () => {
+        await db.recipes.delete(id)
+        await db.history.where('recipeId').equals(id).delete()
+        await db.favourites.where('recipeId').equals(id).delete()
+    })
+}
+
+async function deleteHistoryById(id: number) {
+    return db.history.delete(id)
+}
+
+async function deleteFavouriteById(id: number) {
+    return db.favourites.delete(id)
+}
+
+async function deleteCollectionById(id: number) {
+    return db.collections.delete(id)
+}
+
+export type { History, Favourite, RecipeData }
+export { db, addRecipe, addHistory, addFavourite, getHistory, getFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteCollectionById, addCollection, getCollections, batchGetRecipes };

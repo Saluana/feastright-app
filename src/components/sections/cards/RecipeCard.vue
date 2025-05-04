@@ -9,14 +9,16 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Recipe } from "@/composables/useRecipeImporter";
-import { Clock, ExternalLink, Star, X, Utensils, Clock3 } from "lucide-vue-next";
-import { Button } from "@/components/ui/button";
+import { Clock, ExternalLink, Star, Utensils, Clock3 } from "lucide-vue-next";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { decode } from 'html-entities';
+import { useRouter, useRoute } from 'vue-router';
+import { onMounted, watch } from 'vue';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -26,10 +28,34 @@ interface RecipeCardProps {
 
 const props = defineProps<RecipeCardProps>()
 const emit = defineEmits(['update:open'])
+const router = useRouter()
+const route = useRoute()
 
 const updateOpen = (value: boolean) => {
   emit('update:open', value)
+  
+  // If the modal is being closed, navigate back to the home page
+  if (!value) {
+    router.push('/')
+  }
 }
+
+// Update URL when the modal is opened
+watch(() => props.open, (newValue) => {
+  if (newValue && props.recipe) {
+    // If the modal is opened and we're not already on the recipe route
+    if (!route.path.includes('/recipe/')) {
+      router.push(`/recipe/${encodeURIComponent(props.recipe.url)}`)
+    }
+  }
+})
+
+// Set the route when mounted if the modal is open but URL doesn't reflect it
+onMounted(() => {
+  if (props.open && props.recipe && !route.path.includes('/recipe/')) {
+    router.push(`/recipe/${encodeURIComponent(props.recipe.url)}`)
+  }
+})
 
 // Utility to format decimals as beautiful fractions
 function formatFraction(value: number | string): string {
@@ -71,28 +97,21 @@ function formatFraction(value: number | string): string {
 </script>
 
 <template>
-  <Dialog :open="open" @update:open="updateOpen">
+  <Dialog class="rounded-none" :open="open" @update:open="updateOpen">
     <DialogContent 
-      class="sm:max-w-6xl max-h-[90vh] overflow-y-auto"
-      :closeButton="false"
+  class="md:min-w-[90vw] md:min-h-[99vh] md:max-w-[90vw] md:max-h-[90vh] rounded-none flex flex-col items-center overflow-y-scroll pt-8"
+  :closeButton="false"
     >
       <DialogHeader class="flex justify-between items-center">
         <DialogTitle class="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-          {{ props.recipe?.title }}
+          {{ decode(props.recipe?.title) }}
         </DialogTitle>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          @click="updateOpen(false)" 
-          class="absolute right-4 top-4 rounded-full p-2 hover:bg-primary/10 transition-colors"
-        >
-          <X class="h-5 w-5" />
-        </Button>
+  
       </DialogHeader>
 
       <Card
         :class="[
-          'w-full overflow-hidden rounded-xl border-none',
+          'max-w-[840px] h-auto rounded-xl border-none',
           'bg-gradient-to-b from-background to-background/80',
           'shadow-[0_8px_30px_rgb(0,0,0,0.08)]',
           'transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]',
@@ -117,7 +136,7 @@ function formatFraction(value: number | string): string {
               <div class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
               <!-- Title & Rating -->
               <div class="space-y-2 mb-3">
-                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-md">{{ props.recipe.title }}</h2>
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-md">{{ decode(props.recipe.title) }}</h2>
                 <div class="flex items-center gap-0.5">
                   <template v-for="(_, i) in Array(5)" :key="i">
                     <Star
@@ -139,7 +158,7 @@ function formatFraction(value: number | string): string {
               <!-- Meta badges -->
               <div class="relative flex flex-wrap gap-2 mb-4">
                 <Badge class="bg-primary text-white border-none text-sm py-1 px-3 font-semibold shadow-lg">
-                  {{ props.recipe.publisher }}
+                  {{ decode(props.recipe.publisher) }}
                 </Badge>
                 <Badge class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
                   <Utensils class="h-4 w-4" />
@@ -170,7 +189,7 @@ function formatFraction(value: number | string): string {
               </div>
               
               <!-- Description -->
-              <p class="text-sm text-gray-200 leading-snug line-clamp-2 drop-shadow-sm">{{ props.recipe.description }}</p>
+              <p class="text-sm text-gray-200 leading-snug line-clamp-2 drop-shadow-sm">{{ decode(props.recipe.description) }}</p>
               
               <!-- Source link -->
               <div class="absolute top-4 right-4">
@@ -224,7 +243,7 @@ function formatFraction(value: number | string): string {
                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-medium">
                   {{ idx + 1 }}
                 </span>
-                <span class="leading-relaxed">{{ step }}</span>
+                <span class="leading-relaxed">{{ decode(step) }}</span>
               </li>
             </ol>
           </div>
@@ -236,9 +255,9 @@ function formatFraction(value: number | string): string {
               <template v-for="[k, v] in Object.entries(props.recipe.nutrition)" :key="k">
                 <div v-if="v" class="bg-background rounded p-3 shadow-sm">
                   <span class="block text-xs text-muted-foreground capitalize mb-1">
-                    {{ k.replace(/Content$/i, "") }}
+                    {{ decode(k.replace(/Content$/i, "")) }}
                   </span>
-                  <span class="text-lg font-medium">{{ v }}</span>
+                  <span class="text-lg font-medium">{{ decode(v) }}</span>
                 </div>
               </template>
             </div>

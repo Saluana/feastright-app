@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { MainNavigation } from '@/components/sections/navbar'
+import { useRoute } from 'vue-router'
 import {
   Hero,
   HeroContent,
@@ -14,7 +15,9 @@ import {ChefHat, Hamburger, Shrimp, Salad} from 'lucide-vue-next'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
 import { Recipe } from '@/composables/useRecipeImporter'
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
+import { addRecipe, addHistory, getRecipeByURL } from '@/composables/useDexie'
 
+const route = useRoute()
 const recipeUrl = ref('')
 const recipe = ref<Recipe | null>(null)
 const isRecipeModalOpen = ref(false)
@@ -25,9 +28,41 @@ const importRecipe = async () => {
   // Open the modal when a recipe is imported
   if (recipe.value) {
     isRecipeModalOpen.value = true
+    const recipeId = await addRecipe(recipe.value)
+    
+    if (recipeId) {
+      addHistory({ ...recipe.value, id: recipeId })
+    }
   }
 }
 
+const openRecipeFromUrl = async () => {
+  if (route.params.url) {
+    const url = decodeURIComponent(route.params.url as string)
+    console.log('Opening recipe from URL:', url)
+    
+    // First check if we have it locally
+    const localRecipe = await getRecipeByURL(url)
+    if (localRecipe.length > 0) {
+      recipe.value = localRecipe[0]
+      isRecipeModalOpen.value = true
+    } else {
+      // Otherwise fetch it
+      recipe.value = await getRecipeFromUrl(url)
+      if (recipe.value) {
+        isRecipeModalOpen.value = true
+        const recipeId = await addRecipe(recipe.value)
+        if (recipeId) {
+          addHistory({ ...recipe.value, id: recipeId })
+        }
+      }
+    }
+  }
+}
+
+onMounted(() => {
+  openRecipeFromUrl()
+})
 </script>
 
 <template>

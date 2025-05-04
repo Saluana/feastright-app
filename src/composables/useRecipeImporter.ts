@@ -45,5 +45,13 @@ export interface Ingredient {
     ingredients: Ingredient[];
     instructions: string[];
     ratings: { ratingValue: string; ratingCount: string };
+    meta: {
+      includesFullRecipe: boolean;
+      includesImage: boolean;
+      includesNutrition: boolean;
+      includesVideo: boolean;
+    }
+    favicon: string;
+    hostUrl: string;
   }
   
