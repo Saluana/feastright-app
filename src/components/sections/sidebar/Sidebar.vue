@@ -10,10 +10,14 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from '@/components/ui/sidebar'
-import { getHistory } from '@/composables/useDexie'
+import { getLiveHistory, getLiveFavourites, Favourite } from '@/composables/useDexie'
 import { ref, onMounted } from 'vue'
 import { type History } from '@/composables/useDexie'
+// Use liveQuery for reactive history updates
+const liveHistory = getLiveHistory()
+const liveFavourites = getLiveFavourites()
 const history = ref<History[]>([])
+const favourites = ref<Favourite[]>([])
 const recipe = ref<Recipe | null>(null)
 const isRecipeModalOpen = ref(false)
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
@@ -24,10 +28,28 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-onMounted(async () => {
-  history.value = await getHistory()
+// Subscribe to live history updates
+onMounted(() => {
+  // Initialize with current data
+  liveHistory.subscribe(
+    (result) => {
+      history.value = result.reverse()
+    },
+    (error) => {
+      console.error('Error in history subscription:', error)
+    }
+  )
 
-  console.log('route.params', route.params)
+  liveFavourites.subscribe(
+    (result) => {
+      favourites.value = result
+    },
+    (error) => {
+      console.error('Error in favourites subscription:', error)
+    }
+  )
+
+  // Check for URL parameter to open recipe
   if (route.params.url) {
     openRecipe(route.params.url as string)
   }
@@ -52,11 +74,21 @@ const openRecipe = async (url: string) => {
     <SidebarHeader />
     <SidebarContent>
       <SidebarGroup>
+        <SidebarGroupLabel>Favourites</SidebarGroupLabel>
+        <SidebarGroupContent class="list-none w-full">
+          <SidebarMenuItem v-for="item in favourites" :key="item.id" class="list-none w-full">
+            <SidebarMenuButton class="w-full">
+              <router-link class="w-full line-clamp-1" :to="`/recipe/${encodeURIComponent(item.url)}`" @click="openRecipe(item.url)">{{ item.title }}</router-link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarGroupContent>
+      </SidebarGroup>
+      <SidebarGroup>
         <SidebarGroupLabel>History</SidebarGroupLabel>
         <SidebarGroupContent class="list-none">
-          <SidebarMenuItem v-for="item in history" :key="item.id" class="list-none">
-            <SidebarMenuButton>
-              <router-link :to="`/recipe/${encodeURIComponent(item.url)}`" @click="openRecipe(item.url)">{{ item.title }}</router-link>
+          <SidebarMenuItem v-for="item in history" :key="item.id" class="list-none w-full my-0.5">
+            <SidebarMenuButton class="w-full">
+              <router-link class="w-full line-clamp-1" :to="`/recipe/${encodeURIComponent(item.url)}`" @click="openRecipe(item.url)">{{ item.title }}</router-link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarGroupContent>

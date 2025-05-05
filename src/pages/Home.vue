@@ -15,20 +15,22 @@ import {ChefHat, Hamburger, Shrimp, Salad} from 'lucide-vue-next'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
 import { Recipe } from '@/composables/useRecipeImporter'
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
-import { addRecipe, addHistory, getRecipeByURL } from '@/composables/useDexie'
+import { addRecipe, addHistory, getRecipeByURL, RecipeData } from '@/composables/useDexie'
 
 const route = useRoute()
 const recipeUrl = ref('')
-const recipe = ref<Recipe | null>(null)
+const recipe = ref<RecipeData | null>(null)
 const isRecipeModalOpen = ref(false)
 
 const importRecipe = async () => {
-  recipe.value = await getRecipeFromUrl(recipeUrl.value)
-  console.log(recipe.value)
+  const recipeData = await getRecipeFromUrl(recipeUrl.value)
+
+  console.log(recipeData)
   // Open the modal when a recipe is imported
-  if (recipe.value) {
+  if (recipeData) {
     isRecipeModalOpen.value = true
-    const recipeId = await addRecipe(recipe.value)
+    const recipeId = await addRecipe(recipeData)
+    recipe.value = { ...recipeData, id: recipeId }
     
     if (recipeId) {
       addHistory({ ...recipe.value, id: recipeId })
@@ -53,6 +55,7 @@ const openRecipeFromUrl = async () => {
         isRecipeModalOpen.value = true
         const recipeId = await addRecipe(recipe.value)
         if (recipeId) {
+          recipe.value.id = recipeId
           addHistory({ ...recipe.value, id: recipeId })
         }
       }

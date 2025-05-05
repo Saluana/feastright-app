@@ -9,7 +9,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Recipe } from "@/composables/useRecipeImporter";
-import { Clock, ExternalLink, Star, Utensils, Clock3 } from "lucide-vue-next";
+import { Clock, ExternalLink, Star, Utensils, Clock3, Heart } from "lucide-vue-next";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,8 @@ import {
 } from '@/components/ui/dialog';
 import { decode } from 'html-entities';
 import { useRouter, useRoute } from 'vue-router';
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, ref } from 'vue';
+import { addFavourite, db } from '@/composables/useDexie';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -30,6 +31,29 @@ const props = defineProps<RecipeCardProps>()
 const emit = defineEmits(['update:open'])
 const router = useRouter()
 const route = useRoute()
+const isFavorite = ref(false)
+
+// Check if recipe is already a favorite
+const checkIfFavorite = async () => {
+  if (props.recipe) {
+    // Look for a favorite with matching URL
+    const favorites = await db.favourites.where('url').equals(props.recipe.url).toArray()
+    isFavorite.value = favorites.length > 0
+  }
+}
+
+// Toggle favorite status
+const toggleFavorite = async () => {
+  if (props.recipe) {
+    await addFavourite(props.recipe)
+    isFavorite.value = true
+  }
+}
+
+// Check favorite status when component mounts
+onMounted(() => {
+  checkIfFavorite()
+})
 
 const updateOpen = (value: boolean) => {
   emit('update:open', value)
@@ -191,8 +215,16 @@ function formatFraction(value: number | string): string {
               <!-- Description -->
               <p class="text-sm text-gray-200 leading-snug line-clamp-2 drop-shadow-sm">{{ decode(props.recipe.description) }}</p>
               
-              <!-- Source link -->
-              <div class="absolute top-4 right-4">
+              <!-- Source link and favorite button -->
+              <div class="absolute top-4 right-4 flex gap-2">
+                <button 
+                  @click="toggleFavorite" 
+                  class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-md flex items-center gap-1.5 font-medium shadow-md transition-colors"
+                  :class="{ 'bg-red-600': isFavorite }"
+                >
+                  <Heart class="h-4 w-4" :class="{ 'fill-white': isFavorite }" />
+                  <span>{{ isFavorite ? 'Saved' : 'Favorite' }}</span>
+                </button>
                 <a 
                   :href="props.recipe.url" 
                   target="_blank" 

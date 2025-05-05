@@ -1,5 +1,5 @@
 // db.ts
-import Dexie, { type EntityTable } from 'dexie';
+import Dexie, { type EntityTable, liveQuery } from 'dexie';
 import { type Recipe } from './useRecipeImporter';
 
 interface History {
@@ -63,6 +63,11 @@ async function addHistory(recipe: RecipeData) {
         throw new Error('Recipe ID is required')
     }
 
+    const doesExist = await db.history.where('recipeId').equals(recipe.id).count()
+    if (doesExist > 0) {
+        return
+    }
+
     await db.history.add({
         recipeId: recipe.id,
         url: recipe.url,
@@ -74,6 +79,11 @@ async function addHistory(recipe: RecipeData) {
 async function addFavourite(recipe: RecipeData) {
     if (!recipe.id) {
         throw new Error('Recipe ID is required')
+    }
+
+    const doesExist = await db.favourites.where('recipeId').equals(recipe.id).count()
+    if (doesExist > 0) {
+        return
     }
 
     await db.favourites.add({
@@ -92,8 +102,17 @@ async function getHistory() {
     return db.history.toArray()
 }
 
+// Get live history updates
+function getLiveHistory() {
+    return liveQuery(() => db.history.toArray())
+}
+
 async function getFavourites() {
     return db.favourites.toArray()
+}
+
+function getLiveFavourites() {
+    return liveQuery(() => db.favourites.toArray())
 }
 
 async function getCollections() {
@@ -137,4 +156,4 @@ async function deleteCollectionById(id: number) {
 }
 
 export type { History, Favourite, RecipeData }
-export { db, addRecipe, addHistory, addFavourite, getHistory, getFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteCollectionById, addCollection, getCollections, batchGetRecipes };
+export { db, addRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteCollectionById, addCollection, getCollections, batchGetRecipes };
