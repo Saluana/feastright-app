@@ -18,11 +18,11 @@ import {
 } from '@/components/ui/dialog';
 import { decode } from 'html-entities';
 import { useRouter, useRoute } from 'vue-router';
-import { onMounted, watch, ref } from 'vue';
-import { addFavourite, db } from '@/composables/useDexie';
+import { onMounted, watch, ref, onUnmounted } from 'vue';
+import { addFavourite, deleteFavouriteByRecipeId, db, type RecipeData } from '@/composables/useDexie';
 
 interface RecipeCardProps {
-  recipe: Recipe;
+  recipe: RecipeData;
   className?: string;
   open?: boolean;
 }
@@ -45,8 +45,16 @@ const checkIfFavorite = async () => {
 // Toggle favorite status
 const toggleFavorite = async () => {
   if (props.recipe) {
-    await addFavourite(props.recipe)
-    isFavorite.value = true
+    if (isFavorite.value && props.recipe.id) {
+      console.log('Deleting favorite for recipe', props.recipe.id)
+      await deleteFavouriteByRecipeId(props.recipe.id)
+    } else {
+      console.log('Adding favorite for recipe', props.recipe.id)
+      await addFavourite(props.recipe)
+    }
+    
+    // Update the UI state
+    isFavorite.value = !isFavorite.value
   }
 }
 
@@ -71,6 +79,8 @@ watch(() => props.open, (newValue) => {
     if (!route.path.includes('/recipe/')) {
       router.push(`/recipe/${encodeURIComponent(props.recipe.url)}`)
     }
+    
+    checkIfFavorite()
   }
 })
 
@@ -78,7 +88,12 @@ watch(() => props.open, (newValue) => {
 onMounted(() => {
   if (props.open && props.recipe && !route.path.includes('/recipe/')) {
     router.push(`/recipe/${encodeURIComponent(props.recipe.url)}`)
+    checkIfFavorite()
   }
+})
+
+onUnmounted(() => {
+  isFavorite.value = false
 })
 
 // Utility to format decimals as beautiful fractions

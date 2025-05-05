@@ -148,7 +148,27 @@ async function deleteHistoryById(id: number) {
 }
 
 async function deleteFavouriteById(id: number) {
+    console.log('Deleting favorite by ID', id)
     return db.favourites.delete(id)
+}
+
+async function deleteFavouriteByRecipeId(recipeId: number) {
+    console.log('Deleting favorite by recipe ID', recipeId)
+    // Find the favorite with this recipeId
+    const favorites = await db.favourites.where('recipeId').equals(recipeId).toArray()
+    
+    if (favorites.length > 0) {
+        // Delete all matching favorites (should be just one)
+        for (const favorite of favorites) {
+            if (favorite.id) {
+                await db.favourites.delete(favorite.id)
+                console.log('Deleted favorite with ID', favorite.id)
+            }
+        }
+        return true
+    }
+    
+    return false
 }
 
 async function deleteCollectionById(id: number) {
@@ -156,4 +176,4 @@ async function deleteCollectionById(id: number) {
 }
 
 export type { History, Favourite, RecipeData }
-export { db, addRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteCollectionById, addCollection, getCollections, batchGetRecipes };
+export { db, addRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, batchGetRecipes };
