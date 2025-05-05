@@ -30,6 +30,14 @@ interface Collections {
     updatedAt: Date;
 }
 
+interface CollectionWithRecipes {
+    id?: number;
+    name: string;
+    recipes: {id: number, title: string, url: string}[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 const db = new Dexie('RecipeDatabase') as Dexie & {
   recipes: EntityTable<RecipeData, 'id'>
   history: EntityTable<History, 'id'>
@@ -98,6 +106,17 @@ async function addCollection(collection: Collections) {
     await db.collections.add(clone(collection))
 }
 
+async function updateCollection(collection: Collections) {
+    if (!collection.id) {
+        throw new Error('Collection ID is required')
+    }
+
+    const { id, ...changes } = collection
+    // Always update the updatedAt field
+    changes.updatedAt = new Date()
+    await db.collections.update(id, changes)
+}
+
 async function getHistory() {
     return db.history.toArray()
 }
@@ -117,6 +136,14 @@ function getLiveFavourites() {
 
 async function getCollections() {
     return db.collections.toArray()
+}
+
+async function getCollectionById(id: number) {
+    return db.collections.get(id)
+}
+
+function getLiveCollections() {
+    return liveQuery(() => db.collections.toArray())
 }
 
 async function getRecipes() {
@@ -175,5 +202,5 @@ async function deleteCollectionById(id: number) {
     return db.collections.delete(id)
 }
 
-export type { History, Favourite, RecipeData }
-export { db, addRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, batchGetRecipes };
+export type { History, Favourite, RecipeData, Collections, CollectionWithRecipes }
+export { db, addRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById };
