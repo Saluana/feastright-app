@@ -35,6 +35,8 @@ import {getRecipeByURL} from '@/composables/useDexie'
 import { useRoute } from 'vue-router'
 import NewCollection from '@/components/sections/dialogues/NewCollection.vue'
 import SelectCollection from '@/components/sections/dialogues/SelectCollection.vue'
+import SelectRecipe from '@/components/sections/dialogues/SelectRecipe.vue'
+const isRecipeSelectModalOpen = ref(false)
 const isCollectionModalOpen = ref(false)
 const selectCollectionOpen = ref(false)
 const currentRecipe = ref<History| null>(null)
@@ -202,7 +204,7 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
           
           <!-- Add recipe button that appears on hover -->
           <button 
-            @click.stop="selectCollectionOpen = true; currentRecipe = null" 
+            @click.stop="isRecipeSelectModalOpen = true" 
             class="absolute right-12 opacity-0 group-hover/trigger:opacity-70 hover:opacity-100 transition-opacity h-5 w-5 rounded-sm hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center justify-center"
             title="Add recipe to collection"
           >
@@ -276,6 +278,11 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
     v-model:open="selectCollectionOpen" 
     :recipe-id="currentRecipe.id" 
     @collection-selected="handleCollectionSelected"
+/>
+
+<SelectRecipe 
+    v-model:open="isRecipeSelectModalOpen" 
+    @recipe-selected="handleRecipeSelected"
 />
 </template>
 

@@ -1,0 +1,328 @@
+<script setup lang="ts">
+import Modal from '@/components/sections/modal/modal.vue'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { getHistory, getFavourites, addHistory, getRecipeByURL, addRecipe } from '@/composables/useDexie'
+import { type Recipe } from '@/composables/useRecipeImporter'
+import { MagnifyingGlassIcon, HeartIcon, ClockIcon, GlobeIcon, CheckIcon } from '@radix-icons/vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+// Helper function to extract hostname from URL
+function extractHostname(url: string): string {
+  try {
+    return new URL(url).hostname
+  } catch {
+    // Fallback for invalid URLs
+    return url.replace(/https?:\/\//, '').split('/')[0]
+  }
+}
+
+const props = defineProps<{
+  open?: boolean
+}>()
+
+const emit = defineEmits(['update:open', 'recipe-selected'])
+
+const router = useRouter()
+const activeTab = ref('favorites')
+const searchQuery = ref('')
+const urlInput = ref('')
+const favorites = ref<any[]>([])
+const history = ref<any[]>([])
+const isLoading = ref(true)
+const isFetchingUrl = ref(false)
+const urlError = ref('')
+const successMessage = ref('')
+
+// Fetch favorites and history when component mounts
+onMounted(async () => {
+  try {
+    favorites.value = await getFavourites()
+    history.value = await getHistory()
+    isLoading.value = false
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    isLoading.value = false
+  }
+})
+
+// Filter favorites based on search query
+const filteredFavorites = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return favorites.value
+  }
+  
+  const query = searchQuery.value.toLowerCase().trim()
+  return favorites.value.filter(item => 
+    item.title.toLowerCase().includes(query)
+  )
+})
+
+// Filter history based on search query
+const filteredHistory = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return history.value
+  }
+  
+  const query = searchQuery.value.toLowerCase().trim()
+  return history.value.filter(item => 
+    item.title.toLowerCase().includes(query)
+  )
+})
+
+// Handle recipe selection
+const selectRecipe = (recipeUrl: string) => {
+  router.push(`/recipe/${encodeURIComponent(recipeUrl)}`)
+  emit('recipe-selected', recipeUrl)
+  emit('update:open', false)
+}
+
+// Handle URL import
+const importFromUrl = async () => {
+  if (!urlInput.value) {
+    urlError.value = 'Please enter a URL'
+    return
+  }
+  
+  urlError.value = ''
+  isFetchingUrl.value = true
+  successMessage.value = ''
+  
+  try {
+    // First check if recipe already exists in database
+    const existingRecipe = await getRecipeByURL(urlInput.value)
+    
+    if (existingRecipe.length > 0) {
+      // Use existing recipe
+      successMessage.value = `Recipe "${existingRecipe[0].title}" found!`
+      
+      // Navigate to the recipe after a short delay
+      setTimeout(() => {
+        selectRecipe(existingRecipe[0].url)
+      }, 1000)
+    } else {
+      // Import from external URL using the Recipe API
+      // This would typically be implemented in your backend
+      // For example purposes, we'll simulate it
+      try {
+        // Make API call to fetch recipe
+        const response = await fetch('http://localhost:4200/scrape', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ url: urlInput.value })
+        })
+        
+        if (!response.ok) throw new Error('Failed to fetch recipe')
+        
+        const data = await response.json()
+        if (data.data) {
+          const recipe = data.data
+          // Add recipe to database
+          const recipeId = await addRecipe(recipe)
+          successMessage.value = `Recipe "${recipe.title}" found!`
+          
+          // Navigate to the recipe after a short delay
+          setTimeout(() => {
+            selectRecipe(recipe.url)
+          }, 1000)
+        } else {
+          throw new Error(data.error || 'Unknown error')
+        }
+      } catch (importError) {
+        console.error('Error importing from URL:', importError)
+        urlError.value = 'Could not find a recipe at this URL. Please try another.'
+      }
+    }
+    
+    isFetchingUrl.value = false
+  } catch (error) {
+    console.error('Error importing recipe:', error)
+    urlError.value = 'Could not find a recipe at this URL. Please try another.'
+    isFetchingUrl.value = false
+  }
+}
+
+// Reset form on tab change
+const handleTabChange = (tab: string | number) => {
+  activeTab.value = String(tab)
+  searchQuery.value = ''
+  urlInput.value = ''
+  urlError.value = ''
+  successMessage.value = ''
+}
+</script>
+
+<template>
+  <Modal
+    :open="open"
+    title="Find a Recipe"
+    description="Browse your favorites, history, or import from a URL."
+    @update:open="$emit('update:open', $event)"
+  >
+    <template #trigger-content>
+      <slot name="trigger">
+        <Button variant="outline" size="sm" class="gap-1">
+          <MagnifyingGlassIcon class="h-4 w-4" />
+          Find Recipe
+        </Button>
+      </slot>
+    </template>
+    
+    <Tabs :default-value="activeTab" class="w-full" @update:modelValue="handleTabChange">
+      <TabsList class="grid w-full grid-cols-3 mb-6">
+        <TabsTrigger value="favorites" class="flex items-center gap-1">
+          <HeartIcon class="h-3.5 w-3.5" />
+          <span>Favorites</span>
+        </TabsTrigger>
+        <TabsTrigger value="history" class="flex items-center gap-1">
+          <ClockIcon class="h-3.5 w-3.5" />
+          <span>History</span>
+        </TabsTrigger>
+        <TabsTrigger value="url" class="flex items-center space-x-2">
+          <GlobeIcon class="h-3.5 w-3.5" />
+          <span>URL Import</span>
+        </TabsTrigger>
+      </TabsList>
+      
+      <!-- Search Bar (for Favorites and History tabs) -->
+      <div v-if="activeTab !== 'url'" class="relative mb-4">
+        <MagnifyingGlassIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          v-model="searchQuery"
+          placeholder="Search..."
+          class="pl-9"
+          :disabled="isLoading"
+        />
+      </div>
+      
+      <!-- Favorites Tab -->
+      <TabsContent value="favorites" class="mt-0">
+        <div class="max-h-[300px] overflow-y-auto rounded-md border border-border p-1">
+          <div v-if="isLoading" class="flex items-center justify-center p-8">
+            <div class="animate-spin text-muted-foreground">↻</div>
+          </div>
+          
+          <div v-else-if="favorites.length === 0" class="p-8 text-center">
+            <div class="rounded-full bg-muted/40 h-12 w-12 flex items-center justify-center mx-auto mb-3">
+              <HeartIcon class="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h3 class="text-base font-medium mb-1">No favorites yet</h3>
+            <p class="text-sm text-muted-foreground">Heart a recipe to save it to your favorites.</p>
+          </div>
+          
+          <div v-else-if="filteredFavorites.length === 0" class="p-8 text-center">
+            <p class="text-muted-foreground">No favorites match your search.</p>
+          </div>
+          
+          <div v-else class="space-y-1 p-1">
+            <button
+              v-for="item in filteredFavorites"
+              :key="item.id"
+              @click="selectRecipe(item.url)"
+              class="w-full flex items-center px-3 py-2 rounded-md text-left transition-colors hover:bg-muted group"
+            >
+              <div class="flex-1 truncate">
+                <div class="font-medium truncate">{{ item.title }}</div>
+                <div class="text-xs text-muted-foreground truncate">{{ extractHostname(item.url) }}</div>
+              </div>
+              <div class="ml-2 text-muted-foreground group-hover:text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </button>
+          </div>
+        </div>
+      </TabsContent>
+      
+      <!-- History Tab -->
+      <TabsContent value="history" class="mt-0">
+        <div class="max-h-[300px] overflow-y-auto rounded-md border border-border p-1">
+          <div v-if="isLoading" class="flex items-center justify-center p-8">
+            <div class="animate-spin text-muted-foreground">↻</div>
+          </div>
+          
+          <div v-else-if="history.length === 0" class="p-8 text-center">
+            <div class="rounded-full bg-muted/40 h-12 w-12 flex items-center justify-center mx-auto mb-3">
+              <ClockIcon class="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h3 class="text-base font-medium mb-1">No history yet</h3>
+            <p class="text-sm text-muted-foreground">View recipes to see them in your history.</p>
+          </div>
+          
+          <div v-else-if="filteredHistory.length === 0" class="p-8 text-center">
+            <p class="text-muted-foreground">No history items match your search.</p>
+          </div>
+          
+          <div v-else class="space-y-1 p-1">
+            <button
+              v-for="item in filteredHistory"
+              :key="item.id"
+              @click="selectRecipe(item.url)"
+              class="w-full flex items-center px-3 py-2 rounded-md text-left transition-colors hover:bg-muted group"
+            >
+              <div class="flex-1 truncate">
+                <div class="font-medium truncate">{{ item.title }}</div>
+                <div class="text-xs text-muted-foreground truncate flex items-center gap-1">
+                  <ClockIcon class="h-3 w-3" />
+                  {{ new Date(item.createdAt).toLocaleDateString() }}
+                </div>
+                <div class="text-xs text-muted-foreground truncate">{{ extractHostname(item.url) }}</div>
+              </div>
+              <div class="ml-2 text-muted-foreground group-hover:text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </button>
+          </div>
+        </div>
+      </TabsContent>
+      
+      <!-- URL Import Tab -->
+      <TabsContent value="url" class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <div class="relative">
+              <GlobeIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                v-model="urlInput"
+                placeholder="https://www.example.com/recipe"
+                class="pl-9"
+                :disabled="isFetchingUrl"
+                :class="{ 'border-destructive': urlError }"
+              />
+            </div>
+            <p v-if="urlError" class="text-sm text-destructive">{{ urlError }}</p>
+          </div>
+          
+          <div v-if="successMessage" class="rounded-md bg-green-50 dark:bg-green-950 p-3 text-sm border border-green-200 dark:border-green-800">
+            <p class="flex items-center gap-2 text-green-700 dark:text-green-400">
+              <CheckIcon class="h-4 w-4" />
+              {{ successMessage }}
+            </p>
+          </div>
+          
+          <div class="bg-muted/40 rounded-md p-4 text-sm">
+            <p class="flex items-center gap-2 mb-2 font-medium">
+              <GlobeIcon class="h-4 w-4 text-muted-foreground" />
+              Import a recipe from any URL
+            </p>
+            <p class="text-muted-foreground">Paste a link to any recipe online and we'll try to import it. Works with most popular recipe websites.</p>
+          </div>
+          
+          <Button 
+            type="submit" 
+            @click="importFromUrl" 
+            :disabled="!urlInput || isFetchingUrl" 
+            class="w-full"
+            :class="{ 'opacity-70': isFetchingUrl }"
+          >
+            <span v-if="isFetchingUrl" class="mr-2 inline-block animate-spin">↻</span>
+            {{ isFetchingUrl ? 'Importing...' : 'Import Recipe' }}
+          </Button>
+        </div>
+      </TabsContent>
+    </Tabs>
+  </Modal>
+</template>
