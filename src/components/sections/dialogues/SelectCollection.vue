@@ -130,10 +130,7 @@ const handleCollectionCreated = async () => {
   >
     <template #trigger-content>
       <slot name="trigger">
-        <Button variant="outline" size="sm" class="gap-1">
-          <BookmarkIcon class="h-4 w-4" />
-          Add to Collection
-        </Button>
+
       </slot>
     </template>
     

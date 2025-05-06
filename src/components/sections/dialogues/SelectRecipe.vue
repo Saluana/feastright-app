@@ -8,6 +8,7 @@ import { type Recipe } from '@/composables/useRecipeImporter'
 import { MagnifyingGlassIcon, HeartIcon, ClockIcon, GlobeIcon, CheckIcon } from '@radix-icons/vue'
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { formatDistanceToNow } from 'date-fns'
 
 // Helper function to extract hostname from URL
 function extractHostname(url: string): string {
@@ -165,15 +166,12 @@ const handleTabChange = (tab: string | number) => {
   >
     <template #trigger-content>
       <slot name="trigger">
-        <Button variant="outline" size="sm" class="gap-1">
-          <MagnifyingGlassIcon class="h-4 w-4" />
-          Find Recipe
-        </Button>
+
       </slot>
     </template>
     
     <Tabs :default-value="activeTab" class="w-full" @update:modelValue="handleTabChange">
-      <TabsList class="grid w-full grid-cols-3 mb-6">
+      <TabsList class="grid w-full grid-cols-3 mb-6 rounded-xl bg-slate-100/50 dark:bg-slate-900/50 p-1">
         <TabsTrigger value="favorites" class="flex items-center gap-1">
           <HeartIcon class="h-3.5 w-3.5" />
           <span>Favorites</span>
@@ -201,7 +199,7 @@ const handleTabChange = (tab: string | number) => {
       
       <!-- Favorites Tab -->
       <TabsContent value="favorites" class="mt-0">
-        <div class="max-h-[300px] overflow-y-auto rounded-md border border-border p-1">
+        <div class="h-[300px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm p-1">
           <div v-if="isLoading" class="flex items-center justify-center p-8">
             <div class="animate-spin text-muted-foreground">↻</div>
           </div>
@@ -223,13 +221,22 @@ const handleTabChange = (tab: string | number) => {
               v-for="item in filteredFavorites"
               :key="item.id"
               @click="selectRecipe(item.url)"
-              class="w-full flex items-center px-3 py-2 rounded-md text-left transition-colors hover:bg-muted group"
+              class="w-full flex items-center px-4 py-3 rounded-lg text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-900/60 hover:shadow-sm group"
             >
               <div class="flex-1 truncate">
-                <div class="font-medium truncate">{{ item.title }}</div>
-                <div class="text-xs text-muted-foreground truncate">{{ extractHostname(item.url) }}</div>
+                <div class="font-medium text-[15px] truncate mb-0.5">{{ item.title }}</div>
+                <div class="text-xs flex items-center justify-between mt-0.5">
+                  <div class="truncate flex items-center gap-1 text-slate-500 dark:text-slate-400">
+                    <GlobeIcon class="h-3 w-3 flex-shrink-0" />
+                    {{ extractHostname(item.url) }}
+                  </div>
+                  <div class="truncate flex items-center gap-1 text-rose-500 dark:text-rose-400 font-medium">
+                    <HeartIcon class="h-3 w-3 flex-shrink-0" />
+                    Favorite
+                  </div>
+                </div>
               </div>
-              <div class="ml-2 text-muted-foreground group-hover:text-primary">
+              <div class="ml-2 text-slate-300 dark:text-slate-700 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all transform group-hover:translate-x-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m9 18 6-6-6-6"/></svg>
               </div>
             </button>
@@ -239,7 +246,7 @@ const handleTabChange = (tab: string | number) => {
       
       <!-- History Tab -->
       <TabsContent value="history" class="mt-0">
-        <div class="max-h-[300px] overflow-y-auto rounded-md border border-border p-1">
+        <div class="h-[300px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm p-1">
           <div v-if="isLoading" class="flex items-center justify-center p-8">
             <div class="animate-spin text-muted-foreground">↻</div>
           </div>
@@ -261,17 +268,22 @@ const handleTabChange = (tab: string | number) => {
               v-for="item in filteredHistory"
               :key="item.id"
               @click="selectRecipe(item.url)"
-              class="w-full flex items-center px-3 py-2 rounded-md text-left transition-colors hover:bg-muted group"
+              class="w-full flex items-center px-4 py-3 rounded-lg text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-900/60 hover:shadow-sm group"
             >
               <div class="flex-1 truncate">
-                <div class="font-medium truncate">{{ item.title }}</div>
-                <div class="text-xs text-muted-foreground truncate flex items-center gap-1">
-                  <ClockIcon class="h-3 w-3" />
-                  {{ new Date(item.createdAt).toLocaleDateString() }}
+                <div class="font-medium text-[15px] truncate mb-0.5">{{ item.title }}</div>
+                <div class="text-xs flex items-center justify-between mt-0.5">
+                  <div class="truncate flex items-center gap-1 text-slate-500 dark:text-slate-400">
+                    <GlobeIcon class="h-3 w-3 flex-shrink-0" />
+                    {{ extractHostname(item.url) }}
+                  </div>
+                  <div class="truncate flex items-center gap-1 text-blue-500 dark:text-blue-400 font-medium">
+                    <ClockIcon class="h-3 w-3 flex-shrink-0" />
+                    {{ formatDistanceToNow(new Date(item.createdAt), { addSuffix: true }) }}
+                  </div>
                 </div>
-                <div class="text-xs text-muted-foreground truncate">{{ extractHostname(item.url) }}</div>
               </div>
-              <div class="ml-2 text-muted-foreground group-hover:text-primary">
+              <div class="ml-2 text-slate-300 dark:text-slate-700 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all transform group-hover:translate-x-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m9 18 6-6-6-6"/></svg>
               </div>
             </button>
@@ -280,8 +292,8 @@ const handleTabChange = (tab: string | number) => {
       </TabsContent>
       
       <!-- URL Import Tab -->
-      <TabsContent value="url" class="space-y-4">
-        <div class="space-y-4">
+      <TabsContent value="url" class="mt-0">
+        <div class="h-[348px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm p-6 pt-10 space-y-5 flex flex-col justify-center">
           <div class="space-y-2">
             <div class="relative">
               <GlobeIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -303,14 +315,14 @@ const handleTabChange = (tab: string | number) => {
             </p>
           </div>
           
-          <div class="bg-muted/40 rounded-md p-4 text-sm">
-            <p class="flex items-center gap-2 mb-2 font-medium">
-              <GlobeIcon class="h-4 w-4 text-muted-foreground" />
-              Import a recipe from any URL
-            </p>
-            <p class="text-muted-foreground">Paste a link to any recipe online and we'll try to import it. Works with most popular recipe websites.</p>
+          <div class="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 text-sm border border-blue-100 dark:border-blue-900/50 shadow-sm">
+            <h4 class="font-medium mb-1 flex items-center gap-1.5 text-blue-700 dark:text-blue-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              Tip: Import from URL
+            </h4>
+            <p class="text-blue-600/70 dark:text-blue-300/70">Enter the URL of a recipe page to import it into your collection.</p>
           </div>
-          
+          <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">Paste a link to any recipe online and we'll try to import it. Works with most popular recipe websites.</p>
           <Button 
             type="submit" 
             @click="importFromUrl" 
