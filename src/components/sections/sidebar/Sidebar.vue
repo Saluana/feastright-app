@@ -185,10 +185,29 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
       <Collapsible v-for="collection in collections" :key="collection.id" defaultOpen class="group/collapsible mb-1 !w-full last:mb-0">
     <SidebarGroup class="!p-0 border-l-0 border-r-0 border-t-0 border-b border-border/30 pb-1 mb-1 last:border-b-0 last:mb-0 last:pb-0">
       <SidebarGroupLabel asChild>
-        <CollapsibleTrigger class="flex items-center w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm font-medium">
+        <CollapsibleTrigger class="flex items-center w-full group/trigger px-2 py-1.5 rounded-md hover:bg-muted text-sm font-medium relative">
           <Album class="h-3.5 w-3.5 mr-2 text-muted-foreground" />
-          {{ collection.name }}
-          <ChevronDown class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180 h-4 w-4 text-muted-foreground" />
+          <span class="truncate mr-8">{{ collection.name }}</span>
+          <ChevronDown class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180 h-4 w-4 text-muted-foreground absolute right-2" />
+          
+          <!-- Delete button that appears on hover -->
+          <button 
+            v-if="collection.id" 
+            @click.stop="deleteCollectionById(collection.id)" 
+            class="absolute right-7 opacity-0 group-hover/trigger:opacity-70 hover:opacity-100 transition-opacity h-5 w-5 rounded-sm hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 flex items-center justify-center"
+            title="Delete collection"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+          </button>
+          
+          <!-- Add recipe button that appears on hover -->
+          <button 
+            @click.stop="selectCollectionOpen = true; currentRecipe = null" 
+            class="absolute right-12 opacity-0 group-hover/trigger:opacity-70 hover:opacity-100 transition-opacity h-5 w-5 rounded-sm hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center justify-center"
+            title="Add recipe to collection"
+          >
+            <BookPlus class="h-3.5 w-3.5" />
+          </button>
         </CollapsibleTrigger>
       </SidebarGroupLabel>
       <CollapsibleContent>
