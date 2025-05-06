@@ -15,7 +15,7 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from '@/components/ui/dropdown-menu'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { MoreHorizontal, ChevronDown, BookHeart, BookPlus, Album } from 'lucide-vue-next'
-import { getLiveHistory, getLiveFavourites, Favourite, getLiveCollections, CollectionWithRecipes, batchGetRecipes, updateCollection, getCollectionById, RecipeData } from '@/composables/useDexie'
+import { getLiveHistory, getLiveFavourites, Favourite, getLiveCollections, CollectionWithRecipes, batchGetRecipes, updateCollection, getCollectionById, RecipeData, deleteFavouriteById, deleteCollectionById } from '@/composables/useDexie'
 import { ref, onMounted } from 'vue'
 import { Plus, Heart, History as HistoryIcon, Bookmark as BookmarkIcon } from 'lucide-vue-next'
 import { type History } from '@/composables/useDexie'
@@ -161,7 +161,7 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
         <BookPlus class="h-3.5 w-3.5 mr-2 text-muted-foreground" />
         <span>Add to Collection</span>
       </DropdownMenuItem>
-      <DropdownMenuItem class="cursor-pointer text-destructive focus:text-destructive">
+      <DropdownMenuItem v-if="item.id" @click="deleteFavouriteById(item?.id)" class="cursor-pointer text-destructive focus:text-destructive">
         <Heart class="h-3.5 w-3.5 mr-2" />
         <span>Remove Favourite</span>
       </DropdownMenuItem>
@@ -194,6 +194,9 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
       <CollapsibleContent>
         <div class="pt-0.5 -mx-2"> <!-- Reset padding and margin to align perfectly -->
           <SidebarGroupContent class="list-none space-y-1 pl-0">
+            <div v-if="collection.recipes.length === 0" class="px-4 py-2 text-center">
+              <div class="text-xs text-muted-foreground">No recipes in this collection</div>
+            </div>
             <SidebarMenuItem v-for="recipe in collection.recipes" :key="recipe.id" class="list-none w-full mb-1 last:mb-0">
               <SidebarMenuButton class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm">
                 <router-link class="w-full flex items-center gap-2 truncate" :to="`/recipe/${encodeURIComponent(recipe.url)}`" @click="openRecipe(recipe.url)">
