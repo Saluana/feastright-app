@@ -84,10 +84,7 @@ const handleSubmit = async () => {
   >
     <template #trigger-content>
       <slot name="trigger">
-        <Button variant="outline" size="sm" class="gap-1">
-          <PlusIcon class="h-4 w-4" />
-          New Collection
-        </Button>
+
       </slot>
     </template>
     
