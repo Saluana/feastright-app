@@ -40,10 +40,13 @@ const isRecipeSelectModalOpen = ref(false)
 const isCollectionModalOpen = ref(false)
 const selectCollectionOpen = ref(false)
 const currentRecipe = ref<History| null>(null)
+
 const handleCollectionSelected = (collectionId: number) => {
   selectCollectionOpen.value = false
 }
+
 function handleRecipeSelected(recipe: History) {
+  console.log(recipe)
   currentRecipe.value = recipe
 }
 
@@ -276,7 +279,7 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
     <SelectCollection 
     v-if="currentRecipe"
     v-model:open="selectCollectionOpen" 
-    :recipe-id="currentRecipe.id" 
+    :recipe-id="currentRecipe.recipeId" 
     @collection-selected="handleCollectionSelected"
 />
 

@@ -13,6 +13,13 @@ const props = defineProps<{
   recipeId?: number
 }>()
 
+watch(()=> props.recipeId, () => {
+  if (props.recipeId) {
+    selectedCollectionId.value = null
+    resetForm()
+  }
+})
+
 const emit = defineEmits(['update:open', 'collection-selected'])
 
 const collections = ref<any[]>([])
@@ -61,6 +68,9 @@ const resetForm = () => {
 
 // Handle the submission
 const handleSubmit = async () => {
+  console.log('selectedCollectionId', selectedCollectionId.value)
+  console.log('recipeId', props.recipeId)
+  
   if (!selectedCollectionId.value || !props.recipeId) {
     return
   }
