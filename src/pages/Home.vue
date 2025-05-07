@@ -11,7 +11,7 @@ import {
 } from '@/components/sections/hero'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {ChefHat, Hamburger, Shrimp, Salad} from 'lucide-vue-next'
+import {ChefHat, Hamburger, Shrimp, Salad, Link2, ClipboardPaste, Clipboard} from 'lucide-vue-next'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
 import { Recipe } from '@/composables/useRecipeImporter'
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
@@ -35,6 +35,17 @@ const importRecipe = async () => {
     if (recipeId) {
       addHistory({ ...recipe.value, id: recipeId })
     }
+  }
+}
+
+const handlePaste = async () => {
+  try {
+    const clipboardText = await navigator.clipboard.readText()
+    if (clipboardText && clipboardText.trim() !== '') {
+      recipeUrl.value = clipboardText.trim()
+    }
+  } catch (error) {
+    console.error('Failed to read clipboard contents:', error)
   }
 }
 
@@ -73,24 +84,40 @@ onMounted(() => {
     <MainNavigation />
     <router-view />
     <Hero sectionKey="build_your_next_landing_page_with_shadcn_vue" layout="centered" height="nav">
-      <HeroContent class="container mx-auto" padding="md">
+      <HeroContent class="container mx-auto px-4" padding="lg">
         <div class="flex flex-col w-full justify-center items-center">
-          <Salad class=" w-8 h-8 text-gray-600 dark:text-gray-200 !mb-2" />
-          <div class="flex items-center justify-center gap-2 mb-4">
-            <Hamburger class=" w-8 h-8 text-gray-600 dark:text-gray-200 !mb-0" />
-          <ChefHat class=" w-16 h-16 text-primary !mb-0" />
-          <Shrimp class=" w-8 h-8 text-gray-600 dark:text-gray-200 !mb-0" />
+          <Salad class="w-8 h-8 text-gray-600 dark:text-gray-200 mb-3" />
+          <div class="flex items-center justify-center gap-3 mb-5">
+            <Hamburger class="w-8 h-8 text-gray-600 dark:text-gray-200" />
+            <ChefHat class="w-16 h-16 text-primary" />
+            <Shrimp class="w-8 h-8 text-gray-600 dark:text-gray-200" />
           </div>
-          <HeroTitle size="2xl" class="flex items-center justify-center gap-2">Recipe Importer</HeroTitle>
+          <HeroTitle size="2xl" class="flex items-center justify-center gap-2 mb-3">Recipe Importer</HeroTitle>
         </div>
-        <HeroDescription>Import recipes from the web and save them to your database.</HeroDescription>
-        <Input v-model="recipeUrl" class="max-w-[42rem] h-[48px] text-lg" placeholder="Enter recipe URL" />
-        <HeroActions>
-          <a  @click.prevent="importRecipe">
-            <Button size="lg" class="text-white">Import recipe</Button>
+        <HeroDescription class="mb-6 text-lg max-w-2xl mx-auto">Import recipes from the web and save them to your database.</HeroDescription>
+        <div class="relative max-w-[42rem] mx-auto w-full mb-6">
+          <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <Link2 class="w-5 h-5" />
+          </div>
+          <Input 
+            v-model="recipeUrl" 
+            class="max-w-full h-[48px] text-lg pl-10 pr-10" 
+            placeholder="Enter recipe URL" 
+          />
+          <div 
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-primary transition-colors"
+            @click="handlePaste"
+            title="Paste from clipboard"
+          >
+            <Clipboard class="w-5 h-5" />
+          </div>
+        </div>
+        <HeroActions class="gap-4">
+          <a @click.prevent="importRecipe">
+            <Button size="lg" class="text-white font-medium">Import recipe</Button>
           </a>
           <a href="#">
-            <Button size="lg" variant="outline">I'm feeling lucky</Button>
+            <Button size="lg" variant="outline" class="font-medium">I'm feeling lucky</Button>
           </a>
         </HeroActions>
       </HeroContent>
