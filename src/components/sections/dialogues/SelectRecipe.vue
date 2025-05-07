@@ -170,19 +170,25 @@ const handleTabChange = (tab: string | number) => {
       </slot>
     </template>
     
-    <Tabs :default-value="activeTab" class="w-full" @update:modelValue="handleTabChange">
+    <Tabs :default-value="activeTab" class="w-full min-h-[412px]" @update:modelValue="handleTabChange">
       <TabsList class="grid w-full grid-cols-3 mb-6 rounded-xl bg-slate-100/50 dark:bg-slate-900/50 p-1">
-        <TabsTrigger value="favorites" class="flex items-center gap-1">
-          <HeartIcon class="h-3.5 w-3.5" />
-          <span>Favorites</span>
+        <TabsTrigger value="favorites" >
+          <div class="flex items-center gap-1">
+            <HeartIcon class="h-3.5 w-3.5" />
+            <span>Favorites</span>
+          </div>
         </TabsTrigger>
-        <TabsTrigger value="history" class="flex items-center gap-1">
-          <ClockIcon class="h-3.5 w-3.5" />
-          <span>History</span>
+        <TabsTrigger value="history" >
+          <div class="flex items-center gap-1">
+            <ClockIcon class="h-3.5 w-3.5" />
+            <span>History</span>
+          </div>
         </TabsTrigger>
-        <TabsTrigger value="url" class="flex items-center space-x-2">
-          <GlobeIcon class="h-3.5 w-3.5" />
-          <span>URL Import</span>
+        <TabsTrigger value="url" >
+          <div class="flex items-center space-x-2">
+            <GlobeIcon class="h-3.5 w-3.5" />
+            <span>URL Import</span>
+          </div>
         </TabsTrigger>
       </TabsList>
       

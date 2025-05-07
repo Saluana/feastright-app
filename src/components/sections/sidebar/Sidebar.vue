@@ -136,14 +136,14 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
 </script>
 
 <template>
-  <Sidebar variant="sidebar" class="border-r border-border bg-card/30 dark:bg-card/10">
+  <Sidebar variant="sidebar" class="border-r border-border bg-card/30 dark:bg-card/10 overflow-hidden scrollbar-gutter-stable">
     <SidebarHeader class="p-4 border-b border-border/50">
       <div class="flex items-center gap-2">
         <div class="h-8 w-8 rounded-md bg-emerald-600/90 flex items-center justify-center text-white font-bold">R</div>
         <div class="font-semibold text-lg">Recipe Scraper</div>
       </div>
     </SidebarHeader>
-    <SidebarContent class="px-2 py-1 space-y-6">
+    <SidebarContent class="px-2 py-1 space-y-6 overflow-y-auto scrollbar-gutter-stable">
       <SidebarGroup class="pb-3">
         <SidebarGroupLabel class="text-sm font-semibold text-foreground mb-2 px-1">Favourites</SidebarGroupLabel>
         <SidebarGroupContent class="list-none w-full space-y-1 pl-0">
@@ -292,5 +292,28 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
 <style scoped>
 :deep(li) {
   list-style-type: none;
+}
+
+/* Add this to ensure scrollbar space is reserved */
+.scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
+
+/* Optional: Add custom styling for scrollbars */
+.scrollbar-gutter-stable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-gutter-stable::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.scrollbar-gutter-stable::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.dark .scrollbar-gutter-stable::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 </style>
