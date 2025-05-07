@@ -187,12 +187,12 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
         <div class="text-sm text-muted-foreground">No collections yet</div>
         <div class="text-xs text-muted-foreground mt-1">Create a collection to organize recipes</div>
       </div>
-      <Collapsible v-for="collection in collections" :key="collection.id" defaultOpen class="group/collapsible mb-1 !w-full last:mb-0">
+      <Collapsible v-for="collection in collections" :key="collection.id" class="group/collapsible mb-1 !w-full last:mb-0">
     <SidebarGroup class="!p-0 border-l-0 border-r-0 border-t-0 border-b border-border/30 pb-1 mb-1 last:border-b-0 last:mb-0 last:pb-0">
       <SidebarGroupLabel asChild>
         <CollapsibleTrigger class="flex items-center w-full group/trigger px-2 py-1.5 rounded-md hover:bg-muted text-sm font-medium relative">
           <Album class="h-3.5 w-3.5 mr-2 text-muted-foreground" />
-          <span class="truncate mr-8">{{ collection.name }}</span>
+          <span class="truncate text-sm mr-8">{{ collection.name }}</span>
           <ChevronDown class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180 h-4 w-4 text-muted-foreground absolute right-2" />
           
           <!-- Delete button that appears on hover -->
