@@ -16,11 +16,13 @@ import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
 import { Recipe } from '@/composables/useRecipeImporter'
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
 import { addRecipe, addHistory, getRecipeByURL, RecipeData } from '@/composables/useDexie'
+import AddRecipe from '@/components/sections/dialogues/AddRecipe.vue'
 
 const route = useRoute()
 const recipeUrl = ref('')
 const recipe = ref<RecipeData | null>(null)
 const isRecipeModalOpen = ref(false)
+const isAddRecipeModalOpen = ref(false)
 
 const importRecipe = async () => {
   const recipeData = await getRecipeFromUrl(recipeUrl.value)
@@ -117,7 +119,7 @@ onMounted(() => {
             <Button size="lg" class="text-white font-medium">Import recipe</Button>
           </a>
           <a href="#">
-            <Button size="lg" variant="outline" class="font-medium">I'm feeling lucky</Button>
+            <Button @click="isAddRecipeModalOpen = true" size="lg" variant="outline" class="font-medium">Manual Entry</Button>
           </a>
         </HeroActions>
       </HeroContent>
@@ -127,6 +129,11 @@ onMounted(() => {
       :recipe="recipe" 
       :open="isRecipeModalOpen" 
       @update:open="isRecipeModalOpen = $event" 
+    />
+    <AddRecipe 
+      v-if="isAddRecipeModalOpen" 
+      :open="isAddRecipeModalOpen" 
+      @update:open="isAddRecipeModalOpen = $event" 
     />
   </main>
 </template>
