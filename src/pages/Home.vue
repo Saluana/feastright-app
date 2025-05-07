@@ -84,24 +84,24 @@ onMounted(() => {
     <MainNavigation />
     <router-view />
     <Hero sectionKey="build_your_next_landing_page_with_shadcn_vue" layout="centered" height="nav">
-      <HeroContent class="container mx-auto px-4" padding="lg">
+      <HeroContent class="container mx-auto px-4" padding="sm">
         <div class="flex flex-col w-full justify-center items-center">
-          <Salad class="w-8 h-8 text-gray-600 dark:text-gray-200 mb-3" />
-          <div class="flex items-center justify-center gap-3 mb-5">
+          <Salad class="w-8 h-8 text-gray-600 dark:text-gray-200 mb-1" />
+          <div class="flex items-center justify-center gap-3 mb-2">
             <Hamburger class="w-8 h-8 text-gray-600 dark:text-gray-200" />
             <ChefHat class="w-16 h-16 text-primary" />
             <Shrimp class="w-8 h-8 text-gray-600 dark:text-gray-200" />
           </div>
-          <HeroTitle size="2xl" class="flex items-center justify-center gap-2 mb-3">Recipe Importer</HeroTitle>
+          <HeroTitle size="2xl" class="flex items-center justify-center gap-2 mb-1">Recipe Importer</HeroTitle>
         </div>
-        <HeroDescription class="mb-6 text-lg max-w-2xl mx-auto">Import recipes from the web and save them to your database.</HeroDescription>
-        <div class="relative max-w-[42rem] mx-auto w-full mb-6">
+        <HeroDescription class="mb-3 text-lg max-w-2xl mx-auto">Import recipes from the web and save them to your database.</HeroDescription>
+        <div class="relative max-w-[42rem] mx-auto w-full mb-3">
           <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
             <Link2 class="w-5 h-5" />
           </div>
           <Input 
             v-model="recipeUrl" 
-            class="max-w-full h-[48px] text-lg pl-10 pr-10" 
+            class="max-w-full h-[46px] text-lg pl-10 pr-10" 
             placeholder="Enter recipe URL" 
           />
           <div 
@@ -112,7 +112,7 @@ onMounted(() => {
             <Clipboard class="w-5 h-5" />
           </div>
         </div>
-        <HeroActions class="gap-4">
+        <HeroActions class="gap-3 mt-1">
           <a @click.prevent="importRecipe">
             <Button size="lg" class="text-white font-medium">Import recipe</Button>
           </a>
