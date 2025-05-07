@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/sidebar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from '@/components/ui/dropdown-menu'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { MoreHorizontal, ChevronDown, BookHeart, BookPlus, Album } from 'lucide-vue-next'
-import { getLiveHistory, getLiveFavourites, Favourite, getLiveCollections, CollectionWithRecipes, batchGetRecipes, updateCollection, getCollectionById, RecipeData, deleteFavouriteById, deleteCollectionById } from '@/composables/useDexie'
+import { MoreHorizontal, ChevronDown, BookMarked, BookPlus, Album, Search } from 'lucide-vue-next'
+import { getLiveHistory, getLiveFavourites, Favourite, getLiveCollections, CollectionWithRecipes, batchGetRecipes, updateCollection, getCollectionById, RecipeData, deleteFavouriteById, deleteCollectionById, } from '@/composables/useDexie'
 import { ref, onMounted } from 'vue'
 import { Plus, Heart, History as HistoryIcon, Bookmark as BookmarkIcon } from 'lucide-vue-next'
 import { type History } from '@/composables/useDexie'
@@ -39,6 +39,7 @@ import SelectRecipe from '@/components/sections/dialogues/SelectRecipe.vue'
 const isRecipeSelectModalOpen = ref(false)
 const isCollectionModalOpen = ref(false)
 const selectCollectionOpen = ref(false)
+const currentCollectionId = ref<number | null>(null)
 const currentRecipe = ref<History| null>(null)
 
 const handleCollectionSelected = (collectionId: number) => {
@@ -48,6 +49,26 @@ const handleCollectionSelected = (collectionId: number) => {
 function handleRecipeSelected(recipe: History) {
   console.log(recipe)
   currentRecipe.value = recipe
+}
+
+async function handleSelectRecipeUpdate(url: string) {
+  const localRecipe = await getRecipeByURL(url)
+  console.log('[handleSelectRecipeUpdate] localRecipe', localRecipe)
+
+  if (localRecipe.length > 0) {
+    console.log('[handleSelectRecipeUpdate] localRecipe', localRecipe)
+    const recipe = localRecipe[0]
+    console.log('[handleSelectRecipeUpdate] recipe', recipe)
+    console.log('[handleSelectRecipeUpdate] before', recipe.id, currentCollectionId.value)
+    if (!recipe.id || !currentCollectionId.value) return
+    console.log('[handleSelectRecipeUpdate] adding recipe to collection', recipe.id, currentCollectionId.value)
+    await addRecipeToCollection(recipe.id, currentCollectionId.value)
+    console.log('[handleSelectRecipeUpdate] added recipe to collection', recipe.id, currentCollectionId.value)
+    // Only reset currentCollectionId after successfully adding to collection
+    setTimeout(() => {
+      currentCollectionId.value = null
+    }, 500) // Small delay to ensure operation completes
+  }
 }
 
 
@@ -138,9 +159,26 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
 <template>
   <Sidebar variant="sidebar" class="border-r border-border bg-card/30 dark:bg-card/10 overflow-hidden scrollbar-gutter-stable">
     <SidebarHeader class="p-4 border-b border-border/50">
-      <div class="flex items-center gap-2">
-        <div class="h-8 w-8 rounded-md bg-emerald-600/90 flex items-center justify-center text-white font-bold">R</div>
-        <div class="font-semibold text-lg">Recipe Scraper</div>
+      <div class="flex items-center space-x-3">
+        <div class="h-10 w-10 rounded-md bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-500/20 shadow-lg flex-shrink-0 flex items-center justify-center text-white font-bold ring-1 ring-white/10 text-lg">R</div>
+        <div class="relative w-full group">
+          <input
+            type="search"
+            class="w-full h-10 pl-10 pr-4 rounded-lg border border-border/60 bg-gradient-to-b from-white/5 to-white/10 dark:from-black/5 dark:to-black/10 backdrop-blur-sm text-sm font-medium placeholder:text-muted-foreground/80 shadow-sm transition-all duration-200 focus:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 hover:border-border"
+            placeholder="Search recipes..."
+            autocomplete="off"
+          />
+          
+          <!-- Search icon visually inside the input -->
+          <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none transition-all duration-200 group-focus-within:text-emerald-500">
+            <Search class="h-4 w-4 text-muted-foreground transition-colors duration-200" />
+          </div>
+          
+          <div class="absolute inset-0 bg-emerald-500/5 rounded-lg opacity-0 transition-opacity duration-200 pointer-events-none group-focus-within:opacity-100"></div>
+          
+          <!-- Subtle badge indicator in the corner when focused -->
+          <div class="absolute top-0 right-0 h-2 w-2 rounded-full bg-emerald-500 opacity-0 scale-0 transition-all duration-200 transform -translate-y-1/2 translate-x-1/2 group-focus-within:opacity-100 group-focus-within:scale-100"></div>
+        </div>
       </div>
     </SidebarHeader>
     <SidebarContent class="px-2 py-1 space-y-6 overflow-y-auto scrollbar-gutter-stable">
@@ -191,7 +229,7 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
     <SidebarGroup class="!p-0 border-l-0 border-r-0 border-t-0 border-b border-border/30 pb-1 mb-1 last:border-b-0 last:mb-0 last:pb-0">
       <SidebarGroupLabel asChild>
         <CollapsibleTrigger class="flex items-center w-full group/trigger px-2 py-1.5 rounded-md hover:bg-muted text-sm font-medium relative">
-          <Album class="h-3.5 w-3.5 mr-2 text-muted-foreground" />
+          <BookMarked class="h-3.5 w-3.5 mr-2 text-muted-foreground" />
           <span class="truncate text-sm mr-8">{{ collection.name }}</span>
           <ChevronDown class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180 h-4 w-4 text-muted-foreground absolute right-2" />
           
@@ -207,7 +245,8 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
           
           <!-- Add recipe button that appears on hover -->
           <button 
-            @click.stop="isRecipeSelectModalOpen = true" 
+            v-if="collection.id"
+            @click.stop="currentCollectionId = collection.id; isRecipeSelectModalOpen = true" 
             class="absolute right-12 opacity-0 group-hover/trigger:opacity-70 hover:opacity-100 transition-opacity h-5 w-5 rounded-sm hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center justify-center"
             title="Add recipe to collection"
           >
@@ -285,7 +324,7 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
 
 <SelectRecipe 
     v-model:open="isRecipeSelectModalOpen" 
-    @recipe-selected="handleRecipeSelected"
+    @recipe-selected="handleSelectRecipeUpdate"
 />
 </template>
 

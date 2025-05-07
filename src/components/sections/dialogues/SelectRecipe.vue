@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getHistory, getFavourites, addHistory, getRecipeByURL, addRecipe } from '@/composables/useDexie'
 import { type Recipe } from '@/composables/useRecipeImporter'
 import { MagnifyingGlassIcon, HeartIcon, ClockIcon, GlobeIcon, CheckIcon } from '@radix-icons/vue'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -24,7 +24,13 @@ const props = defineProps<{
   open?: boolean
 }>()
 
-const emit = defineEmits(['update:open', 'recipe-selected'])
+const emit = defineEmits(['update:open', 'recipe-selected', 'onClose'])
+
+watch(() => props.open, (newVal) => {
+  if (!newVal) {
+    emit('onClose')
+  }
+})
 
 const router = useRouter()
 const activeTab = ref('favorites')
@@ -75,7 +81,6 @@ const filteredHistory = computed(() => {
 
 // Handle recipe selection
 const selectRecipe = (recipeUrl: string) => {
-  router.push(`/recipe/${encodeURIComponent(recipeUrl)}`)
   emit('recipe-selected', recipeUrl)
   emit('update:open', false)
 }
