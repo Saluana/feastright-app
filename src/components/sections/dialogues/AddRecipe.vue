@@ -1,223 +1,267 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { PlusCircle, FileText, Image, X, UploadCloud, Loader2 } from 'lucide-vue-next'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
-import { useToast } from '@/components/ui/toast'
+import { ref } from 'vue';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+    PlusCircle,
+    FileText,
+    Image,
+    X,
+    UploadCloud,
+    Loader2,
+} from 'lucide-vue-next';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
+import { useToast } from '@/components/ui/toast';
+import { getRecipesFromText } from '@/composables/useManualRecipeEntry';
 
-const { toast } = useToast()
-const activeTab = ref('text')
-const recipeText = ref('')
-const recipeName = ref('')
-const recipeImage = ref<File | null>(null)
-const previewImage = ref<string | null>(null)
-const isSubmitting = ref(false)
-const fileInputRef = ref<HTMLInputElement | null>(null)
+const { toast } = useToast();
+const activeTab = ref('text');
+const recipeText = ref('');
+const recipeName = ref('');
+const recipeImage = ref<File | null>(null);
+const previewImage = ref<string | null>(null);
+const isSubmitting = ref(false);
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 // Handle image upload
 const handleImageUpload = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  if (input.files && input.files[0]) {
-    recipeImage.value = input.files[0]
-    previewImage.value = URL.createObjectURL(input.files[0])
-  }
-}
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        recipeImage.value = input.files[0];
+        previewImage.value = URL.createObjectURL(input.files[0]);
+    }
+};
 
 // Clear the image
 const clearImage = () => {
-  recipeImage.value = null
-  previewImage.value = null
-  if (fileInputRef.value) fileInputRef.value.value = ''
-}
+    recipeImage.value = null;
+    previewImage.value = null;
+    if (fileInputRef.value) fileInputRef.value.value = '';
+};
 
 // Submit the recipe
 const submitRecipe = async () => {
-  try {
-    isSubmitting.value = true
-    
-    if (activeTab.value === 'text' && !recipeText.value.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please enter your recipe text',
-        variant: 'destructive'
-      })
-      return
-    }
-    
-    if (activeTab.value === 'image' && !recipeImage.value) {
-      toast({
-        title: 'Error',
-        description: 'Please upload a recipe image',
-        variant: 'destructive'
-      })
-      return
-    }
+    try {
+        isSubmitting.value = true;
 
-    // TODO: Add actual submission logic here
-    // For text: use recipeText.value
-    // For image: use recipeImage.value
-    
-    await new Promise(resolve => setTimeout(resolve, 1500)) // Simulate API call
-    
-    toast({
-      title: 'Success!',
-      description: 'Your recipe has been submitted',
-    })
-    
-    // Reset form
-    recipeText.value = ''
-    recipeName.value = ''
-    recipeImage.value = null
-    previewImage.value = null
-    
-  } catch (error) {
-    toast({
-      title: 'Error',
-      description: 'Failed to submit recipe',
-      variant: 'destructive'
-    })
-    console.error(error)
-  } finally {
-    isSubmitting.value = false
-  }
-}
+        if (activeTab.value === 'text' && !recipeText.value.trim()) {
+            toast({
+                title: 'Error',
+                description: 'Please enter your recipe text',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        if (activeTab.value === 'image' && !recipeImage.value) {
+            toast({
+                title: 'Error',
+                description: 'Please upload a recipe image',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        // TODO: Add actual submission logic here
+        // For text: use recipeText.value
+        // For image: use recipeImage.value
+
+        await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
+
+        toast({
+            title: 'Success!',
+            description: 'Your recipe has been submitted',
+        });
+
+        // Reset form
+        recipeText.value = '';
+        recipeName.value = '';
+        recipeImage.value = null;
+        previewImage.value = null;
+    } catch (error) {
+        toast({
+            title: 'Error',
+            description: 'Failed to submit recipe',
+            variant: 'destructive',
+        });
+        console.error(error);
+    } finally {
+        isSubmitting.value = false;
+    }
+};
 </script>
 
 <template>
-  <Dialog>
-    <DialogTrigger as-child>
-      <Button class="bg-emerald-600 hover:bg-emerald-700 text-white">
-        <PlusCircle class="mr-2 h-5 w-5" />
-        Add Recipe
-      </Button>
-    </DialogTrigger>
-    
-    <DialogContent class="sm:max-w-[600px]">
-      <DialogHeader>
-        <DialogTitle class="text-2xl font-bold">Add New Recipe</DialogTitle>
-        <DialogDescription>
-          Import a recipe by text or upload an image
-        </DialogDescription>
-      </DialogHeader>
-      
-      <div class="py-4">
-        <Tabs v-model="activeTab" class="w-full">
-          <TabsList class="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="text" class="flex items-center gap-2">
-                <div class="flex items-center gap-2">
-              <FileText class="h-5 w-5" />
-              Text Input
+    <Dialog>
+        <DialogTrigger as-child>
+            <Button class="bg-emerald-600 hover:bg-emerald-700 text-white">
+                <PlusCircle class="mr-2 h-5 w-5" />
+                Add Recipe
+            </Button>
+        </DialogTrigger>
+
+        <DialogContent class="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle class="text-2xl font-bold"
+                    >Add New Recipe</DialogTitle
+                >
+                <DialogDescription>
+                    Import a recipe by text or upload an image
+                </DialogDescription>
+            </DialogHeader>
+
+            <div class="py-4">
+                <Tabs v-model="activeTab" class="w-full">
+                    <TabsList class="grid w-full grid-cols-2 mb-6">
+                        <TabsTrigger
+                            value="text"
+                            class="flex items-center gap-2"
+                        >
+                            <div class="flex items-center gap-2">
+                                <FileText class="h-5 w-5" />
+                                Text Input
+                            </div>
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="image"
+                            class="flex items-center gap-2"
+                        >
+                            <div class="flex items-center gap-2">
+                                <Image class="h-5 w-5" />
+                                Image Upload
+                            </div>
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <!-- Text Input Tab -->
+                    <TabsContent value="text" class="space-y-4 min-h-[348px]">
+                        <div class="space-y-2">
+                            <Label for="recipe-name"
+                                >Recipe Name (Optional)</Label
+                            >
+                            <Input
+                                id="recipe-name"
+                                v-model="recipeName"
+                                placeholder="E.g., Grandma's Apple Pie"
+                            />
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label for="recipe-text">Recipe Details</Label>
+                            <Textarea
+                                id="recipe-text"
+                                v-model="recipeText"
+                                placeholder="Paste your recipe text here including ingredients and instructions..."
+                                class="min-h-[200px] resize-y"
+                            />
+                            <p class="text-xs text-muted-foreground">
+                                Tip: Include sections for ingredients and
+                                instructions for better parsing
+                            </p>
+                        </div>
+                    </TabsContent>
+
+                    <!-- Image Upload Tab -->
+                    <TabsContent value="image" class="space-y-4">
+                        <div class="space-y-2">
+                            <Label for="recipe-name-img"
+                                >Recipe Name (Optional)</Label
+                            >
+                            <Input
+                                id="recipe-name-img"
+                                v-model="recipeName"
+                                placeholder="E.g., Grandma's Apple Pie"
+                            />
+                        </div>
+
+                        <Card class="border-dashed border-2">
+                            <CardContent class="pt-6 pb-6">
+                                <div
+                                    v-if="!previewImage"
+                                    class="flex flex-col items-center justify-center space-y-4"
+                                >
+                                    <div class="rounded-full bg-muted p-4">
+                                        <Image class="h-8 w-8" />
+                                    </div>
+                                    <div
+                                        class="flex flex-col items-center text-center"
+                                    >
+                                        <p class="font-medium">
+                                            Upload Recipe Image
+                                        </p>
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
+                                            Drag and drop or click to browse
+                                        </p>
+                                    </div>
+                                    <Input
+                                        ref="fileInputRef"
+                                        type="file"
+                                        accept="image/*"
+                                        class="hidden"
+                                        @change="handleImageUpload"
+                                    />
+                                    <Button
+                                        variant="outline"
+                                        @click="() => fileInputRef?.click()"
+                                    >
+                                        Select Image
+                                    </Button>
+                                </div>
+
+                                <div
+                                    v-else
+                                    class="flex flex-col items-center space-y-4"
+                                >
+                                    <img
+                                        :src="previewImage"
+                                        alt="Recipe preview"
+                                        class="max-h-[200px] rounded-md object-contain"
+                                    />
+                                    <Button
+                                        variant="outline"
+                                        @click="clearImage"
+                                    >
+                                        <X class="mr-2 h-4 w-4" />
+                                        Remove Image
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <p class="text-sm text-muted-foreground">
+                            We'll extract the recipe details from your image
+                            using OCR technology
+                        </p>
+                    </TabsContent>
+                </Tabs>
             </div>
-            </TabsTrigger>
-            <TabsTrigger value="image" class="flex items-center gap-2">
-                <div class="flex items-center gap-2">
-              <Image class="h-5 w-5" />
-              Image Upload
-            </div>
-            </TabsTrigger>
-          </TabsList>
-          
-          <!-- Text Input Tab -->
-          <TabsContent value="text" class="space-y-4 min-h-[348px]">
-            <div class="space-y-2">
-              <Label for="recipe-name">Recipe Name (Optional)</Label>
-              <Input id="recipe-name" v-model="recipeName" placeholder="E.g., Grandma's Apple Pie" />
-            </div>
-            
-            <div class="space-y-2">
-              <Label for="recipe-text">Recipe Details</Label>
-              <Textarea
-                id="recipe-text"
-                v-model="recipeText"
-                placeholder="Paste your recipe text here including ingredients and instructions..."
-                class="min-h-[200px] resize-y"
-              />
-              <p class="text-xs text-muted-foreground">
-                Tip: Include sections for ingredients and instructions for better parsing
-              </p>
-            </div>
-          </TabsContent>
-          
-          <!-- Image Upload Tab -->
-          <TabsContent value="image" class="space-y-4">
-            <div class="space-y-2">
-              <Label for="recipe-name-img">Recipe Name (Optional)</Label>
-              <Input id="recipe-name-img" v-model="recipeName" placeholder="E.g., Grandma's Apple Pie" />
-            </div>
-            
-            <Card class="border-dashed border-2">
-              <CardContent class="pt-6 pb-6">
-                <div v-if="!previewImage" class="flex flex-col items-center justify-center space-y-4">
-                  <div class="rounded-full bg-muted p-4">
-                    <Image class="h-8 w-8" />
-                  </div>
-                  <div class="flex flex-col items-center text-center">
-                    <p class="font-medium">Upload Recipe Image</p>
-                    <p class="text-sm text-muted-foreground">Drag and drop or click to browse</p>
-                  </div>
-                  <Input
-                    ref="fileInputRef"
-                    type="file"
-                    accept="image/*"
-                    class="hidden"
-                    @change="handleImageUpload"
-                  />
-                  <Button
-                    variant="outline"
-                    @click="() => fileInputRef?.click()"
-                  >
-                    Select Image
-                  </Button>
-                </div>
-                
-                <div v-else class="flex flex-col items-center space-y-4">
-                  <img 
-                    :src="previewImage" 
-                    alt="Recipe preview" 
-                    class="max-h-[200px] rounded-md object-contain"
-                  />
-                  <Button variant="outline" @click="clearImage">
-                    <X class="mr-2 h-4 w-4" />
-                    Remove Image
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <p class="text-sm text-muted-foreground">
-              We'll extract the recipe details from your image using OCR technology
-            </p>
-          </TabsContent>
-        </Tabs>
-      </div>
-      
-      <DialogFooter>
-        <Button variant="outline" class="mr-2">
-          Cancel
-        </Button>
-        <Button 
-          @click="submitRecipe" 
-          :disabled="isSubmitting"
-          class="bg-emerald-600 hover:bg-emerald-700 text-white"
-        >
-          <UploadCloud class="mr-2 h-5 w-5" v-if="!isSubmitting" />
-          <Loader2 class="animate-spin mr-2 h-5 w-5" v-else />
-          {{ isSubmitting ? 'Submitting...' : 'Submit Recipe' }}
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+
+            <DialogFooter>
+                <Button variant="outline" class="mr-2"> Cancel </Button>
+                <Button
+                    @click="submitRecipe"
+                    :disabled="isSubmitting"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                    <UploadCloud class="mr-2 h-5 w-5" v-if="!isSubmitting" />
+                    <Loader2 class="animate-spin mr-2 h-5 w-5" v-else />
+                    {{ isSubmitting ? 'Submitting...' : 'Submit Recipe' }}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 </template>
