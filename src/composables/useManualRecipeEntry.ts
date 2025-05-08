@@ -1,12 +1,12 @@
 import { Recipe } from "@/types/Recipe"
 
-export async function getRecipeFromUrl(url: string): Promise<Recipe> {
-  const response = await fetch('http://localhost:4200/scrape', {
+export async function getRecipeFromText(recipeText: string): Promise<Recipe> {
+  const response = await fetch('http://localhost:4200/text-to-recipe', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ url })
+    body: JSON.stringify({ recipeText })
   })
 
   if (!response.ok) {
