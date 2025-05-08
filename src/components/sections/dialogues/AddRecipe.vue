@@ -24,7 +24,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/components/ui/toast';
-import { getRecipesFromText } from '@/composables/useManualRecipeEntry';
+import { getRecipeFromText } from '@/composables/useManualRecipeEntry';
+import { type Recipe } from '@/types/Recipe';
+import PreviewRecipe from './PreviewRecipe.vue';
 
 const { toast } = useToast();
 const activeTab = ref('text');
@@ -34,6 +36,17 @@ const recipeImage = ref<File | null>(null);
 const previewImage = ref<string | null>(null);
 const isSubmitting = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
+const isPreviewOpen = ref(false);
+const processedRecipe = ref<Recipe | null>(null);
+
+// Props and emits for dialog control
+const props = defineProps<{
+  open: boolean;
+}>();
+
+const emit = defineEmits<{
+  'update:open': [value: boolean];
+}>();
 
 // Handle image upload
 const handleImageUpload = (event: Event) => {
@@ -74,26 +87,29 @@ const submitRecipe = async () => {
             return;
         }
 
-        // TODO: Add actual submission logic here
-        // For text: use recipeText.value
-        // For image: use recipeImage.value
-
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
-
-        toast({
-            title: 'Success!',
-            description: 'Your recipe has been submitted',
-        });
-
-        // Reset form
-        recipeText.value = '';
-        recipeName.value = '';
-        recipeImage.value = null;
-        previewImage.value = null;
+        // Process recipe based on input method
+        if (activeTab.value === 'text') {
+            // Add recipe name if provided
+            const finalText = recipeName.value 
+                ? `${recipeName.value}\n\n${recipeText.value}` 
+                : recipeText.value;
+                
+            const recipe = await getRecipeFromText(finalText);
+            processedRecipe.value = recipe;
+            isPreviewOpen.value = true; // Open preview dialog
+        } else if (activeTab.value === 'image' && recipeImage.value) {
+            // TODO: Implement image OCR processing
+            toast({
+                title: 'Coming Soon',
+                description: 'Image processing is not yet implemented',
+            });
+            // Simulate API call for now
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+        }
     } catch (error) {
         toast({
             title: 'Error',
-            description: 'Failed to submit recipe',
+            description: 'Failed to process recipe',
             variant: 'destructive',
         });
         console.error(error);
@@ -101,11 +117,26 @@ const submitRecipe = async () => {
         isSubmitting.value = false;
     }
 };
+
+// Reset form after successful submission or cancellation
+const resetForm = () => {
+    recipeText.value = '';
+    recipeName.value = '';
+    recipeImage.value = null;
+    previewImage.value = null;
+    processedRecipe.value = null;
+};
+
+// Handle when user wants to edit the recipe
+const handleEditRecipe = () => {
+    isPreviewOpen.value = false;
+    // Keep the form data for editing
+};
 </script>
 
 <template>
-    <Dialog>
-        <DialogTrigger as-child>
+    <Dialog :open="open" @update:open="(value) => emit('update:open', value)">
+        <DialogTrigger as-child v-if="!open">
             <Button class="bg-emerald-600 hover:bg-emerald-700 text-white">
                 <PlusCircle class="mr-2 h-5 w-5" />
                 Add Recipe
@@ -251,7 +282,7 @@ const submitRecipe = async () => {
             </div>
 
             <DialogFooter>
-                <Button variant="outline" class="mr-2"> Cancel </Button>
+                <Button variant="outline" class="mr-2" @click="emit('update:open', false)"> Cancel </Button>
                 <Button
                     @click="submitRecipe"
                     :disabled="isSubmitting"
@@ -259,9 +290,21 @@ const submitRecipe = async () => {
                 >
                     <UploadCloud class="mr-2 h-5 w-5" v-if="!isSubmitting" />
                     <Loader2 class="animate-spin mr-2 h-5 w-5" v-else />
-                    {{ isSubmitting ? 'Submitting...' : 'Submit Recipe' }}
+                    {{ isSubmitting ? 'Processing...' : 'Process Recipe' }}
                 </Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>
+    
+    <!-- Recipe Preview Dialog -->
+    <PreviewRecipe
+        :open="isPreviewOpen"
+        :recipe="processedRecipe"
+        @update:open="(value) => { 
+            isPreviewOpen = value; 
+            if (!value) emit('update:open', false); // Close parent dialog too when preview is closed
+            resetForm();
+        }"
+        @edit-recipe="handleEditRecipe"
+    />
 </template>
