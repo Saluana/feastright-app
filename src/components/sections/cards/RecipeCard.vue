@@ -8,8 +8,8 @@ import {
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Recipe } from "@/composables/useRecipeImporter";
-import { Clock, ExternalLink, Star, Utensils, Clock3, Heart } from "lucide-vue-next";
+import { Recipe } from "@/types/Recipe";
+import { Clock, ExternalLink, Star, Utensils, Clock3, Heart, Share2 } from "lucide-vue-next";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,7 @@ import { decode } from 'html-entities';
 import { useRouter, useRoute } from 'vue-router';
 import { onMounted, watch, ref, onUnmounted } from 'vue';
 import { addFavourite, deleteFavouriteByRecipeId, db, type RecipeData } from '@/composables/useDexie';
+import LZString from 'lz-string';
 
 interface RecipeCardProps {
   recipe: RecipeData;
@@ -133,6 +134,26 @@ function formatFraction(value: number | string): string {
   }
   return intPart.toString();
 }
+
+function createShareableRecipe() {
+  // Compress the recipe data
+  const recipeString = LZString.compressToBase64(JSON.stringify(props.recipe))
+  
+  // Make sure to encode the parameter for URLs
+  const encodedRecipeString = encodeURIComponent(recipeString)
+  
+  // Create a full URL including the protocol, hostname, and port
+  const fullUrl = `${window.location.origin}/share/${encodedRecipeString}`
+  
+  // Copy to clipboard
+  navigator.clipboard.writeText(fullUrl)
+  
+  // Optional: Show a toast or notification that the link was copied
+  console.log('Shareable link copied to clipboard!')
+}
+
+
+
 </script>
 
 <template>
@@ -161,7 +182,7 @@ function formatFraction(value: number | string): string {
         <div class="relative overflow-hidden rounded-t-xl">
           <AspectRatio :ratio="16 / 9" class="overflow-hidden">
             <img
-              :src="props.recipe.images[0]"
+              :src="props.recipe.images && props.recipe.images.length > 0 ? props.recipe.images[0] : '/recipe-placeholder.webp'"
               :alt="props.recipe.title"
               class="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
               loading="lazy"
@@ -176,7 +197,7 @@ function formatFraction(value: number | string): string {
               <!-- Title & Rating -->
               <div class="space-y-2 mb-3">
                 <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-md">{{ decode(props.recipe.title) }}</h2>
-                <div class="flex items-center gap-0.5">
+                <div v-show="props.recipe.ratings && props.recipe.ratings.ratingValue" class="flex items-center gap-0.5">
                   <template v-for="(_, i) in Array(5)" :key="i">
                     <Star
                       :size="20"
@@ -189,29 +210,30 @@ function formatFraction(value: number | string): string {
                     />
                   </template>
                   <span class="ml-2 text-sm font-bold text-white drop-shadow-md">
-                    {{ props.recipe.ratings.ratingValue }} ({{ props.recipe.ratings.ratingCount }})
+                    {{ props.recipe.ratings.ratingValue }} <span v-show="props.recipe.ratings.ratingCount">({{ props.recipe.ratings.ratingCount }})</span>
                   </span>
                 </div>
               </div>
               
               <!-- Meta badges -->
               <div class="relative flex flex-wrap gap-2 mb-4">
-                <Badge class="bg-primary text-white border-none text-sm py-1 px-3 font-semibold shadow-lg">
+                <Badge v-show="props.recipe.publisher" class="bg-primary text-white border-none text-sm py-1 px-3 font-semibold shadow-lg">
                   {{ decode(props.recipe.publisher) }}
                 </Badge>
-                <Badge class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
+                <Badge v-show="props.recipe.servings" class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
                   <Utensils class="h-4 w-4" />
                   {{ props.recipe.servings }} servings
                 </Badge>
-                <Badge class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
+                <Badge v-show="props.recipe.totalTime" class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
                   <Clock class="h-4 w-4" />
                   {{ props.recipe.totalTime }} min total
                 </Badge>
-                <Badge class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
+                <Badge v-show="props.recipe.prepTime && props.recipe.cookTime" class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
                   <Clock3 class="h-4 w-4" />
                   {{ props.recipe.prepTime }}+{{ props.recipe.cookTime }} min
                 </Badge>
                 <Badge 
+                  v-show="props.recipe.cuisine && props.recipe.cuisine.length > 0"
                   v-for="c in props.recipe.cuisine" 
                   :key="c"
                   class="bg-primary text-white border-none text-sm py-1 px-3 font-semibold shadow-lg"
@@ -219,6 +241,7 @@ function formatFraction(value: number | string): string {
                   {{ c }}
                 </Badge>
                 <Badge 
+                  v-show="props.recipe.categories && props.recipe.categories.length > 0"
                   v-for="c in props.recipe.categories" 
                   :key="c"
                   class="bg-secondary text-black dark:text-white border-none text-sm py-1 px-3 font-semibold shadow-lg"
@@ -228,9 +251,9 @@ function formatFraction(value: number | string): string {
               </div>
               
               <!-- Description -->
-              <p class="text-sm text-gray-200 leading-snug line-clamp-2 drop-shadow-sm">{{ decode(props.recipe.description) }}</p>
+              <p v-show="props.recipe.description" class="text-sm text-gray-200 leading-snug line-clamp-2 drop-shadow-sm">{{ decode(props.recipe.description) }}</p>
               
-              <!-- Source link and favorite button -->
+              <!-- Source link, share, and favorite buttons -->
               <div class="absolute top-4 right-4 flex gap-2">
                 <button 
                   @click="toggleFavorite" 
@@ -239,6 +262,13 @@ function formatFraction(value: number | string): string {
                 >
                   <Heart class="h-4 w-4" :class="{ 'fill-white': isFavorite }" />
                   <span>{{ isFavorite ? 'Saved' : 'Favorite' }}</span>
+                </button>
+                <button 
+                  @click="createShareableRecipe" 
+                  class="bg-violet-500 hover:bg-violet-600 text-white text-xs px-3 py-1.5 rounded-md flex items-center gap-1.5 font-medium shadow-md transition-colors"
+                >
+                  <Share2 class="h-4 w-4" />
+                  <span>Share</span>
                 </button>
                 <a 
                   :href="props.recipe.url" 
@@ -296,7 +326,7 @@ function formatFraction(value: number | string): string {
           </div>
 
           <!-- Nutrition -->
-          <div class="bg-background/50 p-4 rounded-lg">
+          <div v-show="props.recipe.nutrition && Object.keys(props.recipe.nutrition).length > 0" class="bg-background/50 p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-3 text-primary">Nutrition (per serving)</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               <template v-for="[k, v] in Object.entries(props.recipe.nutrition)" :key="k">

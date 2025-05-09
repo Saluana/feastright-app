@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {ChefHat, Hamburger, Shrimp, Salad, Link2, ClipboardPaste, Clipboard} from 'lucide-vue-next'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
-import { Recipe } from '@/composables/useRecipeImporter'
+import { Recipe } from '@/types/Recipe'
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
 import { addRecipe, addHistory, getRecipeByURL, RecipeData } from '@/composables/useDexie'
 import AddRecipe from '@/components/sections/dialogues/AddRecipe.vue'
@@ -76,8 +76,44 @@ const openRecipeFromUrl = async () => {
   }
 }
 
+import LZString from 'lz-string'
+
+const openRecipeFromShareableString = async () => {
+  try {
+    if (route.params.lzString) {
+      // First decode the URL parameter
+      const lzString = decodeURIComponent(route.params.lzString as string)
+      console.log('Processing lzString param:', lzString.substring(0, 50) + '...')
+      
+      // Then decompress it
+      const recipeString = LZString.decompressFromBase64(lzString)
+      if (!recipeString) {
+        console.error('Failed to decompress recipe string')
+        return
+      }
+      
+      // Parse the JSON
+      const recipe = JSON.parse(recipeString)
+
+      if (recipe) {
+        console.log('Successfully parsed recipe:', recipe.title || 'Unnamed recipe')
+        const recipeId = await addRecipe(recipe)
+        recipe.value = { ...recipe, id: recipeId }
+        
+        if (recipeId) {
+          addHistory({ ...recipe.value, id: recipeId })
+        }
+        isRecipeModalOpen.value = true
+      }
+    }
+  } catch (error) {
+    console.error('Error processing shared recipe:', error)
+  }
+}
+
 onMounted(() => {
   openRecipeFromUrl()
+  openRecipeFromShareableString()
 })
 </script>
 

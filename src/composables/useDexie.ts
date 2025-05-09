@@ -1,6 +1,7 @@
 // db.ts
 import Dexie, { type EntityTable, liveQuery } from 'dexie';
-import { type Recipe } from './useRecipeImporter';
+import { type Recipe } from '@/types/Recipe';
+import { z } from 'zod';
 
 interface History {
     id?: number;
@@ -46,11 +47,25 @@ const db = new Dexie('RecipeDatabase') as Dexie & {
 };
 
 // Schema declaration:
-db.version(1).stores({
-  recipes: '++id, title, url, image, description, publisher, video, servings, prepTime, cookTime, totalTime, cuisine, categories, nutrition, ingredients, instructions, ratings, meta, favicon, hostUrl',
+// Incremented version number due to schema change for 'recipes' table
+db.version(2).stores({
+  recipes: '++id, title, url, *images, description, publisher, servings, prepTime, cookTime, totalTime, *cuisine, *categories, favicon, hostUrl', // Corrected 'image' to '*images', made 'cuisine' and 'categories' multiEntry, removed complex objects (video, nutrition, ingredients, instructions, ratings, meta) from direct indexing.
   history: '++id, recipeId, url, title, createdAt',
   favourites: '++id, recipeId, title, url, createdAt',
   collections: '++id, name, recipes, createdAt, updatedAt',
+}).upgrade(tx => {
+  console.log("Upgrading Dexie schema from version 1 to 2 for 'RecipeDatabase'.");
+  // This is a basic upgrade path. If specific data migration for the 'recipes' table
+  // (e.g., renaming 'image' to 'images' and moving data) was needed, it would go here.
+  // Given the console log showed 'images: Array(0)', it's likely 'image' was an unused or incorrect index.
+  // If you had data under an old 'image' field and it should now be 'images',
+  // you would need to modify each record: 
+  // return tx.table('recipes').toCollection().modify(recipe => {
+  //   if (recipe.image && !recipe.images) { // Example: if 'image' was a string
+  //     recipe.images = [recipe.image];
+  //     delete recipe.image;
+  //   }
+  // });
 });
 
 function clone<T>(obj: T): T {
@@ -58,12 +73,43 @@ function clone<T>(obj: T): T {
 }
 
 async function addRecipe(recipe: RecipeData): Promise<number | undefined> {
-    const existingRecipe = await getRecipeByURL(recipe.url)
-    if (existingRecipe.length > 0) {
-        return existingRecipe[0].id; 
+    console.log("[addRecipe] input:", recipe);
+    // It's crucial that the object passed to Dexie is a plain JavaScript object.
+    // Vue's Proxy objects can sometimes cause issues with ORMs/libraries expecting plain objects.
+    // The clone function (JSON.parse(JSON.stringify(obj))) effectively de-proxifies.
+    const recipeToAdd = clone(recipe);
+    console.log("[addRecipe] cloned data to add:", recipeToAdd);
+
+    if (recipeToAdd.url) {
+        console.log("Checking for existing recipe with URL:", recipeToAdd.url);
+        const existingRecipe = await getRecipeByURL(recipeToAdd.url);
+        console.log("Existing recipe query result:", existingRecipe);
+        if (existingRecipe && existingRecipe.length > 0) {
+            console.log("Recipe already exists with ID:", existingRecipe[0].id);
+            return existingRecipe[0].id;
+        }
     }
 
-    return await db.recipes.add(clone(recipe))
+    console.log("Attempting to add new recipe to Dexie:", recipeToAdd);
+    try {
+        const newId = await db.recipes.add(recipeToAdd);
+        console.log("Recipe added successfully to Dexie with ID:", newId);
+        return newId;
+    } catch (error) {
+        console.error("DexieError: Error adding recipe to db.recipes:", error);
+        if (error instanceof Error) {
+            console.error("DexieError name:", error.name);
+            console.error("DexieError message:", error.message);
+            // Dexie errors often have more specific types or 'inner' errors
+            if ('inner' in error) {
+                 console.error("DexieError inner error:", (error as any).inner);
+            }
+            if (error.stack) {
+                console.error("DexieError stack:", error.stack);
+            }
+        }
+        return undefined;
+    }
 }
 
 async function addHistory(recipe: RecipeData) {
@@ -76,12 +122,14 @@ async function addHistory(recipe: RecipeData) {
         return
     }
 
-    await db.history.add({
+   const newId = await db.history.add({
         recipeId: recipe.id,
         url: recipe.url,
         title: recipe.title,
         createdAt: new Date()
     })
+    
+    return newId
 }
 
 async function addFavourite(recipe: RecipeData) {
@@ -94,16 +142,19 @@ async function addFavourite(recipe: RecipeData) {
         return
     }
 
-    await db.favourites.add({
+    const newId = await db.favourites.add({
         recipeId: recipe.id,
         title: recipe.title,
         url: recipe.url,
         createdAt: new Date()
     })
+
+    return newId
 }
 
 async function addCollection(collection: Collections) {
-    await db.collections.add(clone(collection))
+    const newId = await db.collections.add(clone(collection))
+    return newId
 }
 
 async function updateCollection(collection: Collections) {

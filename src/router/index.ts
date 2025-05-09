@@ -21,6 +21,15 @@ export const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/share/:lzString',
+    name: 'Recipe',
+    component: () => import('@/pages/Home.vue'),
+    meta: {
+      title: 'Recipe',
+      icon: 'Home'
+    }
+  },
+  {
     path: '/hero',
     name: 'Hero Sections',
     component: () => import('@/pages/Layout.vue'),

@@ -5,18 +5,16 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, Clock, Users, ChevronLeft, Save, Plus, Trash, EditIcon } from 'lucide-vue-next';
-import { type Recipe, type Ingredient } from '@/types/Recipe';
-import { addRecipe, type RecipeData } from '@/composables/useDexie';
+import { Save, Plus, Trash, EditIcon } from 'lucide-vue-next';
+import { type Recipe } from '@/types/Recipe';
+import { addRecipe, type RecipeData, addHistory } from '@/composables/useDexie';
 import { useToast } from '@/components/ui/toast';
 
 const props = defineProps<{
@@ -149,14 +147,25 @@ const removeInstruction = (index: number) => {
 
 const saveRecipe = async () => {
   if (!editableRecipe.value) return;
+
+  console.log(editableRecipe.value);
   
   try {
     isSaving.value = true;
     
     // Convert Recipe to RecipeData by casting
     const recipeData: RecipeData = editableRecipe.value as RecipeData;
+
+    recipeData.url = recipeData.title + '-' + Math.random().toString(8).substring(2, 8)
     
-    await addRecipe(recipeData);
+    await addRecipe(recipeData).then((id) => {
+        if (id) {
+            addHistory({
+                ...recipeData,
+                id
+            })
+        }
+    });
     toast({
       title: 'Success!',
       description: 'Recipe saved to your collection',
