@@ -12,7 +12,8 @@ export const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/recipe/:url',
+    // Add (.*) pattern to match URLs with slashes
+    path: '/recipe/:url(.*)',
     name: 'Recipe',
     component: () => import('@/pages/Home.vue'),
     meta: {
@@ -21,12 +22,13 @@ export const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/share/:lzString',
-    name: 'Recipe',
+    // Add (.*) pattern to match compressed data that might contain special characters
+    path: '/share/:lzString(.*)',
+    name: 'SharedRecipe',
     component: () => import('@/pages/Home.vue'),
     meta: {
-      title: 'Recipe',
-      icon: 'Home'
+      title: 'Shared Recipe',
+      icon: 'Share'
     }
   },
   {

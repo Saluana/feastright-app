@@ -29,7 +29,7 @@ const recipe = ref<Recipe | null>(null)
 const collections = ref<CollectionWithRecipes[]>([])
 const isRecipeModalOpen = ref(false)
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
-import { type Recipe } from '@/composables/useRecipeImporter'
+import { type Recipe } from '@/types/Recipe'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
 import {getRecipeByURL} from '@/composables/useDexie'
 import { useRoute } from 'vue-router'

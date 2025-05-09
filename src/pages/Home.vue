@@ -65,7 +65,6 @@ const openRecipeFromUrl = async () => {
       // Otherwise fetch it
       recipe.value = await getRecipeFromUrl(url)
       if (recipe.value) {
-        isRecipeModalOpen.value = true
         const recipeId = await addRecipe(recipe.value)
         if (recipeId) {
           recipe.value.id = recipeId
@@ -73,6 +72,13 @@ const openRecipeFromUrl = async () => {
         }
       }
     }
+  }
+
+  if (recipe.value) {
+    isRecipeModalOpen.value = true
+    return true
+  } else {
+    return false
   }
 }
 
@@ -93,27 +99,44 @@ const openRecipeFromShareableString = async () => {
       }
       
       // Parse the JSON
-      const recipe = JSON.parse(recipeString)
+      const parsedRecipe = JSON.parse(recipeString)
 
-      if (recipe) {
-        console.log('Successfully parsed recipe:', recipe.title || 'Unnamed recipe')
-        const recipeId = await addRecipe(recipe)
-        recipe.value = { ...recipe, id: recipeId }
+      if (parsedRecipe) {
+        console.log('Successfully parsed recipe:', parsedRecipe.title || 'Unnamed recipe')
+        const recipeId = await addRecipe(parsedRecipe)
+        
+        // Assign to the component's recipe ref
+        recipe.value = { ...parsedRecipe, id: recipeId }
         
         if (recipeId) {
-          addHistory({ ...recipe.value, id: recipeId })
+          addHistory({ ...parsedRecipe, id: recipeId })
         }
+        
+      }
+
+      if (recipe.value) {
         isRecipeModalOpen.value = true
+        return true
+      } else {
+        return false
       }
     }
   } catch (error) {
     console.error('Error processing shared recipe:', error)
+    return false
   }
 }
 
-onMounted(() => {
-  openRecipeFromUrl()
-  openRecipeFromShareableString()
+// Use async IIFE (Immediately Invoked Function Expression) in onMounted
+onMounted(async () => {
+  // Check URL param first
+  if (route.params.url) {
+    await openRecipeFromUrl()
+  } 
+  // If no URL param, or if it didn't result in an opened recipe, try lzString param
+  else if (route.params.lzString) {
+    await openRecipeFromShareableString()
+  }
 })
 </script>
 
