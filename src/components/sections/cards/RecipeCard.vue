@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { decode } from 'html-entities';
 import { useRouter, useRoute } from 'vue-router';
-import { onMounted, watch, ref, onUnmounted } from 'vue';
+import { onMounted, watch, ref, onUnmounted, computed } from 'vue';
 import { addFavourite, deleteFavouriteByRecipeId, db, type RecipeData } from '@/composables/useDexie';
 import LZString from 'lz-string';
 
@@ -33,6 +33,8 @@ const emit = defineEmits(['update:open'])
 const router = useRouter()
 const route = useRoute()
 const isFavorite = ref(false)
+const showCopyNotification = ref(false)
+const copyNotificationTimer = ref<number | null>(null)
 
 // Check if recipe is already a favorite
 const checkIfFavorite = async () => {
@@ -95,6 +97,11 @@ onMounted(() => {
 
 onUnmounted(() => {
   isFavorite.value = false
+  
+  // Clear any pending timers
+  if (copyNotificationTimer.value) {
+    clearTimeout(copyNotificationTimer.value)
+  }
 })
 
 // Utility to format decimals as beautiful fractions
@@ -146,10 +153,21 @@ function createShareableRecipe() {
   const fullUrl = `${window.location.origin}/share/${encodedRecipeString}`
   
   // Copy to clipboard
-  navigator.clipboard.writeText(fullUrl)
-  
-  // Optional: Show a toast or notification that the link was copied
-  console.log('Shareable link copied to clipboard!')
+  navigator.clipboard.writeText(fullUrl).then(() => {
+    // Show the notification
+    showCopyNotification.value = true
+    
+    // Clear any existing timer
+    if (copyNotificationTimer.value) {
+      clearTimeout(copyNotificationTimer.value)
+    }
+    
+    // Set a timer to hide the notification after 2 seconds
+    copyNotificationTimer.value = setTimeout(() => {
+      showCopyNotification.value = false
+      copyNotificationTimer.value = null
+    }, 2000) as unknown as number
+  })
 }
 
 
@@ -159,7 +177,7 @@ function createShareableRecipe() {
 <template>
   <Dialog class="rounded-none" :open="open" @update:open="updateOpen">
     <DialogContent 
-  class="md:min-w-[90vw] md:min-h-[99vh] md:max-w-[90vw] md:max-h-[90vh] rounded-none flex flex-col items-center overflow-y-scroll pt-8"
+  class="DialogContent md:min-w-[90vw] md:min-h-[99vh] md:max-w-[90vw] md:max-h-[90vh] rounded-none flex flex-col items-center overflow-y-scroll scrollbar-thin pt-8"
   :closeButton="false"
     >
       <DialogHeader class="flex justify-between items-center">
@@ -263,13 +281,29 @@ function createShareableRecipe() {
                   <Heart class="h-4 w-4" :class="{ 'fill-white': isFavorite }" />
                   <span>{{ isFavorite ? 'Saved' : 'Favorite' }}</span>
                 </button>
-                <button 
-                  @click="createShareableRecipe" 
-                  class="bg-violet-500 hover:bg-violet-600 text-white text-xs px-3 py-1.5 rounded-md flex items-center gap-1.5 font-medium shadow-md transition-colors"
-                >
-                  <Share2 class="h-4 w-4" />
-                  <span>Share</span>
-                </button>
+                <div class="relative">
+                  <button 
+                    @click="createShareableRecipe" 
+                    class="bg-violet-500 hover:bg-violet-600 text-white text-xs px-3 py-1.5 rounded-md flex items-center gap-1.5 font-medium shadow-md transition-colors"
+                  >
+                    <Share2 class="h-4 w-4" />
+                    <span>Share</span>
+                  </button>
+                  
+                  <!-- Copy notification tooltip -->
+                  <div 
+                    v-show="showCopyNotification"
+                    class="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-black/90 text-white text-xs py-1.5 px-3 rounded-lg whitespace-nowrap shadow-lg z-50 font-medium animate-in fade-in zoom-in-95 duration-300"
+                  >
+                    <div class="flex items-center gap-1.5">
+                      <svg class="h-4 w-4 text-green-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                      <span>Copied to clipboard!</span>
+                    </div>
+                    <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-black/90 rotate-45"></div>
+                  </div>
+                </div>
                 <a 
                   :href="props.recipe.url" 
                   target="_blank" 
@@ -356,3 +390,34 @@ function createShareableRecipe() {
     </DialogContent>
   </Dialog>
 </template>
+
+<style>
+
+
+/* Specific styles for the dialog content */
+.DialogContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.DialogContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.DialogContent::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50px;
+}
+
+.DialogContent::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox scrollbar */
+.DialogContent {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+
+</style>
+
