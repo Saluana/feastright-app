@@ -3,16 +3,26 @@ import { useRouter, useRoute } from 'vue-router'
 import { Navbar, NavbarBrand, NavbarLayer } from '@/components/sections/navbar'
 import { DarkMode } from '@/components/darkMode'
 import { Home, ChevronsRight} from 'lucide-vue-next'
-import { defineAsyncComponent} from 'vue'
+import { computed, defineAsyncComponent} from 'vue'
 import {SidebarTrigger, useSidebar} from '@/components/ui/sidebar'
+import { useMediaQuery } from '@vueuse/core'
 
-const {open, setOpen} = useSidebar()
+const {open, openMobile, setOpen, setOpenMobile} = useSidebar()
 
 const router = useRouter()
 // const route = useRoute()
 
+const isMobileView = useMediaQuery('(max-width: 768px)')
 
+const isOpen = computed(() => isMobileView.value ? openMobile.value : open.value)
 
+function toggleSidebar() {
+  if (isMobileView.value) {
+    setOpenMobile(!openMobile.value)
+  } else {
+    setOpen(!open.value)
+  }
+}
 
 interface RouteChild {
   name: string
@@ -77,7 +87,7 @@ const menuDescription = 'Main navigation menu with all available sections and pa
         <div class="flex items-center gap-6">
           <NavbarBrand class="text-primary">
             <SidebarTrigger class="h-6 w-6" />
-            <span @click="setOpen(!open)" class="font-semibold text-sm">{{ open ? 'Close menu' : 'Open menu' }}</span>
+            <span @click="toggleSidebar" class="font-semibold text-sm">{{ isOpen ? 'Close menu' : 'Open menu' }}</span>
           </NavbarBrand>
           
         </div>
