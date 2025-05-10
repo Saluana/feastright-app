@@ -29,7 +29,7 @@ const updateOpen = (value: boolean) => {
         <slot name="trigger-content"></slot>
       </DialogTrigger>
     </slot>
-    <DialogContent class="sm:max-w-[425px]">
+    <DialogContent class="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription>{{ description }}</DialogDescription>

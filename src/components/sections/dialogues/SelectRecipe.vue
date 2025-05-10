@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getHistory, getFavourites, addHistory, getRecipeByURL, addRecipe } from '@/composables/useDexie'
-import { type Recipe } from '@/composables/useRecipeImporter'
+import { type Recipe } from '@/types/Recipe'
 import { MagnifyingGlassIcon, HeartIcon, ClockIcon, GlobeIcon, CheckIcon } from '@radix-icons/vue'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -215,35 +215,30 @@ const handleTabChange = (tab: string | number) => {
             <div class="animate-spin text-muted-foreground">↻</div>
           </div>
           
-          <div v-else-if="favorites.length === 0" class="p-8 text-center">
-            <div class="rounded-full bg-muted/40 h-12 w-12 flex items-center justify-center mx-auto mb-3">
-              <HeartIcon class="h-6 w-6 text-muted-foreground" />
+          <div v-else-if="filteredFavorites.length === 0" class="flex items-center justify-center h-full p-8 text-center text-muted-foreground">
+            <div>
+              <p>No favorites found</p>
+              <p v-if="searchQuery" class="text-sm">Try a different search term</p>
             </div>
-            <h3 class="text-base font-medium mb-1">No favorites yet</h3>
-            <p class="text-sm text-muted-foreground">Heart a recipe to save it to your favorites.</p>
           </div>
           
-          <div v-else-if="filteredFavorites.length === 0" class="p-8 text-center">
-            <p class="text-muted-foreground">No favorites match your search.</p>
-          </div>
-          
-          <div v-else class="space-y-1 p-1">
+          <div v-else class="divide-y divide-slate-200 dark:divide-slate-800">
             <button
               v-for="item in filteredFavorites"
               :key="item.id"
               @click="selectRecipe(item.url)"
-              class="w-full flex items-center px-4 py-3 rounded-lg text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-900/60 hover:shadow-sm group"
+              class="w-full flex items-center p-3 hover:bg-slate-100 dark:hover:bg-slate-900 text-left transition"
             >
-              <div class="flex-1 truncate">
-                <div class="font-medium text-[15px] truncate mb-0.5">{{ item.title }}</div>
-                <div class="text-xs flex items-center justify-between mt-0.5">
-                  <div class="truncate flex items-center gap-1 text-slate-500 dark:text-slate-400">
+              <div class="flex-1 min-w-0 overflow-hidden mr-2">
+                <h3 class="font-medium truncate">{{ item.title }}</h3>
+                <div class="flex justify-between text-sm">
+                  <div class="text-muted-foreground flex items-center gap-1 overflow-hidden">
                     <GlobeIcon class="h-3 w-3 flex-shrink-0" />
-                    {{ extractHostname(item.url) }}
+                    <span class="truncate">{{ extractHostname(item.url) }}</span>
                   </div>
-                  <div class="truncate flex items-center gap-1 text-rose-500 dark:text-rose-400 font-medium">
+                  <div class="flex items-center gap-1 text-rose-500 dark:text-rose-400 font-medium flex-shrink-0">
                     <HeartIcon class="h-3 w-3 flex-shrink-0" />
-                    Favorite
+                    <span>Favorite</span>
                   </div>
                 </div>
               </div>
@@ -274,27 +269,27 @@ const handleTabChange = (tab: string | number) => {
             <p class="text-muted-foreground">No history items match your search.</p>
           </div>
           
-          <div v-else class="space-y-1 p-1">
+          <div v-else class="divide-y divide-slate-200 dark:divide-slate-800">
             <button
               v-for="item in filteredHistory"
               :key="item.id"
               @click="selectRecipe(item.url)"
-              class="w-full flex items-center px-4 py-3 rounded-lg text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-900/60 hover:shadow-sm group"
+              class="w-full flex items-center p-3 hover:bg-slate-100 dark:hover:bg-slate-900 text-left transition"
             >
-              <div class="flex-1 truncate">
-                <div class="font-medium text-[15px] truncate mb-0.5">{{ item.title }}</div>
-                <div class="text-xs flex items-center justify-between mt-0.5">
-                  <div class="truncate flex items-center gap-1 text-slate-500 dark:text-slate-400">
+              <div class="flex-1 min-w-0 overflow-hidden mr-2">
+                <h3 class="font-medium truncate">{{ item.title }}</h3>
+                <div class="flex justify-between text-sm">
+                  <div class="text-muted-foreground flex items-center gap-1 overflow-hidden">
                     <GlobeIcon class="h-3 w-3 flex-shrink-0" />
-                    {{ extractHostname(item.url) }}
+                    <span class="truncate">{{ extractHostname(item.url) }}</span>
                   </div>
-                  <div class="truncate flex items-center gap-1 text-blue-500 dark:text-blue-400 font-medium">
+                  <div class="flex items-center gap-1 text-blue-500 dark:text-blue-400 font-medium flex-shrink-0">
                     <ClockIcon class="h-3 w-3 flex-shrink-0" />
-                    {{ formatDistanceToNow(new Date(item.createdAt), { addSuffix: true }) }}
+                    <span>{{ formatDistanceToNow(new Date(item.createdAt), { addSuffix: true }) }}</span>
                   </div>
                 </div>
               </div>
-              <div class="ml-2 text-slate-300 dark:text-slate-700 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all transform group-hover:translate-x-0.5">
+              <div class="text-xs text-muted-foreground flex-shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="m9 18 6-6-6-6"/></svg>
               </div>
             </button>
@@ -321,8 +316,8 @@ const handleTabChange = (tab: string | number) => {
           
           <div v-if="successMessage" class="rounded-md bg-green-50 dark:bg-green-950 p-3 text-sm border border-green-200 dark:border-green-800">
             <p class="flex items-center gap-2 text-green-700 dark:text-green-400">
-              <CheckIcon class="h-4 w-4" />
-              {{ successMessage }}
+              <CheckIcon class="h-4 w-4 flex-shrink-0" />
+              <span class="break-words">{{ successMessage }}</span>
             </p>
           </div>
           
