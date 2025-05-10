@@ -36,6 +36,13 @@ const recipeImage = ref<File | null>(null);
 const previewImage = ref<string | null>(null);
 const isSubmitting = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
+
+// Method to trigger file input click
+const triggerFileInput = () => {
+    if (fileInputRef.value) {
+        fileInputRef.value.click();
+    }
+};
 const isPreviewOpen = ref(false);
 const processedRecipe = ref<Recipe | null>(null);
 
@@ -98,6 +105,7 @@ const submitRecipe = async () => {
             processedRecipe.value = recipe;
             isPreviewOpen.value = true; // Open preview dialog
         } else if (activeTab.value === 'image' && recipeImage.value) {
+            console.log(recipeImage.value)
             // TODO: Implement image OCR processing
             toast({
                 title: 'Coming Soon',
@@ -238,7 +246,7 @@ const handleEditRecipe = () => {
                                             Drag and drop or click to browse
                                         </p>
                                     </div>
-                                    <Input
+                                    <input
                                         ref="fileInputRef"
                                         type="file"
                                         accept="image/*"
@@ -247,7 +255,7 @@ const handleEditRecipe = () => {
                                     />
                                     <Button
                                         variant="outline"
-                                        @click="() => fileInputRef?.click()"
+                                        @click="triggerFileInput"
                                     >
                                         Select Image
                                     </Button>
