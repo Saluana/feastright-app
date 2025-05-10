@@ -24,5 +24,29 @@ export async function getRecipeFromText(recipeText: string): Promise<Recipe> {
   }
 }
 
+export async function getRecipeFromImage(image: File): Promise<Recipe> {
+  const formData = new FormData();
+  formData.append('recipeImage', image);
+
+  const response = await fetch('http://localhost:4200/image-to-recipe', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch recipe');
+  }
+
+  const data = await response.json();
+
+  if (data.data) {
+    return data.data as Recipe;
+  } else if (data.error) {
+    throw new Error(data.error);
+  } else {
+    throw new Error('Unknown error');
+  }
+}
+
 
   

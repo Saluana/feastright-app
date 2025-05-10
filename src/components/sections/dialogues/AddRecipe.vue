@@ -24,7 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/components/ui/toast';
-import { getRecipeFromText } from '@/composables/useManualRecipeEntry';
+import { getRecipeFromText, getRecipeFromImage } from '@/composables/useManualRecipeEntry';
 import { type Recipe } from '@/types/Recipe';
 import PreviewRecipe from './PreviewRecipe.vue';
 
@@ -106,13 +106,9 @@ const submitRecipe = async () => {
             isPreviewOpen.value = true; // Open preview dialog
         } else if (activeTab.value === 'image' && recipeImage.value) {
             console.log(recipeImage.value)
-            // TODO: Implement image OCR processing
-            toast({
-                title: 'Coming Soon',
-                description: 'Image processing is not yet implemented',
-            });
-            // Simulate API call for now
-            await new Promise((resolve) => setTimeout(resolve, 1500));
+            const recipe = await getRecipeFromImage(recipeImage.value);
+            processedRecipe.value = recipe;
+            isPreviewOpen.value = true; // Open preview dialog
         }
     } catch (error) {
         toast({
