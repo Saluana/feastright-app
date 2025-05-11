@@ -29,12 +29,12 @@ const updateOpen = (value: boolean) => {
         <slot name="trigger-content"></slot>
       </DialogTrigger>
     </slot>
-    <DialogContent class="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+    <DialogContent class="w-screen h-screen sm:min-w-[550px] sm:h-auto sm:max-w-screen sm:max-h-screen overflow-y-auto overflow-x-hidden">
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription>{{ description }}</DialogDescription>
       </DialogHeader>
-      <div class="py-4">
+      <div class="py-4 flex flex-col max-w-screen overflow-y-scroll md:overflow-hidden">
         <slot></slot>
       </div>
       <DialogFooter>

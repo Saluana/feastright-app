@@ -192,7 +192,7 @@ const handleTabChange = (tab: string | number) => {
         <TabsTrigger value="url" >
           <div class="flex items-center space-x-2">
             <GlobeIcon class="h-3.5 w-3.5" />
-            <span>URL Import</span>
+            <span>Import</span>
           </div>
         </TabsTrigger>
       </TabsList>

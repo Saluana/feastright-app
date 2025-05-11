@@ -177,7 +177,7 @@ function createShareableRecipe() {
 <template>
   <Dialog class="rounded-none" :open="open" @update:open="updateOpen">
     <DialogContent 
-  class="DialogContent md:min-w-[90vw] md:min-h-[99vh] md:max-w-[90vw] md:max-h-[90vh] rounded-none flex flex-col items-center overflow-y-scroll scrollbar-thin pt-8"
+  class="DialogContent px-0 h-screen w-screen md:min-w-[90vw] md:min-h-[99vh] md:max-w-[90vw] md:max-h-[90vh] rounded-none flex flex-col items-center overflow-y-auto scrollbar-thin pt-8"
   :closeButton="false"
     >
       <DialogHeader class="flex justify-between items-center">
@@ -188,6 +188,7 @@ function createShareableRecipe() {
       </DialogHeader>
 
       <Card
+      class="w-full"
         :class="[
           'max-w-[840px] h-auto rounded-xl border-none',
           'bg-gradient-to-b from-background to-background/80',
@@ -420,4 +421,3 @@ function createShareableRecipe() {
 
 
 </style>
-
