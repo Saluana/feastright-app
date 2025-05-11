@@ -72,6 +72,24 @@ function clone<T>(obj: T): T {
     return JSON.parse(JSON.stringify(obj))
 }
 
+async function addOrUpdateRecipe(recipe: RecipeData): Promise<number | undefined> {
+    // Clone the recipe to ensure we're working with a plain object
+    const recipeToSave = clone(recipe);
+    
+    // If it's a new recipe (no ID), use addRecipe which handles duplicates
+    if (!recipeToSave.id) {
+        return addRecipe(recipeToSave);
+    }
+    
+    // For existing recipes, use put() which will update the record
+    try {
+        return await db.recipes.put(recipeToSave);
+    } catch (error) {
+        console.error("Error updating recipe:", error);
+        return undefined;
+    }
+}
+
 async function addRecipe(recipe: RecipeData): Promise<number | undefined> {
     console.log("[addRecipe] input:", recipe);
     // It's crucial that the object passed to Dexie is a plain JavaScript object.
@@ -130,6 +148,37 @@ async function addHistory(recipe: RecipeData) {
     })
     
     return newId
+}
+
+async function addOrUpdateHistory(recipe: RecipeData) {
+    if (!recipe.id) {
+        throw new Error('Recipe ID is required')
+    }
+    
+    const historyItem = {
+        recipeId: recipe.id,
+        url: recipe.url,
+        title: recipe.title,
+        createdAt: new Date()
+    }
+    
+    try {
+        const existingItem = await db.history.where('recipeId').equals(recipe.id).first()
+        
+        if (existingItem) {
+            // Update existing item with new timestamp
+            return await db.history.update(existingItem.id, {
+                ...historyItem,
+                createdAt: new Date() // Update timestamp to current time
+            })
+        } else {
+            // Add new history item
+            return await db.history.add(historyItem)
+        }
+    } catch (error) {
+        console.error("Error updating history:", error)
+        throw error
+    }
 }
 
 async function addFavourite(recipe: RecipeData) {
@@ -248,10 +297,24 @@ async function deleteFavouriteByRecipeId(recipeId: number) {
     
     return false
 }
+async function updateFavourite(favourite: Favourite) {
+    if (!favourite.id) {
+        throw new Error('Favourite ID is required')
+    }
+
+    console.log('[updateFavourite] favourite to update:', favourite)
+
+    const { id, ...changes } = favourite
+    await db.favourites.update(id, changes)
+}
+
+async function getFavouriteByRecipeId(recipeId: number) {
+    return db.favourites.where('recipeId').equals(recipeId).first()
+}
 
 async function deleteCollectionById(id: number) {
     return db.collections.delete(id)
 }
 
 export type { History, Favourite, RecipeData, Collections, CollectionWithRecipes }
-export { db, addRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById };
+export { db, addRecipe, addOrUpdateRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite };

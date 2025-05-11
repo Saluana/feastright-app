@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Save, Plus, Trash, EditIcon } from 'lucide-vue-next';
 import { type Recipe } from '@/types/Recipe';
-import { addRecipe, type RecipeData, addHistory } from '@/composables/useDexie';
+import { addOrUpdateRecipe, type RecipeData, addHistory, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite } from '@/composables/useDexie';
 import { useToast } from '@/components/ui/toast';
 
 const props = defineProps<{
@@ -155,22 +155,48 @@ const saveRecipe = async () => {
     
     // Convert Recipe to RecipeData by casting
     const recipeData: RecipeData = editableRecipe.value as RecipeData;
-
-    recipeData.url = recipeData.title + '-' + Math.random().toString(8).substring(2, 8)
+    const isUpdating = recipeData.id !== undefined;
     
-    await addRecipe(recipeData).then((id) => {
-        if (id) {
-            addHistory({
-                ...recipeData,
-                id
-            })
+    console.log('[saveRecipe] isUpdating', isUpdating);
+
+    // Only generate a new URL if this is a new recipe (no URL)
+    if (!recipeData.url) {
+      recipeData.url = recipeData.title + '-' + Math.random().toString(8).substring(2, 8);
+    }
+    
+    // Use addOrUpdateRecipe to handle both new and existing recipes
+    const id = await addOrUpdateRecipe(recipeData);
+    
+    if (id) {
+      // Add to history
+      await addOrUpdateHistory({
+        ...recipeData,
+        id
+      });
+      
+      toast({
+        title: 'Success!',
+        description: isUpdating ? 'Recipe updated successfully' : 'Recipe saved to your collection',
+      });
+
+      if (isUpdating && recipeData.id) {
+        console.log('[saveRecipe] updating favorite');  
+        const isFavorite = await getFavouriteByRecipeId(recipeData.id)
+        
+        if (isFavorite) {
+          console.log('[saveRecipe] favorite found', isFavorite);
+          await updateFavourite({
+            id: isFavorite.id,
+            title: recipeData.title,
+            url: recipeData.url || isFavorite.url,
+            recipeId: recipeData.id,
+            createdAt: isFavorite?.createdAt || new Date()
+          })
+          console.log('[saveRecipe] favorite updated');
         }
-    });
-    toast({
-      title: 'Success!',
-      description: 'Recipe saved to your collection',
-    });
-    emit('update:open', false);
+      }
+      emit('update:open', false);
+    }
   } catch (error) {
     console.error('Error saving recipe:', error);
     toast({

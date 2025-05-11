@@ -9,7 +9,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Recipe } from "@/types/Recipe";
-import { Clock, ExternalLink, Star, Utensils, Clock3, Heart, Share2 } from "lucide-vue-next";
+import { Clock, ExternalLink, Star, Utensils, Clock3, Heart, Share2, Edit } from "lucide-vue-next";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { onMounted, watch, ref, onUnmounted, computed } from 'vue';
 import { addFavourite, deleteFavouriteByRecipeId, db, type RecipeData } from '@/composables/useDexie';
 import LZString from 'lz-string';
+import PreviewRecipe from '@/components/sections/dialogues/PreviewRecipe.vue';
 
 interface RecipeCardProps {
   recipe: RecipeData;
@@ -35,6 +36,7 @@ const route = useRoute()
 const isFavorite = ref(false)
 const showCopyNotification = ref(false)
 const copyNotificationTimer = ref<number | null>(null)
+const showEditDialog = ref(false)
 
 // Check if recipe is already a favorite
 const checkIfFavorite = async () => {
@@ -215,7 +217,7 @@ function createShareableRecipe() {
             <!-- Extra text background gradient for better readability -->
             <div class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
               <!-- Title & Rating -->
-              <div class="space-y-2 mb-3">
+              <div class="space-y-2 mb-3 mr-[140px] sm:mr-[160px] md:mr-[180px]">
                 <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-md">{{ decode(props.recipe.title) }}</h2>
                 <div v-show="props.recipe.ratings && props.recipe.ratings.ratingValue" class="flex items-center gap-0.5">
                   <template v-for="(_, i) in Array(5)" :key="i">
@@ -273,8 +275,8 @@ function createShareableRecipe() {
               <!-- Description -->
               <p v-show="props.recipe.description" class="text-sm text-gray-200 leading-snug line-clamp-2 drop-shadow-sm">{{ decode(props.recipe.description) }}</p>
               
-              <!-- Source link, share, and favorite buttons -->
-              <div class="absolute top-4 right-4 flex gap-2">
+              <!-- Source link, share, favorite, and edit buttons -->
+              <div class="absolute top-4 right-4 flex flex-wrap gap-1 px-2 sm:gap-2 sm:px-3">
                 <button 
                   @click="toggleFavorite" 
                   class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-md flex items-center gap-1.5 font-medium shadow-md transition-colors"
@@ -315,6 +317,13 @@ function createShareableRecipe() {
                   <ExternalLink class="h-3.5 w-3.5" />
                   Source
                 </a>
+                <button 
+                  @click="showEditDialog = true" 
+                  class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-md flex items-center gap-1.5 font-medium shadow-md transition-colors"
+                >
+                  <Edit class="h-3.5 w-3.5" />
+                  Edit
+                </button>
               </div>
             </div>
         </div>
@@ -390,6 +399,12 @@ function createShareableRecipe() {
       </Card>
     </DialogContent>
   </Dialog>
+  
+  <!-- Edit Recipe Dialog -->
+  <PreviewRecipe 
+    v-model:open="showEditDialog"
+    :recipe="props.recipe"
+  />
 </template>
 
 <style>
