@@ -198,21 +198,22 @@ function createShareableRecipe() {
         ]"
       >
         <!-- Hero image with overlaid information -->
-        <div class="relative overflow-hidden rounded-t-xl">
-          <AspectRatio :ratio="16 / 9" class="overflow-hidden">
+        <div class="relative overflow-hidden rounded-t-xl" style="min-height: 360px;">
+          <div class="absolute inset-0">
             <img
               :src="props.recipe.images && props.recipe.images.length > 0 ? props.recipe.images[0] : '/recipe-placeholder.webp'"
               :alt="props.recipe.title"
-              class="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+              class="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-105"
               loading="lazy"
             />
-            <!-- Gradient overlay for text readability that preserves image visibility -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20"></div>
-            
-            <!-- Content overlay -->
-            <div class="absolute inset-0 flex flex-col justify-end p-6 text-white">
-              <!-- Extra text background gradient for better readability -->
-              <div class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
+          </div>
+          <!-- Gradient overlay for text readability that preserves image visibility -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20"></div>
+          
+          <!-- Content overlay -->
+          <div class="absolute inset-0 flex flex-col justify-end p-6 text-white">
+            <!-- Extra text background gradient for better readability -->
+            <div class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
               <!-- Title & Rating -->
               <div class="space-y-2 mb-3">
                 <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-md">{{ decode(props.recipe.title) }}</h2>
@@ -316,7 +317,6 @@ function createShareableRecipe() {
                 </a>
               </div>
             </div>
-          </AspectRatio>
         </div>
         
         <CardContent class="p-6 space-y-6">
