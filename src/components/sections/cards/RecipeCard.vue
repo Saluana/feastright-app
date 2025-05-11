@@ -19,7 +19,7 @@ import {
 import { decode } from 'html-entities';
 import { useRouter, useRoute } from 'vue-router';
 import { onMounted, watch, ref, onUnmounted, computed } from 'vue';
-import { addFavourite, deleteFavouriteByRecipeId, db, type RecipeData } from '@/composables/useDexie';
+import { addFavourite, deleteFavouriteByRecipeId, db, type RecipeData, getLiveRecipeById } from '@/composables/useDexie';
 import LZString from 'lz-string';
 import PreviewRecipe from '@/components/sections/dialogues/PreviewRecipe.vue';
 
@@ -37,6 +37,8 @@ const isFavorite = ref(false)
 const showCopyNotification = ref(false)
 const copyNotificationTimer = ref<number | null>(null)
 const showEditDialog = ref(false)
+// Initialize liveRecipe with a deep clone of the prop's recipe data
+const liveRecipe = ref<RecipeData>(JSON.parse(JSON.stringify(props.recipe)))
 
 // Check if recipe is already a favorite
 const checkIfFavorite = async () => {
@@ -63,10 +65,44 @@ const toggleFavorite = async () => {
   }
 }
 
-// Check favorite status when component mounts
+// Subscription for live recipe updates
+let liveRecipeSubscription: { unsubscribe: () => void } | null = null;
+
 onMounted(() => {
-  checkIfFavorite()
-})
+  checkIfFavorite();
+
+  if (props.recipe.id) {
+    const liveRecipeObservable = getLiveRecipeById(props.recipe.id);
+    liveRecipeSubscription = liveRecipeObservable.subscribe((recipeUpdate?: RecipeData) => {
+      if (recipeUpdate) {
+        // Update properties of the existing liveRecipe.value object
+        Object.assign(liveRecipe.value, recipeUpdate);
+        console.log("Live recipe updated (properties assigned):", liveRecipe.value);
+      } else {
+        // Recipe not found in DB (e.g., deleted), revert to initial prop data
+        Object.assign(liveRecipe.value, JSON.parse(JSON.stringify(props.recipe)));
+        console.log("Live recipe not found, using prop data:", liveRecipe.value);
+      }
+    });
+  } else {
+    // For new recipes without an ID, liveRecipe is already initialized from props.recipe
+    // No further action needed here unless props.recipe itself could change reactively
+    // and needs to be re-cloned into liveRecipe. For now, assuming props.recipe is stable initial data.
+    console.log("Using initial recipe from prop (no ID):", liveRecipe.value);
+  }
+});
+
+onUnmounted(() => {
+  if (liveRecipeSubscription) {
+    liveRecipeSubscription.unsubscribe();
+    liveRecipeSubscription = null;
+  }
+  // ... other cleanup ...
+  if (copyNotificationTimer.value) {
+    clearTimeout(copyNotificationTimer.value);
+  }
+  isFavorite.value = false;
+});
 
 const updateOpen = (value: boolean) => {
   emit('update:open', value)
@@ -184,7 +220,7 @@ function createShareableRecipe() {
     >
       <DialogHeader class="flex justify-between items-center">
         <DialogTitle class="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-          {{ decode(props.recipe?.title) }}
+          {{ decode(liveRecipe?.title) }}
         </DialogTitle>
   
       </DialogHeader>
@@ -203,8 +239,8 @@ function createShareableRecipe() {
         <div class="relative overflow-hidden rounded-t-xl" style="min-height: 360px;">
           <div class="absolute inset-0">
             <img
-              :src="props.recipe.images && props.recipe.images.length > 0 ? props.recipe.images[0] : '/recipe-placeholder.webp'"
-              :alt="props.recipe.title"
+              :src="liveRecipe?.images && liveRecipe.images.length > 0 ? liveRecipe.images[0] : '/recipe-placeholder.webp'"
+              :alt="liveRecipe?.title"
               class="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-105"
               loading="lazy"
             />
@@ -218,53 +254,53 @@ function createShareableRecipe() {
             <div class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/90 to-transparent pointer-events-none"></div>
               <!-- Title & Rating -->
               <div class="space-y-2 mb-3 mr-[140px] sm:mr-[160px] md:mr-[180px]">
-                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-md">{{ decode(props.recipe.title) }}</h2>
-                <div v-show="props.recipe.ratings && props.recipe.ratings.ratingValue" class="flex items-center gap-0.5">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-md">{{ decode(liveRecipe?.title) }}</h2>
+                <div v-if="liveRecipe?.ratings && liveRecipe.ratings.ratingValue" class="flex items-center gap-0.5">
                   <template v-for="(_, i) in Array(5)" :key="i">
                     <Star
                       :size="20"
                       :class="[
                         'transition-all duration-300 filter drop-shadow-md',
-                        i < Math.round(parseFloat(props.recipe.ratings.ratingValue)) 
+                        i < Math.round(parseFloat(liveRecipe?.ratings.ratingValue)) 
                           ? 'fill-yellow-300 text-yellow-300' 
                           : 'text-gray-300'
                       ]"
                     />
                   </template>
                   <span class="ml-2 text-sm font-bold text-white drop-shadow-md">
-                    {{ props.recipe.ratings.ratingValue }} <span v-show="props.recipe.ratings.ratingCount">({{ props.recipe.ratings.ratingCount }})</span>
+                    {{ liveRecipe?.ratings.ratingValue }} <span v-show="liveRecipe?.ratings.ratingCount">({{ liveRecipe?.ratings.ratingCount }})</span>
                   </span>
                 </div>
               </div>
               
               <!-- Meta badges -->
               <div class="relative flex flex-wrap gap-2 mb-4">
-                <Badge v-show="props.recipe.publisher" class="bg-primary text-white border-none text-sm py-1 px-3 font-semibold shadow-lg">
-                  {{ decode(props.recipe.publisher) }}
+                <Badge v-if="liveRecipe?.publisher" class="bg-primary text-white border-none text-sm py-1 px-3 font-semibold shadow-lg">
+                  {{ decode(liveRecipe?.publisher) }}
                 </Badge>
-                <Badge v-show="props.recipe.servings" class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
+                <Badge v-if="liveRecipe?.servings" class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
                   <Utensils class="h-4 w-4" />
-                  {{ props.recipe.servings }} servings
+                  {{ liveRecipe?.servings }} servings
                 </Badge>
-                <Badge v-show="props.recipe.totalTime" class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
+                <Badge v-if="liveRecipe?.totalTime" class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
                   <Clock class="h-4 w-4" />
-                  {{ props.recipe.totalTime }} min total
+                  {{ liveRecipe?.totalTime }} min total
                 </Badge>
-                <Badge v-show="props.recipe.prepTime && props.recipe.cookTime" class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
+                <Badge v-if="liveRecipe?.prepTime && liveRecipe?.cookTime" class="bg-black/75 text-white border-none text-sm py-1 px-3 font-semibold shadow-lg gap-1.5">
                   <Clock3 class="h-4 w-4" />
-                  {{ props.recipe.prepTime }}+{{ props.recipe.cookTime }} min
+                  {{ liveRecipe?.prepTime }}+{{ liveRecipe?.cookTime }} min
                 </Badge>
                 <Badge 
-                  v-show="props.recipe.cuisine && props.recipe.cuisine.length > 0"
-                  v-for="c in props.recipe.cuisine" 
+                  v-if="liveRecipe?.cuisine && liveRecipe?.cuisine.length > 0"
+                  v-for="c in liveRecipe?.cuisine" 
                   :key="c"
                   class="bg-primary text-white border-none text-sm py-1 px-3 font-semibold shadow-lg"
                 >
                   {{ c }}
                 </Badge>
                 <Badge 
-                  v-show="props.recipe.categories && props.recipe.categories.length > 0"
-                  v-for="c in props.recipe.categories" 
+                  v-if="liveRecipe?.categories && liveRecipe?.categories.length > 0"
+                  v-for="c in liveRecipe?.categories" 
                   :key="c"
                   class="bg-secondary text-black dark:text-white border-none text-sm py-1 px-3 font-semibold shadow-lg"
                 >
@@ -273,7 +309,7 @@ function createShareableRecipe() {
               </div>
               
               <!-- Description -->
-              <p v-show="props.recipe.description" class="text-sm text-gray-200 leading-snug line-clamp-2 drop-shadow-sm">{{ decode(props.recipe.description) }}</p>
+              <p v-if="liveRecipe?.description" class="text-sm text-gray-200 leading-snug line-clamp-2 drop-shadow-sm">{{ decode(liveRecipe?.description) }}</p>
               
               <!-- Source link, share, favorite, and edit buttons -->
               <div class="absolute top-4 right-4 flex flex-wrap gap-1 px-2 sm:gap-2 sm:px-3">
@@ -309,7 +345,8 @@ function createShareableRecipe() {
                   </div>
                 </div>
                 <a 
-                  :href="props.recipe.url" 
+                  v-if="liveRecipe?.url"
+                  :href="liveRecipe?.url" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   class="bg-primary hover:bg-primary/90 text-white text-xs px-3 py-1.5 rounded-md flex items-center gap-1.5 font-medium shadow-md transition-colors"
@@ -337,7 +374,7 @@ function createShareableRecipe() {
             <h3 class="text-lg font-semibold mb-3 text-primary">Ingredients</h3>
             <ul class="grid grid-cols-1 md:grid-cols-2 gap-2">
               <li 
-                v-for="({ name, quantity, unit }, idx) in props.recipe.ingredients" 
+                v-for="({ name, quantity, unit }, idx) in liveRecipe?.ingredients" 
                 :key="idx"
                 class="flex items-start gap-2"
               >
@@ -357,7 +394,7 @@ function createShareableRecipe() {
             <h3 class="text-lg font-semibold mb-3 text-primary">Instructions</h3>
             <ol class="space-y-4">
               <li 
-                v-for="(step, idx) in props.recipe.instructions" 
+                v-for="(step, idx) in liveRecipe?.instructions" 
                 :key="idx"
                 class="flex gap-4 pb-4 border-b border-border/40 last:border-0 last:pb-0"
               >
@@ -370,10 +407,10 @@ function createShareableRecipe() {
           </div>
 
           <!-- Nutrition -->
-          <div v-show="props.recipe.nutrition && Object.keys(props.recipe.nutrition).length > 0" class="bg-background/50 p-4 rounded-lg">
+          <div v-if="liveRecipe?.nutrition && Object.keys(liveRecipe?.nutrition).length > 0" class="bg-background/50 p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-3 text-primary">Nutrition (per serving)</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              <template v-for="[k, v] in Object.entries(props.recipe.nutrition)" :key="k">
+              <template v-for="[k, v] in Object.entries(liveRecipe?.nutrition)" :key="k">
                 <div v-if="v" class="bg-background rounded p-3 shadow-sm">
                   <span class="block text-xs text-muted-foreground capitalize mb-1">
                     {{ decode(k.replace(/Content$/i, "")) }}
@@ -387,7 +424,8 @@ function createShareableRecipe() {
 
         <CardFooter class="p-6 pt-0 flex justify-end">
           <a
-            :href="props.recipe.url"
+            v-if="liveRecipe?.url"
+            :href="liveRecipe?.url"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors"
@@ -403,7 +441,7 @@ function createShareableRecipe() {
   <!-- Edit Recipe Dialog -->
   <PreviewRecipe 
     v-model:open="showEditDialog"
-    :recipe="props.recipe"
+    :recipe="liveRecipe"
   />
 </template>
 

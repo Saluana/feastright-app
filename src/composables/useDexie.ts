@@ -258,6 +258,10 @@ async function getRecipeById(id: number) {
     return db.recipes.get(id)
 }
 
+function getLiveRecipeById(id: number) {
+    return liveQuery(() => db.recipes.get(id))
+}
+
 async function getRecipeByURL(url: string) {
     return db.recipes.where('url').equals(url).toArray()
 }
@@ -317,4 +321,4 @@ async function deleteCollectionById(id: number) {
 }
 
 export type { History, Favourite, RecipeData, Collections, CollectionWithRecipes }
-export { db, addRecipe, addOrUpdateRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite };
+export { db, addRecipe, addOrUpdateRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite, getLiveRecipeById };
