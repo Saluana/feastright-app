@@ -39,20 +39,30 @@ interface CollectionWithRecipes {
     updatedAt: Date;
 }
 
+interface RecipeEmbedding {
+    id?: number;
+    recipeId: number;
+    embedding: number[];
+    createdAt: Date;
+    updatedAt: Date
+}
+
 const db = new Dexie('RecipeDatabase') as Dexie & {
   recipes: EntityTable<RecipeData, 'id'>
   history: EntityTable<History, 'id'>
   favourites: EntityTable<Favourite, 'id'>
   collections: EntityTable<Collections, 'id'>
+  embeddings: EntityTable<RecipeEmbedding, 'id'>
 };
 
 // Schema declaration:
 // Incremented version number due to schema change for 'recipes' table
-db.version(2).stores({
+db.version(3).stores({
   recipes: '++id, title, url, *images, description, publisher, servings, prepTime, cookTime, totalTime, *cuisine, *categories, favicon, hostUrl', // Corrected 'image' to '*images', made 'cuisine' and 'categories' multiEntry, removed complex objects (video, nutrition, ingredients, instructions, ratings, meta) from direct indexing.
   history: '++id, recipeId, url, title, createdAt',
   favourites: '++id, recipeId, title, url, createdAt',
   collections: '++id, name, recipes, createdAt, updatedAt',
+  embeddings: '++id, recipeId, embedding, createdAt, updatedAt'
 }).upgrade(tx => {
   console.log("Upgrading Dexie schema from version 1 to 2 for 'RecipeDatabase'.");
   // This is a basic upgrade path. If specific data migration for the 'recipes' table
@@ -320,5 +330,34 @@ async function deleteCollectionById(id: number) {
     return db.collections.delete(id)
 }
 
+async function addRecipeEmbedding(embedding: RecipeEmbedding) {
+    return db.embeddings.add(clone(embedding))
+}
+
+async function updateRecipeEmbedding(embedding: RecipeEmbedding) {
+    if (!embedding.id) {
+        throw new Error('Embedding ID is required')
+    }
+
+    const { id, ...changes } = embedding
+    await db.embeddings.update(id, clone(changes))
+}
+
+async function deleteRecipeEmbeddingById(id: number) {
+    return db.embeddings.delete(id)
+}
+
+async function getRecipeEmbeddingById(id: number) {
+    return db.embeddings.get(id)
+}
+
+async function getRecipeEmbeddingsByRecipeId(recipeId: number) {
+    return db.embeddings.where('recipeId').equals(recipeId).toArray()
+}
+
+async function getRecipeEmbeddings() {
+    return db.embeddings.toArray()
+}
+
 export type { History, Favourite, RecipeData, Collections, CollectionWithRecipes }
-export { db, addRecipe, addOrUpdateRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite, getLiveRecipeById };
+export { db, addRecipe, addOrUpdateRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite, getLiveRecipeById, addRecipeEmbedding, updateRecipeEmbedding, deleteRecipeEmbeddingById, getRecipeEmbeddingById, getRecipeEmbeddingsByRecipeId, getRecipeEmbeddings };
