@@ -307,7 +307,7 @@ const addRecipeToCollection = async (recipeId: number, collectionId: number) => 
       v-if="recipe" 
       :recipe="recipe" 
       :open="isRecipeModalOpen" 
-      @update:open="isRecipeModalOpen = $event" 
+      @update:open="isRecipeModalOpen = $event; recipe = null" 
     />
 
     <NewCollection 

@@ -187,7 +187,7 @@ onMounted(async () => {
       v-if="recipe" 
       :recipe="recipe" 
       :open="isRecipeModalOpen" 
-      @update:open="isRecipeModalOpen = $event" 
+      @update:open="isRecipeModalOpen = $event; recipe = null" 
     />
     <AddRecipe 
       v-if="isAddRecipeModalOpen" 

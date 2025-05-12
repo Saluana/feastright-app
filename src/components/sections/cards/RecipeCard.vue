@@ -97,7 +97,11 @@ onUnmounted(() => {
     liveRecipeSubscription.unsubscribe();
     liveRecipeSubscription = null;
   }
-  // ... other cleanup ...
+
+  // Reset state
+  liveRecipe.value = props.recipe;
+
+  
   if (copyNotificationTimer.value) {
     clearTimeout(copyNotificationTimer.value);
   }
