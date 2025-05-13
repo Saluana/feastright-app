@@ -6,6 +6,8 @@ import { initializeTheme } from '@/components/theming/themeManager'
 import './components/theming/themes.css'
 import { useCollecty } from '@/composables/useCollecty'
 import { isOnline } from './composables/useState'
+import { ensureEmbeddingsExistForRecipes } from './composables/useEmbeddings'
+import {getHistory} from '@/composables/useDexie'
 
 // Initialize theme and collecty store
 initializeTheme()
@@ -16,11 +18,18 @@ app.use(router)
 app.mount('#app')
 
 isOnline.value = navigator.onLine
-window.addEventListener('online', () => {
+window.addEventListener('online', async () => {
+    if (isOnline.value) return;
+
     isOnline.value = true
     console.log('[online]', isOnline.value)
+
+    const history = await getHistory()
+    ensureEmbeddingsExistForRecipes(history.map(h => h.recipeId))
 })
+
 window.addEventListener('offline', () => {
+    if (!isOnline.value) return;
     isOnline.value = false
     console.log('[offline]', isOnline.value)
 })
