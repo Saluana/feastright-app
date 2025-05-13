@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { decode } from 'html-entities';
 import { useRouter, useRoute } from 'vue-router';
@@ -219,14 +220,15 @@ function createShareableRecipe() {
 <template>
   <Dialog class="rounded-none" :open="open" @update:open="updateOpen">
     <DialogContent 
-  class="DialogContent px-0 h-screen w-screen md:min-w-[90vw] md:min-h-[99vh] md:max-w-[90vw] md:max-h-[90vh] rounded-none flex flex-col items-center overflow-y-auto scrollbar-thin pt-8"
-  :closeButton="false"
+    class="DialogContent px-0 h-screen w-screen md:min-w-[90vw] md:min-h-[99vh] md:max-w-[90vw] md:max-h-[90vh] rounded-none flex flex-col items-center overflow-y-auto scrollbar-thin pt-8"
     >
-      <DialogHeader class="flex justify-between items-center">
-        <DialogTitle class="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+      <DialogHeader class="pb-4">
+        <DialogTitle  class="hidden text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent text-center">
           {{ decode(liveRecipe?.title) }}
         </DialogTitle>
-  
+        <DialogDescription class="hidden">
+          Detailed recipe information for "{{ decode(liveRecipe?.title) }}".
+        </DialogDescription>
       </DialogHeader>
 
       <Card

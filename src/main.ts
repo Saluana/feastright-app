@@ -4,14 +4,13 @@ import App from './App.vue'
 import router from './router'
 import { initializeTheme } from '@/components/theming/themeManager'
 import './components/theming/themes.css'
-import { useCollecty } from '@/composables/useCollecty'
+
 import { isOnline } from './composables/useState'
 import { ensureEmbeddingsExistForRecipes } from './composables/useEmbeddings'
 import {getHistory} from '@/composables/useDexie'
 
 // Initialize theme and collecty store
 initializeTheme()
-useCollecty()
 
 const app = createApp(App)
 app.use(router)
