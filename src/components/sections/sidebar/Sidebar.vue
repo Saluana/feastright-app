@@ -15,10 +15,11 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from '@/components/ui/dropdown-menu'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { MoreHorizontal, ChevronDown, BookMarked, BookPlus, Album, Search } from 'lucide-vue-next'
-import { getLiveHistory, getLiveFavourites, Favourite, getLiveCollections, CollectionWithRecipes, batchGetRecipes, updateCollection, getCollectionById, RecipeData, deleteFavouriteById, deleteCollectionById, } from '@/composables/useDexie'
+import { getLiveHistory, getLiveFavourites, Favourite, getLiveCollections, CollectionWithRecipes, batchGetRecipes, updateCollection, getCollectionById, RecipeData, deleteFavouriteById, deleteCollectionById, findRecipeIdsWithoutEmbedding, batchAddRecipeEmbeddings, RecipeEmbedding } from '@/composables/useDexie'
 import { ref, onMounted } from 'vue'
 import { Plus, Heart, History as HistoryIcon, Bookmark as BookmarkIcon } from 'lucide-vue-next'
 import { type History } from '@/composables/useDexie'
+import { getRecipeEmbedding, ensureEmbeddingsExistForRecipes } from '@/composables/useEmbeddings'
 // Use liveQuery for reactive history updates
 const liveHistory = getLiveHistory()
 const liveFavourites = getLiveFavourites()
@@ -36,6 +37,7 @@ import { useRoute } from 'vue-router'
 import NewCollection from '@/components/sections/dialogues/NewCollection.vue'
 import SelectCollection from '@/components/sections/dialogues/SelectCollection.vue'
 import SelectRecipe from '@/components/sections/dialogues/SelectRecipe.vue'
+import {isOnline} from '@/composables/useState'
 const isRecipeSelectModalOpen = ref(false)
 const isCollectionModalOpen = ref(false)
 const selectCollectionOpen = ref(false)
@@ -78,8 +80,13 @@ const route = useRoute()
 onMounted(() => {
   // Initialize with current data
   liveHistory.subscribe(
-    (result) => {
+    async (result) => {
       history.value = result.reverse()
+
+      if (isOnline.value) {
+        await ensureEmbeddingsExistForRecipes(result.map(h => h.recipeId))
+      }
+ 
     },
     (error) => {
       console.error('Error in history subscription:', error)

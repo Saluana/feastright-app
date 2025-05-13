@@ -334,6 +334,10 @@ async function addRecipeEmbedding(embedding: RecipeEmbedding) {
     return db.embeddings.add(clone(embedding))
 }
 
+async function batchAddRecipeEmbeddings(embeddings: RecipeEmbedding[]) {
+    return db.embeddings.bulkAdd(embeddings)
+}
+
 async function updateRecipeEmbedding(embedding: RecipeEmbedding) {
     if (!embedding.id) {
         throw new Error('Embedding ID is required')
@@ -359,5 +363,21 @@ async function getRecipeEmbeddings() {
     return db.embeddings.toArray()
 }
 
-export type { History, Favourite, RecipeData, Collections, CollectionWithRecipes }
-export { db, addRecipe, addOrUpdateRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite, getLiveRecipeById, addRecipeEmbedding, updateRecipeEmbedding, deleteRecipeEmbeddingById, getRecipeEmbeddingById, getRecipeEmbeddingsByRecipeId, getRecipeEmbeddings };
+async function checkIfEmbeddingDoesExist(recipeId: number) {
+    const count = await db.embeddings.where('recipeId').equals(recipeId).count()
+    return count > 0
+}
+
+async function findRecipeIdsWithoutEmbedding(recipeIds: number[]): Promise<number[]> {
+    // Get all embeddings that match any of the provided recipeIds
+    const foundEmbeddings = await db.embeddings.where('recipeId').anyOf(recipeIds).primaryKeys();
+    // foundEmbeddings will be the primary keys (usually the row id), but we want the recipeIds that were found
+    // So instead, we should get the recipeIds that exist:
+    const foundRecipeIds = await db.embeddings.where('recipeId').anyOf(recipeIds).toArray();
+    const foundIdsSet = new Set(foundRecipeIds.map(e => e.recipeId));
+    // Return the recipeIds that are NOT in the found set
+    return recipeIds.filter(id => !foundIdsSet.has(id));
+}
+
+export type { History, Favourite, RecipeData, Collections, CollectionWithRecipes, RecipeEmbedding }
+export { db, addRecipe, addOrUpdateRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite, getLiveRecipeById, addRecipeEmbedding, updateRecipeEmbedding, deleteRecipeEmbeddingById, getRecipeEmbeddingById, getRecipeEmbeddingsByRecipeId, getRecipeEmbeddings, checkIfEmbeddingDoesExist, findRecipeIdsWithoutEmbedding, batchAddRecipeEmbeddings };
