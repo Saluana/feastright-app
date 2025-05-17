@@ -1,7 +1,7 @@
 // db.ts
 import Dexie, { type EntityTable, liveQuery } from 'dexie';
 import { type Recipe } from '@/types/Recipe';
-import { z } from 'zod';
+
 
 interface History {
     id?: number;
