@@ -31,6 +31,10 @@ const favourites = ref<Favourite[]>([])
 const recipe = ref<Recipe | null>(null)
 const collections = ref<CollectionWithRecipes[]>([])
 const isRecipeModalOpen = ref(false)
+// Add loading states for each section
+const isHistoryLoading = ref(true)
+const isFavouritesLoading = ref(true)
+const isCollectionsLoading = ref(true)
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
 import { type Recipe } from '@/types/Recipe'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
@@ -100,6 +104,7 @@ onMounted(() => {
         await ensureEmbeddingsExistForRecipes(result.map(h => h.recipeId))
       }
 
+      isHistoryLoading.value = false
     },
     (error) => {
       console.error('Error in history subscription:', error)
@@ -109,6 +114,7 @@ onMounted(() => {
   liveFavourites.subscribe(
     (result) => {
       favourites.value = result
+      isFavouritesLoading.value = false
     },
     (error) => {
       console.error('Error in favourites subscription:', error)
@@ -136,6 +142,7 @@ onMounted(() => {
 
         return col
       }))
+      isCollectionsLoading.value = false
     },
     (error) => {
       console.error('Error in collections subscription:', error)
@@ -235,11 +242,19 @@ const handleRestoreChange = (e: Event) => {
       <SidebarGroup class="pb-3">
         <SidebarGroupLabel class="text-sm font-semibold text-foreground mb-2 px-1">Favourites</SidebarGroupLabel>
         <SidebarGroupContent class="list-none w-full space-y-1 pl-0">
-          <div v-if="favourites.length === 0" class="px-2 py-3 text-center rounded-md bg-muted/40">
+          <div v-if="isFavouritesLoading">
+            <!-- Skeleton loaders for favourites -->
+            <div v-for="i in 3" :key="i" class="flex items-center mb-1 px-2 py-1.5 rounded-md">
+              <div class="h-3.5 w-3.5 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse mr-2 flex-shrink-0"></div>
+              <div class="h-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded w-full"></div>
+              <div class="h-6 w-6 ml-1 bg-transparent"></div>
+            </div>
+          </div>
+          <div v-else-if="favourites.length === 0" class="px-2 py-3 text-center rounded-md bg-muted/40">
             <div class="text-sm text-muted-foreground">No favorites yet</div>
             <div class="text-xs text-muted-foreground mt-1">Heart a recipe to save it here</div>
           </div>
-          <SidebarMenuItem v-for="item in favourites" :key="item.id" class="list-none w-full mb-1 last:mb-0">
+          <SidebarMenuItem v-else v-for="item in favourites" :key="item.id" class="list-none w-full mb-1 last:mb-0">
             <SidebarMenuButton @click="openRecipe(item.url)" class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm group">
 
                 <Heart
@@ -277,11 +292,27 @@ const handleRestoreChange = (e: Event) => {
           </SidebarGroupAction>
         </div>
         <SidebarGroupContent class="space-y-1 pl-0">
-          <div v-if="collections.length === 0" class="px-2 py-3 text-center rounded-md bg-muted/40">
+          <div v-if="isCollectionsLoading">
+            <!-- Skeleton loaders for collections -->
+            <div v-for="i in 2" :key="i" class="mb-2">
+              <div class="flex items-center px-2 py-1.5 rounded-md">
+                <div class="h-3.5 w-3.5 rounded-sm bg-slate-200 dark:bg-slate-700 animate-pulse mr-2 flex-shrink-0"></div>
+                <div class="h-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded w-full"></div>
+                <div class="h-4 w-4 ml-2 bg-slate-200 dark:bg-slate-700 animate-pulse rounded"></div>
+              </div>
+              <!-- Skeleton for collection items -->
+              <div class="pl-6 pt-1 space-y-1" v-if="i === 1">
+                <div v-for="j in 2" :key="j" class="flex items-center px-2 py-1 rounded-md">
+                  <div class="h-3 bg-slate-200 dark:bg-slate-700 animate-pulse rounded w-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else-if="collections.length === 0" class="px-2 py-3 text-center rounded-md bg-muted/40">
             <div class="text-sm text-muted-foreground">No collections yet</div>
             <div class="text-xs text-muted-foreground mt-1">Create a collection to organize recipes</div>
           </div>
-          <Collapsible v-for="collection in collections" :key="collection.id"
+          <Collapsible v-else v-for="collection in collections" :key="collection.id"
             class="group/collapsible mb-1 !w-full last:mb-0">
             <SidebarGroup
               class="!p-0 border-l-0 border-r-0 border-t-0 border-b border-border/30 pb-1 mb-1 last:border-b-0 last:mb-0 last:pb-0">
@@ -340,11 +371,19 @@ const handleRestoreChange = (e: Event) => {
       <SidebarGroup class="pb-3">
         <SidebarGroupLabel class="text-sm font-semibold text-foreground mb-2 px-1">History</SidebarGroupLabel>
         <SidebarGroupContent class="list-none space-y-1 pl-0">
-          <div v-if="history.length === 0" class="px-2 py-3 text-center rounded-md bg-muted/40">
+          <div v-if="isHistoryLoading">
+            <!-- Skeleton loaders for history -->
+            <div v-for="i in 4" :key="i" class="flex items-center mb-1 px-2 py-1.5 rounded-md">
+              <div class="h-3.5 w-3.5 rounded-sm bg-slate-200 dark:bg-slate-700 animate-pulse mr-2 flex-shrink-0"></div>
+              <div class="h-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded w-full"></div>
+              <div class="h-6 w-6 ml-1 bg-transparent"></div>
+            </div>
+          </div>
+          <div v-else-if="history.length === 0" class="px-2 py-3 text-center rounded-md bg-muted/40">
             <div class="text-sm text-muted-foreground">No history yet</div>
             <div class="text-xs text-muted-foreground mt-1">View recipes to see them here</div>
           </div>
-          <SidebarMenuItem v-for="item in history" :key="item.id" class="list-none w-full mb-1 last:mb-0">
+          <SidebarMenuItem v-else v-for="item in history" :key="item.id" class="list-none w-full mb-1 last:mb-0">
             <SidebarMenuButton v-if="!item.isTrash" @click="openRecipe(item.url)" class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm">
                 <HistoryIcon class="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" /> <span class="truncate">{{
                   item.title }}</span>
