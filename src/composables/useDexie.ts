@@ -9,6 +9,7 @@ interface History {
     url: string;
     title: string;
     createdAt: Date;
+    isTrash?: boolean;
 }
 
 interface Favourite {
@@ -58,14 +59,14 @@ const db = new Dexie('RecipeDatabase') as Dexie & {
 
 // Schema declaration:
 // Incremented version number due to schema change for 'recipes' table
-db.version(4).stores({
+db.version(7).stores({
   recipes: '++id, title, url, *images, description, publisher, servings, prepTime, cookTime, totalTime, *cuisine, *categories, favicon, hostUrl', // Corrected 'image' to '*images', made 'cuisine' and 'categories' multiEntry, removed complex objects (video, nutrition, ingredients, instructions, ratings, meta) from direct indexing.
-  history: '++id, recipeId, url, title, createdAt',
-  favourites: '++id, recipeId, title, url, createdAt',
+  history: '++id, &recipeId, url, title, createdAt, isTrash',
+  favourites: '++id, &recipeId, title, url, createdAt',
   collections: '++id, name, recipes, createdAt, updatedAt',
-  embeddings: '++id, recipeId, title, embedding, createdAt, updatedAt'
+  embeddings: '++id, &recipeId, title, embedding, createdAt, updatedAt'
 }).upgrade(tx => {
-  console.log("Upgrading Dexie schema from version 1 to 4 for 'RecipeDatabase'.");
+  console.log("Upgrading Dexie schema from version 1 to 5 for 'RecipeDatabase'.");
   // This is a basic upgrade path. If specific data migration for the 'recipes' table
   // (e.g., renaming 'image' to 'images' and moving data) was needed, it would go here.
   // Given the console log showed 'images: Array(0)', it's likely 'image' was an unused or incorrect index.
@@ -123,6 +124,7 @@ async function addRecipe(recipe: RecipeData): Promise<number | undefined> {
     try {
         const newId = await db.recipes.add(recipeToAdd);
         console.log("Recipe added successfully to Dexie with ID:", newId);
+
         return newId;
     } catch (error) {
         console.error("DexieError: Error adding recipe to db.recipes:", error);
@@ -151,17 +153,21 @@ async function addHistory(recipe: RecipeData) {
         return
     }
 
-   const newId = await db.history.add({
+   const newId = await db.history.put({
         recipeId: recipe.id,
         url: recipe.url,
         title: recipe.title,
-        createdAt: new Date()
+        createdAt: new Date(),
+        isTrash: false
     })
     
     return newId
 }
+async function moveHistoryToTrash(historyId: number) {
+    await db.history.update(historyId, { isTrash: true })
+}
 
-async function addOrUpdateHistory(recipe: RecipeData) {
+async function addOrUpdateHistory(recipe: RecipeData, isTrash: boolean = false) {
     if (!recipe.id) {
         throw new Error('Recipe ID is required')
     }
@@ -170,7 +176,8 @@ async function addOrUpdateHistory(recipe: RecipeData) {
         recipeId: recipe.id,
         url: recipe.url,
         title: recipe.title,
-        createdAt: new Date()
+        createdAt: new Date(),
+        isTrash: isTrash
     }
     
     try {
@@ -184,7 +191,7 @@ async function addOrUpdateHistory(recipe: RecipeData) {
             })
         } else {
             // Add new history item
-            return await db.history.add(historyItem)
+            return await db.history.put(historyItem)
         }
     } catch (error) {
         console.error("Error updating history:", error)
@@ -193,6 +200,7 @@ async function addOrUpdateHistory(recipe: RecipeData) {
 }
 
 async function addFavourite(recipe: RecipeData) {
+
     if (!recipe.id) {
         throw new Error('Recipe ID is required')
     }
@@ -202,7 +210,7 @@ async function addFavourite(recipe: RecipeData) {
         return
     }
 
-    const newId = await db.favourites.add({
+    const newId = await db.favourites.put({
         recipeId: recipe.id,
         title: recipe.title,
         url: recipe.url,
@@ -210,10 +218,11 @@ async function addFavourite(recipe: RecipeData) {
     })
 
     return newId
+
 }
 
 async function addCollection(collection: Collections) {
-    const newId = await db.collections.add(clone(collection))
+    const newId = await db.collections.put(clone(collection))
     return newId
 }
 
@@ -285,6 +294,17 @@ async function deleteRecipeById(id: number) {
     })
 }
 
+async function addFavouriteByRecipeId(recipeId: number) {
+    const doesExist = await db.favourites.where('recipeId').equals(recipeId).count()
+    if (doesExist > 0) {
+        return
+    }
+    
+    const recipe = await getRecipeById(recipeId)
+    if (!recipe) return
+    return db.favourites.put({ recipeId, title: recipe.title, url: recipe.url, createdAt: new Date() })
+}
+
 async function deleteHistoryById(id: number) {
     return db.history.delete(id)
 }
@@ -332,11 +352,11 @@ async function deleteCollectionById(id: number) {
 }
 
 async function addRecipeEmbedding(embedding: RecipeEmbedding) {
-    return db.embeddings.add(clone(embedding))
+    return db.embeddings.put(clone(embedding))
 }
 
 async function batchAddRecipeEmbeddings(embeddings: RecipeEmbedding[]) {
-    return db.embeddings.bulkAdd(embeddings)
+    return db.embeddings.bulkPut(embeddings.map(embedding => clone(embedding)))
 }
 
 async function updateRecipeEmbedding(embedding: RecipeEmbedding) {
@@ -381,4 +401,4 @@ async function findRecipeIdsWithoutEmbedding(recipeIds: number[]): Promise<numbe
 }
 
 export type { History, Favourite, RecipeData, Collections, CollectionWithRecipes, RecipeEmbedding }
-export { db, addRecipe, addOrUpdateRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite, getLiveRecipeById, addRecipeEmbedding, updateRecipeEmbedding, deleteRecipeEmbeddingById, getRecipeEmbeddingById, getRecipeEmbeddingsByRecipeId, getRecipeEmbeddings, checkIfEmbeddingDoesExist, findRecipeIdsWithoutEmbedding, batchAddRecipeEmbeddings };
+export { db, addRecipe, addOrUpdateRecipe, addHistory, addFavourite, getHistory, getLiveHistory, getFavourites, getLiveFavourites, getRecipes, getRecipeById, getRecipeByURL, deleteRecipeById, deleteHistoryById, deleteFavouriteById, deleteFavouriteByRecipeId, deleteCollectionById, addCollection, getCollections, getLiveCollections, batchGetRecipes, updateCollection, getCollectionById, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite, getLiveRecipeById, addRecipeEmbedding, updateRecipeEmbedding, deleteRecipeEmbeddingById, getRecipeEmbeddingById, getRecipeEmbeddingsByRecipeId, getRecipeEmbeddings, checkIfEmbeddingDoesExist, findRecipeIdsWithoutEmbedding, batchAddRecipeEmbeddings, addFavouriteByRecipeId, moveHistoryToTrash };

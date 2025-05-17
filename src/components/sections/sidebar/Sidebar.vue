@@ -15,8 +15,8 @@ import {
 import SearchInput from "./SearchInput.vue"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { MoreHorizontal, ChevronDown, BookMarked, BookPlus, Album, Search } from 'lucide-vue-next'
-import { getLiveHistory, getLiveFavourites, Favourite, getLiveCollections, CollectionWithRecipes, batchGetRecipes, updateCollection, getCollectionById, RecipeData, deleteFavouriteById, deleteCollectionById, findRecipeIdsWithoutEmbedding, batchAddRecipeEmbeddings, RecipeEmbedding, getRecipeById } from '@/composables/useDexie'
+import { MoreHorizontal, ChevronDown, BookMarked, BookPlus, Album, Search, Trash } from 'lucide-vue-next'
+import { getLiveHistory, getLiveFavourites, Favourite, getLiveCollections, CollectionWithRecipes, batchGetRecipes, updateCollection, getCollectionById, RecipeData, deleteFavouriteById, deleteCollectionById, moveHistoryToTrash, getRecipeById, addFavouriteByRecipeId } from '@/composables/useDexie'
 import { ref, onMounted } from 'vue'
 import { Plus, Heart, History as HistoryIcon, Bookmark as BookmarkIcon } from 'lucide-vue-next'
 import { type History } from '@/composables/useDexie'
@@ -34,7 +34,7 @@ const isRecipeModalOpen = ref(false)
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
 import { type Recipe } from '@/types/Recipe'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
-import { getRecipeByURL } from '@/composables/useDexie'
+import { getRecipeByURL, addFavourite } from '@/composables/useDexie'
 import { useRoute } from 'vue-router'
 import NewCollection from '@/components/sections/dialogues/NewCollection.vue'
 import SelectCollection from '@/components/sections/dialogues/SelectCollection.vue'
@@ -60,6 +60,10 @@ const handleCollectionSelected = (collectionId: number) => {
 function handleRecipeSelected(recipe: History) {
   console.log(recipe)
   currentRecipe.value = recipe
+}
+
+function trashHistory(historyId: number) {
+  moveHistoryToTrash(historyId)
 }
 
 async function handleSelectRecipeUpdate(url: string) {
@@ -341,10 +345,34 @@ const handleRestoreChange = (e: Event) => {
             <div class="text-xs text-muted-foreground mt-1">View recipes to see them here</div>
           </div>
           <SidebarMenuItem v-for="item in history" :key="item.id" class="list-none w-full mb-1 last:mb-0">
-            <SidebarMenuButton @click="openRecipe(item.url)" class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm">
+            <SidebarMenuButton v-if="!item.isTrash" @click="openRecipe(item.url)" class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm">
                 <HistoryIcon class="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" /> <span class="truncate">{{
                   item.title }}</span>
             </SidebarMenuButton>
+            <DropdownMenu v-if="!item.isTrash">
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuAction class="h-6 w-6 hover:bg-muted rounded-sm opacity-70 hover:opacity-100">
+                  <MoreHorizontal class="h-3.5 w-3.5" />
+                </SidebarMenuAction>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="right" align="start" class="w-48">
+                <DropdownMenuItem v-if="item.id" @click="addFavouriteByRecipeId(item.recipeId)"
+                  class="cursor-pointer ">
+                  <Heart class="h-3.5 w-3.5 mr-2 text-primary" />
+                  <span>Add to Favourites</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem @click="handleRecipeSelected(item); selectCollectionOpen = true"
+                  class="cursor-pointer">
+                  <BookPlus class="h-3.5 w-3.5 mr-2 text-muted-foreground" />
+                  <span>Add to Collection</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem v-if="item.id" @click="trashHistory(item?.id)"
+                  class="cursor-pointer text-destructive focus:text-destructive">
+                  <Trash class="h-3.5 w-3.5 mr-2" />
+                  <span>Move to Trash</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarGroupContent>
       </SidebarGroup>

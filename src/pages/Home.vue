@@ -19,6 +19,7 @@ import { isOnline } from '@/composables/useState'
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
 import { addRecipe, addHistory, getRecipeByURL, RecipeData } from '@/composables/useDexie'
 import AddRecipe from '@/components/sections/dialogues/AddRecipe.vue'
+import { ensureEmbeddingsExistForRecipes } from '@/composables/useEmbeddings'
 
 const route = useRoute()
 const recipeUrl = ref('')
@@ -38,8 +39,10 @@ const importRecipe = async () => {
     recipe.value = { ...recipeData, id: recipeId }
     
     if (recipeId) {
-      addHistory({ ...recipe.value, id: recipeId })
+      await addHistory({ ...recipe.value, id: recipeId })
+      ensureEmbeddingsExistForRecipes([recipeId])
     }
+
   } else {
     toast({
       title: 'Error',
