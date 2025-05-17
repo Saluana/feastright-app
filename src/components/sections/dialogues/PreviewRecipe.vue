@@ -40,12 +40,12 @@ watch(() => props.recipe, (newRecipe) => {
     editableRecipe.value = JSON.parse(JSON.stringify(newRecipe));
     // Ensure cuisine and categories are arrays if they might be undefined/null from newRecipe
     if (editableRecipe.value) {
-        if (!Array.isArray(editableRecipe.value.cuisine)) {
-            editableRecipe.value.cuisine = [];
-        }
-        if (!Array.isArray(editableRecipe.value.categories)) {
-            editableRecipe.value.categories = [];
-        }
+      if (!Array.isArray(editableRecipe.value.cuisine)) {
+        editableRecipe.value.cuisine = [];
+      }
+      if (!Array.isArray(editableRecipe.value.categories)) {
+        editableRecipe.value.categories = [];
+      }
     }
   } else {
     editableRecipe.value = null;
@@ -87,7 +87,7 @@ const formatTime = (minutes: number): string => {
   if (!minutes) return 'N/A';
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  
+
   if (hours > 0) {
     return `${hours}h ${mins > 0 ? `${mins}m` : ''}`;
   }
@@ -97,11 +97,11 @@ const formatTime = (minutes: number): string => {
 // Parse time string to minutes
 const parseTime = (timeString: string): number => {
   if (!timeString || timeString === 'N/A') return 0;
-  
+
   // Handle hours and minutes format (e.g., "1h 30m" or "45m")
   const hoursMatch = timeString.match(/([\d.]+)h/);
   const minutesMatch = timeString.match(/([\d.]+)m/);
-  
+
   let totalMinutes = 0;
   if (hoursMatch && hoursMatch[1]) {
     totalMinutes += parseInt(hoursMatch[1]) * 60;
@@ -109,14 +109,14 @@ const parseTime = (timeString: string): number => {
   if (minutesMatch && minutesMatch[1]) {
     totalMinutes += parseInt(minutesMatch[1]);
   }
-  
+
   return totalMinutes;
 };
 
 // Helper function to add a new ingredient
 const addIngredient = () => {
   if (!editableRecipe.value) return;
-  
+
   editableRecipe.value.ingredients.push({
     name: '',
     quantity: 0,
@@ -127,62 +127,81 @@ const addIngredient = () => {
 // Helper function to remove an ingredient
 const removeIngredient = (index: number) => {
   if (!editableRecipe.value) return;
-  
+
   editableRecipe.value.ingredients.splice(index, 1);
 };
 
 // Helper function to add a new instruction
 const addInstruction = () => {
   if (!editableRecipe.value) return;
-  
+
   editableRecipe.value.instructions.push('');
 };
 
 // Helper function to remove an instruction
 const removeInstruction = (index: number) => {
   if (!editableRecipe.value) return;
-  
+
   editableRecipe.value.instructions.splice(index, 1);
+};
+
+const newImageUrl = ref('');
+
+const updateImageUrl = () => {
+  if (editableRecipe.value && newImageUrl.value) {
+    // Validate URL format
+    try {
+      new URL(newImageUrl.value);
+      editableRecipe.value.images = [newImageUrl.value];
+      newImageUrl.value = '';
+    } catch (e) {
+      toast({
+        title: 'Invalid URL',
+        description: 'Please enter a valid image URL',
+        variant: 'destructive',
+      });
+    }
+  }
 };
 
 const saveRecipe = async () => {
   if (!editableRecipe.value) return;
 
   console.log(editableRecipe.value);
-  
+
   try {
     isSaving.value = true;
-    
+
     // Convert Recipe to RecipeData by casting
     const recipeData: RecipeData = editableRecipe.value as RecipeData;
     const isUpdating = recipeData.id !== undefined;
-    
+
     console.log('[saveRecipe] isUpdating', isUpdating);
 
     // Only generate a new URL if this is a new recipe (no URL)
     if (!recipeData.url) {
       recipeData.url = recipeData.title + '-' + Math.random().toString(8).substring(2, 8);
     }
-    
+
     // Use addOrUpdateRecipe to handle both new and existing recipes
     const id = await addOrUpdateRecipe(recipeData);
-    
+
     if (id) {
       // Add to history
       await addOrUpdateHistory({
         ...recipeData,
         id
       });
-      
+
       toast({
         title: 'Success!',
         description: isUpdating ? 'Recipe updated successfully' : 'Recipe saved to your collection',
       });
 
       if (isUpdating && recipeData.id) {
-        console.log('[saveRecipe] updating favorite');  
+        console.log('[saveRecipe] updating favorite');
         const isFavorite = await getFavouriteByRecipeId(recipeData.id)
-        
+
         if (isFavorite) {
           console.log('[saveRecipe] favorite found', isFavorite);
           await updateFavourite({
@@ -222,120 +241,194 @@ watch(() => props.recipe, (newValue) => {
     <DialogContent class="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle class="text-2xl font-bold mb-2">
-          <Input 
-            v-if="editableRecipe" 
-            v-model="editableRecipe.title" 
-            class="text-2xl font-bold" 
-            placeholder="Recipe Title"
-          />
+          <Input v-if="editableRecipe" v-model="editableRecipe.title" class="text-2xl font-bold"
+            placeholder="Recipe Title" />
           <span v-else>Recipe Preview</span>
         </DialogTitle>
         <div v-if="editableRecipe" class="mb-2">
-          <Textarea 
-            v-model="editableRecipe.description" 
-            placeholder="Add a brief description of your recipe"
-            class="resize-none"
-            rows="2"
-          />
+          <Textarea v-model="editableRecipe.description" placeholder="Add a brief description of your recipe"
+            class="resize-none" rows="2" />
         </div>
       </DialogHeader>
 
-      <div v-if="editableRecipe" class="py-4">
-        <!-- Recipe image and overview -->
-        <div class="mb-6 flex flex-col sm:flex-row gap-6">
-          <div class="sm:w-1/3">
-            <div 
-              v-if="editableRecipe.images && editableRecipe.images.length > 0" 
-              class="overflow-hidden rounded-lg aspect-square mb-4 relative group"
-            >
-              <img 
-                :src="editableRecipe.images[0]" 
-                :alt="editableRecipe.title" 
-                class="object-cover w-full h-full"
-              />
-              <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Button variant="outline" size="sm" class="text-white border-white hover:bg-white hover:bg-opacity-20">
-                  <EditIcon class="h-4 w-4 mr-2" /> Change Image
-                </Button>
+      <div v-if="editableRecipe" class="py-4 flex flex-col">
+        <!-- Recipe image section -->
+        <div class="mb-8 bg-white dark:bg-slate-800  dark:border-slate-700 overflow-hidden">
+          <div class="flex flex-col md:flex-row">
+            <!-- Image Preview -->
+            <div class="relative md:w-1/2 aspect-[4/3] bg-slate-100 dark:bg-slate-700/50">
+              <div v-if="editableRecipe.images && editableRecipe.images[0]" class="relative h-full w-full group">
+                <img :src="editableRecipe.images[0]" :alt="editableRecipe.title"
+                  class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                  <Button variant="outline" @click="editableRecipe.images = []" size="sm"
+                    class="bg-white/90 hover:bg-white text-slate-800 border-white/50 backdrop-blur-sm">
+                    <Trash class="h-4 w-4 mr-2" />
+                    Remove Image
+                  </Button>
+                </div>
+              </div>
+              <div v-else class="h-full flex flex-col items-center justify-center p-6 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                  class="text-slate-300 dark:text-slate-600 mb-3">
+                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+                <p class="text-slate-500 dark:text-slate-400 font-medium mb-1">No image selected</p>
+                <p class="text-sm text-slate-400 dark:text-slate-500">Add an image URL below</p>
               </div>
             </div>
-            <div 
-              v-else 
-              class="overflow-hidden rounded-lg aspect-square mb-4 bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center text-slate-400 gap-2"
-            >
-              <span>No image available</span>
-              <Button variant="outline" size="sm">
-                <Plus class="h-4 w-4 mr-2" /> Add Image
-              </Button>
+
+            <!-- Image URL Input -->
+            <div class="p-6 md:p-8 flex-1 flex flex-col justify-center">
+              <div class="space-y-4">
+                <div>
+                  <Label for="imageUrl" class="text-base font-medium flex items-center gap-2 text-slate-700 dark:text-slate-200 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                      <circle cx="9" cy="9" r="2" />
+                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                    </svg>
+                    Recipe Image
+                  </Label>
+                  <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">
+                    Add a beautiful image to make your recipe stand out
+                  </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                  <div class="flex-1">
+                    <Input 
+                      id="imageUrl" 
+                      v-model="newImageUrl" 
+                      placeholder="https://example.com/your-recipe-image.jpg"
+                      @keyup.enter="updateImageUrl" 
+                      class="w-full"
+                    />
+                  </div>
+                  <Button 
+                    type="button" 
+                    @click="updateImageUrl" 
+                    :disabled="!newImageUrl"
+                    class="whitespace-nowrap"
+                  >
+                    <Upload class="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
+                </div>
+                <p class="text-xs text-slate-400 dark:text-slate-500">
+                  Supports JPG, PNG, and WebP formats. Max file size 5MB.
+                </p>
+              </div>
+            </div>
+        </div>
+
+        <!-- Recipe Details Section -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl   dark:border-slate-700 p-6 mb-8">
+          <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            Recipe Details
+          </h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Servings -->
+            <div class="bg-slate-50 dark:bg-slate-700/30 rounded-lg p-4 border border-slate-100 dark:border-slate-700">
+              <Label for="servings" class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1 block">Servings</Label>
+              <div class="flex items-center">
+                <Input 
+                  id="servings" 
+                  :model-value="editableRecipe?.servings"
+                  @update:model-value="val => { if (editableRecipe) editableRecipe.servings = Number(val) }"
+                  type="number" 
+                  min="1" 
+                  class="w-20 text-center text-lg font-semibold text-slate-800 dark:text-white bg-transparent border-0 p-0"
+                />
+                <span class="ml-2 text-slate-600 dark:text-slate-300">servings</span>
+              </div>
+            </div>
+
+
+            <!-- Prep Time -->
+            <div class="bg-slate-50 dark:bg-slate-700/30 rounded-lg p-4 border border-slate-100 dark:border-slate-700">
+              <Label for="prepTime" class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1 block">Prep Time</Label>
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                  class="text-emerald-500 mr-2">
+                  <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+                  <path d="M12 6v6l4 2" />
+                </svg>
+                <Input 
+                  id="prepTime" 
+                  :model-value="editableRecipe?.prepTime"
+                  @update:model-value="val => { if (editableRecipe) editableRecipe.prepTime = Number(val) }"
+                  type="number" 
+                  min="0" 
+                  class="w-16 text-center text-lg font-semibold text-slate-800 dark:text-white bg-transparent border-0 p-0"
+                />
+                <span class="ml-1 text-slate-600 dark:text-slate-300">mins</span>
+              </div>
+            </div>
+
+            <!-- Cook Time -->
+            <div class="bg-slate-50 dark:bg-slate-700/30 rounded-lg p-4 border border-slate-100 dark:border-slate-700">
+              <Label for="cookTime" class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1 block">Cook Time</Label>
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                  class="text-amber-500 mr-2">
+                  <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" />
+                  <path d="M12 6v6l4 2" />
+                </svg>
+                <Input 
+                  id="cookTime" 
+                  :model-value="editableRecipe?.cookTime"
+                  @update:model-value="val => { if (editableRecipe) editableRecipe.cookTime = Number(val) }"
+                  type="number" 
+                  min="0" 
+                  class="w-16 text-center text-lg font-semibold text-slate-800 dark:text-white bg-transparent border-0 p-0"
+                />
+                <span class="ml-1 text-slate-600 dark:text-slate-300">mins</span>
+              </div>
+            </div>
+
+            <!-- Total Time (auto-calculated) -->
+            <div class="bg-slate-50 dark:bg-slate-700/30 rounded-lg p-4 border border-slate-100 dark:border-slate-700">
+              <div class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Total Time</div>
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                  class="text-rose-500 mr-2">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span class="text-lg font-semibold text-slate-800 dark:text-white">
+                  {{ (Number(editableRecipe?.prepTime || 0) + Number(editableRecipe?.cookTime || 0)) || '0' }} mins
+                </span>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div class="sm:w-2/3 space-y-4">
-            <!-- Recipe quick facts -->
-            <div class="space-y-4">
-              <div class="grid grid-cols-2 gap-3">
-                <div class="space-y-1">
-                  <Label for="servings">Servings</Label>
-                  <Input 
-                    id="servings" 
-                    v-model="editableRecipe.servings" 
-                    type="number" 
-                    min="1"
-                    placeholder="e.g., 4"
-                  />
-                </div>
-                
-                <div class="space-y-1">
-                  <Label for="prepTime">Prep Time (minutes)</Label>
-                  <Input 
-                    id="prepTime" 
-                    v-model="editableRecipe.prepTime" 
-                    type="number" 
-                    min="0"
-                    placeholder="e.g., 15"
-                  />
-                </div>
-                
-                <div class="space-y-1">
-                  <Label for="cookTime">Cook Time (minutes)</Label>
-                  <Input 
-                    id="cookTime" 
-                    v-model="editableRecipe.cookTime" 
-                    type="number" 
-                    min="0"
-                    placeholder="e.g., 30"
-                  />
-                </div>
-                
-                <div class="space-y-1">
-                  <Label for="totalTime">Total Time (minutes)</Label>
-                  <Input 
-                    id="totalTime" 
-                    v-model="editableRecipe.totalTime" 
-                    type="number" 
-                    min="0"
-                    placeholder="e.g., 45"
-                  />
-                </div>
-              </div>
-            </div>
+        <div class="space-y-5">
 
             <!-- Cuisine field -->
             <div class="space-y-1">
               <Label>Cuisine (comma-separated)</Label>
-              <Input 
-                v-model="cuisineString" 
-                placeholder="e.g., Italian, Mediterranean"
-              />
+              <Input v-model="cuisineString" placeholder="e.g., Italian, Mediterranean" />
             </div>
-            
+
             <!-- Categories field -->
             <div class="space-y-1">
               <Label>Categories (comma-separated)</Label>
-              <Input 
-                v-model="categoriesString" 
-                placeholder="e.g., Dinner, Pasta"
-              />
+              <Input v-model="categoriesString" placeholder="e.g., Dinner, Pasta" />
             </div>
           </div>
         </div>
@@ -354,25 +447,19 @@ watch(() => props.recipe, (newValue) => {
             <div class="space-y-2">
               <div class="flex items-center justify-between">
                 <h3 class="font-semibold text-lg">Nutrition Information</h3>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  @click="editableRecipe.meta.includesNutrition = !editableRecipe.meta.includesNutrition"
-                >
+                <Button size="sm" variant="outline"
+                  @click="editableRecipe.meta.includesNutrition = !editableRecipe.meta.includesNutrition">
                   {{ editableRecipe.meta.includesNutrition ? 'Hide Nutrition' : 'Show Nutrition' }}
                 </Button>
               </div>
-              
+
               <div v-if="editableRecipe.meta.includesNutrition" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div v-for="(value, key) in editableRecipe.nutrition" :key="key" class="space-y-1">
                   <Label :for="`nutrition-${key}`" class="capitalize text-sm">
                     {{ key.replace('Content', '') }}
                   </Label>
-                  <Input 
-                    :id="`nutrition-${key}`"
-                    v-model="editableRecipe.nutrition[key]" 
-                    placeholder="e.g., 200 kcal"
-                  />
+                  <Input :id="`nutrition-${key}`" v-model="editableRecipe.nutrition[key]"
+                    placeholder="e.g., 200 kcal" />
                 </div>
               </div>
             </div>
@@ -386,71 +473,43 @@ watch(() => props.recipe, (newValue) => {
                 <Plus class="h-4 w-4" /> Add Ingredient
               </Button>
             </div>
-            
+
             <div class="space-y-4">
-              <div 
-                v-for="(ingredient, index) in editableRecipe.ingredients" 
-                :key="index"
-                class="p-3 border rounded-md relative group"
-              >
+              <div v-for="(ingredient, index) in editableRecipe.ingredients" :key="index"
+                class="p-3 border rounded-md relative group">
                 <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
+                  <Button size="sm" variant="ghost"
                     class="h-8 w-8 p-0 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50"
-                    @click="removeIngredient(index)"
-                  >
+                    @click="removeIngredient(index)">
                     <Trash class="h-4 w-4" />
                   </Button>
                 </div>
-                
+
                 <div class="grid grid-cols-12 gap-3">
                   <div class="col-span-3">
                     <Label :for="`quantity-${index}`" class="text-xs">Quantity</Label>
-                    <Input 
-                      :id="`quantity-${index}`"
-                      v-model.number="ingredient.quantity"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      placeholder="e.g., 2"
-                    />
+                    <Input :id="`quantity-${index}`" v-model.number="ingredient.quantity" type="number" min="0"
+                      step="0.1" placeholder="e.g., 2" />
                   </div>
-                  
+
                   <div class="col-span-3">
                     <Label :for="`unit-${index}`" class="text-xs">Unit</Label>
-                    <Input 
-                      :id="`unit-${index}`"
-                      v-if="ingredient.unit !== null"
-                      v-model="ingredient.unit"
-                      placeholder="e.g., tsp"
-                    />
-                    <Input 
-                      :id="`unit-${index}-null`"
-                      v-else
-                      @input="ingredient.unit = $event.target.value"
-                      placeholder="e.g., tsp"
-                    />
+                    <Input :id="`unit-${index}`" v-if="ingredient.unit !== null" v-model="ingredient.unit"
+                      placeholder="e.g., tsp" />
+                    <Input :id="`unit-${index}-null`" v-else @input="ingredient.unit = $event.target.value"
+                      placeholder="e.g., tsp" />
                   </div>
-                  
+
                   <div class="col-span-6">
                     <Label :for="`ingredient-${index}`" class="text-xs">Ingredient</Label>
-                    <Input 
-                      :id="`ingredient-${index}`"
-                      v-if="ingredient.name !== null"
-                      v-model="ingredient.name"
-                      placeholder="e.g., Salt"
-                    />
-                    <Input 
-                      :id="`ingredient-${index}-null`"
-                      v-else
-                      @input="ingredient.name = $event.target.value"
-                      placeholder="e.g., Salt"
-                    />
+                    <Input :id="`ingredient-${index}`" v-if="ingredient.name !== null" v-model="ingredient.name"
+                      placeholder="e.g., Salt" />
+                    <Input :id="`ingredient-${index}-null`" v-else @input="ingredient.name = $event.target.value"
+                      placeholder="e.g., Salt" />
                   </div>
                 </div>
               </div>
-              
+
               <div v-if="editableRecipe.ingredients.length === 0" class="text-center py-8 text-slate-500">
                 <p>No ingredients added yet. Click the button above to add one.</p>
               </div>
@@ -465,45 +524,31 @@ watch(() => props.recipe, (newValue) => {
                 <Plus class="h-4 w-4" /> Add Step
               </Button>
             </div>
-            
+
             <div class="space-y-4">
-              <div 
-                v-for="(instruction, index) in editableRecipe.instructions" 
-                :key="index"
-                class="p-3 border rounded-md relative group"
-              >
+              <div v-for="(instruction, index) in editableRecipe.instructions" :key="index"
+                class="p-3 border rounded-md relative group">
                 <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
+                  <Button size="sm" variant="ghost"
                     class="h-8 w-8 p-0 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50"
-                    @click="removeInstruction(index)"
-                  >
+                    @click="removeInstruction(index)">
                     <Trash class="h-4 w-4" />
                   </Button>
                 </div>
-                
+
                 <div class="flex gap-3">
-                  <div class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
+                  <div
+                    class="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
                     {{ index + 1 }}
                   </div>
-                  <Textarea 
-                    v-if="editableRecipe.instructions[index] !== null"
-                    v-model="editableRecipe.instructions[index]" 
-                    placeholder="Describe this step..." 
-                    class="flex-grow resize-none"
-                    rows="2"
-                  />
-                  <Textarea 
-                    v-else
-                    @input="editableRecipe.instructions[index] = $event.target.value"
-                    placeholder="Describe this step..." 
-                    class="flex-grow resize-none"
-                    rows="2"
-                  />
+                  <Textarea v-if="editableRecipe.instructions[index] !== null"
+                    v-model="editableRecipe.instructions[index]" placeholder="Describe this step..."
+                    class="flex-grow resize-none" rows="2" />
+                  <Textarea v-else @input="editableRecipe.instructions[index] = $event.target.value"
+                    placeholder="Describe this step..." class="flex-grow resize-none" rows="2" />
                 </div>
               </div>
-              
+
               <div v-if="editableRecipe.instructions.length === 0" class="text-center py-8 text-slate-500">
                 <p>No instructions added yet. Click the button above to add a step.</p>
               </div>
@@ -513,18 +558,10 @@ watch(() => props.recipe, (newValue) => {
       </div>
 
       <DialogFooter>
-        <Button 
-          @click="emit('update:open', false)"
-          variant="outline"
-          class="mr-2"
-        >
+        <Button @click="emit('update:open', false)" variant="outline" class="mr-2">
           Cancel
         </Button>
-        <Button 
-          @click="saveRecipe"
-          :disabled="isSaving"
-          class="bg-emerald-600 hover:bg-emerald-700 text-white"
-        >
+        <Button @click="saveRecipe" :disabled="isSaving" class="bg-emerald-600 hover:bg-emerald-700 text-white">
           <Save class="mr-2 h-4 w-4" v-if="!isSaving" />
           <span v-else class="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
           {{ isSaving ? 'Saving...' : 'Save Recipe' }}
