@@ -67,6 +67,20 @@ const cuisineString = computed({
   }
 });
 
+const publisherString = computed({
+  get: () => {
+    if (editableRecipe.value) {
+      return editableRecipe.value.publisher;
+    }
+    return '';
+  },
+  set: (newValue: string) => {
+    if (editableRecipe.value) {
+      editableRecipe.value.publisher = newValue;
+    }
+  }
+});
+
 // Computed property for categories string
 const categoriesString = computed({
   get: () => {
@@ -238,7 +252,7 @@ watch(() => props.recipe, (newValue) => {
 
 <template>
   <Dialog :open="open" @update:open="(value) => emit('update:open', value)">
-    <DialogContent class="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+    <DialogContent class="sm:max-w-[700px] max-h-[90vh] overflow-y-auto DialogContent pt-12">
       <DialogHeader>
         <DialogTitle class="text-2xl font-bold mb-2">
           <Input v-if="editableRecipe" v-model="editableRecipe.title" class="text-2xl font-bold"
@@ -418,6 +432,12 @@ watch(() => props.recipe, (newValue) => {
         </div>
 
         <div class="space-y-5">
+
+            <!-- Publisher field -->
+            <div class="space-y-1">
+              <Label>Publisher</Label>
+              <Input v-model="publisherString" placeholder="e.g., Italian, Mediterranean" />
+            </div>
 
             <!-- Cuisine field -->
             <div class="space-y-1">
