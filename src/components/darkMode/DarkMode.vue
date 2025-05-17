@@ -19,6 +19,11 @@ const toggleDarkMode = () => {
   isDark.value = !isDark.value
   document.documentElement.classList.toggle('dark', isDark.value)
   localStorage.setItem('darkMode', String(isDark.value))
+  
+  // Get the current theme and reapply it to ensure dark mode styles are applied
+  const currentState = JSON.parse(localStorage.getItem('currentState') || '{}')
+  const currentTheme = currentState?.sceleton?.theme || 'green'
+  document.documentElement.classList.add(`theme-${currentTheme}`)
 }
 </script>
 

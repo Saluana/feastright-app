@@ -110,10 +110,23 @@ export const initializeTheme = () => {
 }
 
 export const applyThemeClass = (theme: string) => {
+  // Remove any existing theme classes
   document.documentElement.classList.forEach(className => {
     if (className.startsWith('theme-')) {
       document.documentElement.classList.remove(className)
     }
   })
+  
+  // Add the new theme class
   document.documentElement.classList.add(`theme-${theme}`)
+  
+  // Check if dark mode is enabled in localStorage
+  const isDarkMode = localStorage.getItem('darkMode') === 'true'
+  
+  // Apply or remove dark class based on the stored preference
+  if (isDarkMode) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
 } 

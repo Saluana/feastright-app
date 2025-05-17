@@ -179,7 +179,7 @@ onMounted(async () => {
           </div>
           <Input 
             v-model="recipeUrl" 
-            class="max-w-full h-[46px] text-lg pl-10 pr-10" 
+            class="max-w-full h-[46px] text-lg pl-10 pr-10 dark:border-gray-600 dark:text-gray-200" 
             placeholder="Enter recipe URL" 
           />
           <div 
@@ -195,7 +195,7 @@ onMounted(async () => {
             <Button size="lg" class="text-white font-medium">Import recipe</Button>
           </a>
           <a href="#">
-            <Button @click="isAddRecipeModalOpen = true" size="lg" variant="outline" class="font-medium">Manual Entry</Button>
+            <Button @click="isAddRecipeModalOpen = true" size="lg" variant="outline" class="font-medium dark:border-gray-600 dark:text-gray-200">Manual Entry</Button>
           </a>
         </HeroActions>
       </HeroContent>

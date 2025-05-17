@@ -452,7 +452,7 @@ export const themes = [
         'ring': '142.1 76.2% 36.3%',
       },
       dark: {
-        'background': '20 14.3% 4.1%',
+        'background': '240 5% 15%',
         'foreground': '0 0% 95%',
         'popover': '0 0% 9%',
         'popover-foreground': '0 0% 95%',
