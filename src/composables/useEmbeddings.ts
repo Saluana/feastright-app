@@ -2,7 +2,7 @@ import { Recipe } from "@/types/Recipe";
 import { findRecipeIdsWithoutEmbedding, batchGetRecipes, batchAddRecipeEmbeddings, RecipeEmbedding } from "@/composables/useDexie";
 
 export async function getRecipeEmbedding (recipe: Recipe) {
-    const res = await fetch('http://localhost:4200/embedding', {
+    const res = await fetch('http://localhost:4200/recipe-embedding', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -72,4 +72,23 @@ export async function ensureEmbeddingsExistForRecipes (recipeIds: number[]) {
         await batchAddRecipeEmbeddings(toAdd as RecipeEmbedding[]); // Cast if ResolvedEmbedding structurally matches RecipeEmbedding
       }
     }
+}
+
+export async function getTextEmbedding (text: string) {
+    const res = await fetch('http://localhost:4200/text-embedding', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({text: text})
+    })
+
+    if (!res.ok) {
+        throw new Error('Failed to get text embedding')
+    }
+
+    const data = await res.json()
+
+    const embedding = data.data as {embedding: number[]}
+    return embedding
 }

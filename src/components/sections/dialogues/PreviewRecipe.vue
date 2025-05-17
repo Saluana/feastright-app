@@ -12,7 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Save, Plus, Trash, EditIcon } from 'lucide-vue-next';
+import { Save, Plus, Trash, EditIcon, Upload } from 'lucide-vue-next';
 import { type Recipe } from '@/types/Recipe';
 import { addOrUpdateRecipe, type RecipeData, addHistory, addOrUpdateHistory, getFavouriteByRecipeId, updateFavourite } from '@/composables/useDexie';
 import { useToast } from '@/components/ui/toast';
@@ -270,7 +270,7 @@ watch(() => props.recipe, (newValue) => {
         <div class="mb-8 bg-white dark:bg-slate-800  dark:border-slate-700 overflow-hidden">
           <div class="flex flex-col md:flex-row">
             <!-- Image Preview -->
-            <div class="relative md:w-1/2 aspect-[4/3] bg-slate-100 dark:bg-slate-700/50">
+            <div class="relative md:w-1/2 aspect-[4/3]  bg-slate-100 dark:bg-slate-700/50">
               <div v-if="editableRecipe.images && editableRecipe.images[0]" class="relative h-full w-full group">
                 <img :src="editableRecipe.images[0]" :alt="editableRecipe.title"
                   class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105" />
@@ -329,8 +329,7 @@ watch(() => props.recipe, (newValue) => {
                     :disabled="!newImageUrl"
                     class="whitespace-nowrap"
                   >
-                    <Upload class="h-4 w-4 mr-2" />
-                    Upload
+                    <Upload class="h-4 w-4 " />
                   </Button>
                 </div>
                 <p class="text-xs text-slate-400 dark:text-slate-500">
