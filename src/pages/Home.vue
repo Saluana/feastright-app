@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {ChefHat, Hamburger, Shrimp, Salad, Link2, ClipboardPaste, Clipboard} from 'lucide-vue-next'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
-import { Recipe } from '@/types/Recipe'
+import { isOnline } from '@/composables/useState'
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
 import { addRecipe, addHistory, getRecipeByURL, RecipeData } from '@/composables/useDexie'
 import AddRecipe from '@/components/sections/dialogues/AddRecipe.vue'
@@ -192,7 +192,7 @@ onMounted(async () => {
         </div>
         <HeroActions class="gap-3 mt-1">
           <a @click.prevent="importRecipe">
-            <Button size="lg" class="text-white font-medium">Import recipe</Button>
+            <Button :disabled="!isOnline" size="lg" class="text-white font-medium">Import recipe</Button>
           </a>
           <a href="#">
             <Button @click="isAddRecipeModalOpen = true" size="lg" variant="outline" class="font-medium dark:border-gray-600 dark:text-gray-200">Manual Entry</Button>

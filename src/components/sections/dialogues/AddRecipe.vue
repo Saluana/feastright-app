@@ -27,6 +27,7 @@ import { useToast } from '@/components/ui/toast';
 import { getRecipeFromText, getRecipeFromImage } from '@/composables/useManualRecipeEntry';
 import { type Recipe } from '@/types/Recipe';
 import PreviewRecipe from './PreviewRecipe.vue';
+import { isOnline } from '@/composables/useState';
 
 const { toast } = useToast();
 const activeTab = ref('text');
@@ -129,6 +130,43 @@ const resetForm = () => {
     recipeImage.value = null;
     previewImage.value = null;
     processedRecipe.value = null;
+};
+
+// Create a blank recipe template for manual entry
+const createBlankRecipe = (): Recipe => {
+    return {
+        title: '',
+        images: [],
+        url: '',
+        description: '',
+        publisher: '',
+        servings: 1,
+        prepTime: 0,
+        cookTime: 0,
+        totalTime: 0,
+        cuisine: [],
+        categories: [],
+        nutrition: {},
+        ingredients: [
+            { name: '', quantity: '', unit: '' }
+        ],
+        instructions: [''],
+        ratings: { ratingValue: '0', ratingCount: '0' },
+        meta: {
+            includesFullRecipe: true,
+            includesImage: false,
+            includesNutrition: false,
+            includesVideo: false
+        },
+        favicon: '',
+        hostUrl: ''
+    };
+};
+
+// Open the preview with a blank recipe for manual entry
+const openManualEntry = () => {
+    processedRecipe.value = createBlankRecipe();
+    isPreviewOpen.value = true;
 };
 
 // Handle when user wants to edit the recipe
@@ -286,10 +324,13 @@ const handleEditRecipe = () => {
             </div>
 
             <DialogFooter>
-                <Button variant="outline" class="mr-2" @click="emit('update:open', false)"> Cancel </Button>
+                <Button variant="outline" class="mr-2" @click="openManualEntry">
+                    <FileText class="mr-2 h-5 w-5" />
+                    Manual Entry
+                </Button>
                 <Button
                     @click="submitRecipe"
-                    :disabled="isSubmitting"
+                    :disabled="isSubmitting || !isOnline"
                     class="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
                     <UploadCloud class="mr-2 h-5 w-5" v-if="!isSubmitting" />
