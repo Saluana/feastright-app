@@ -1,8 +1,9 @@
 import { Recipe } from "@/types/Recipe";
 import { findRecipeIdsWithoutEmbedding, batchGetRecipes, batchAddRecipeEmbeddings, RecipeEmbedding } from "@/composables/useDexie";
+import { host } from "@/composables/useState";
 
 export async function getRecipeEmbedding (recipe: Recipe) {
-    const res = await fetch('http://localhost:4200/recipe-embedding', {
+    const res = await fetch(`${host.value}/recipe-embedding`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -75,7 +76,7 @@ export async function ensureEmbeddingsExistForRecipes (recipeIds: number[]) {
 }
 
 export async function getTextEmbedding (text: string) {
-    const res = await fetch('http://localhost:4200/text-embedding', {
+    const res = await fetch(`${host.value}/text-embedding`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

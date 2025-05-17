@@ -208,8 +208,9 @@ const handleRestoreChange = (e: Event) => {
     <SidebarHeader class="p-4 border-b border-border/50">
       <div class="flex items-center space-x-3">
         <div
-          class="h-10 w-10 rounded-md bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-500/20 shadow-lg flex-shrink-0 flex items-center justify-center text-white font-bold ring-1 ring-white/10 text-lg">
-          R</div>
+          class="h-10 w-10 border-none  flex-shrink-0 flex items-center justify-center text-white font-bold  text-lg">
+          <img src="/fr-logo.png" alt="Recipe Scraper Logo" class="w-10 h-10" />
+        </div>
         <SearchInput @onSearch="handleSearch" @onChange="handleSearchChange" />
       </div>
     </SidebarHeader>
@@ -351,7 +352,7 @@ const handleRestoreChange = (e: Event) => {
     </SidebarContent>
     <SidebarFooter class="p-4 border-t border-border/50 mt-auto">
       <div class="flex items-center justify-between">
-        <div class="text-xs text-muted-foreground">Recipe Scraper v1.0</div>
+        <div class="text-xs text-muted-foreground">FeastRight Beta v1.0</div>
         <div class="text-xs flex items-center gap-1.5">
           <button @click="exportDatabase()" class="text-muted-foreground hover:text-foreground transition-colors">Backup</button>
           <span class="text-border">•</span>

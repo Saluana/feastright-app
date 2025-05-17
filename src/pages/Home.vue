@@ -164,13 +164,10 @@ onMounted(async () => {
     <Hero sectionKey="build_your_next_landing_page_with_shadcn_vue" layout="centered" height="nav">
       <HeroContent class="container mx-auto px-4" padding="sm">
         <div class="flex flex-col w-full justify-center items-center">
-          <Salad class="w-8 h-8 text-gray-600 dark:text-gray-200 mb-1" />
           <div class="flex items-center justify-center gap-3 mb-2">
-            <Hamburger class="w-8 h-8 text-gray-600 dark:text-gray-200" />
-            <ChefHat class="w-16 h-16 text-primary" />
-            <Shrimp class="w-8 h-8 text-gray-600 dark:text-gray-200" />
+            <img src="/Chef/Chef.webp" alt="Recipe Scraper Logo" class="w-32 h-32 " />
           </div>
-          <HeroTitle size="2xl" class="flex items-center justify-center gap-2 mb-1">Recipe Importer</HeroTitle>
+          <HeroTitle size="2xl" class="flex items-center justify-center gap-2 mb-1 font-semibold drop-shadow-md">Feast<span class="text-primary font-bold">Right</span></HeroTitle>
         </div>
         <HeroDescription class="mb-3 text-lg max-w-2xl mx-auto">Import recipes from the web and save them to your database.</HeroDescription>
         <div class="relative max-w-[42rem] mx-auto w-full mb-3">

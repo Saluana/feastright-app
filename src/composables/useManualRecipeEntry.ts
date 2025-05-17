@@ -1,7 +1,8 @@
 import { Recipe } from "@/types/Recipe"
+import { host } from "@/composables/useState";
 
 export async function getRecipeFromText(recipeText: string): Promise<Recipe> {
-  const response = await fetch('http://localhost:4200/text-to-recipe', {
+  const response = await fetch(`${host.value}/text-to-recipe`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -28,7 +29,7 @@ export async function getRecipeFromImage(image: File): Promise<Recipe> {
   const formData = new FormData();
   formData.append('recipeImage', image);
 
-  const response = await fetch('http://localhost:4200/image-to-recipe', {
+  const response = await fetch(`${host.value}/image-to-recipe`, {
     method: 'POST',
     body: formData,
   });

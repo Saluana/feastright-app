@@ -1,7 +1,8 @@
 import { Recipe } from "@/types/Recipe"
+import { host } from "@/composables/useState";
 
 export async function getRecipeFromUrl(url: string): Promise<Recipe> {
-  const response = await fetch('http://localhost:4200/scrape', {
+  const response = await fetch(`${host.value}/scrape`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
