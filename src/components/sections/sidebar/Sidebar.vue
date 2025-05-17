@@ -21,6 +21,7 @@ import { ref, onMounted } from 'vue'
 import { Plus, Heart, History as HistoryIcon, Bookmark as BookmarkIcon } from 'lucide-vue-next'
 import { type History } from '@/composables/useDexie'
 import { getRecipeEmbedding, ensureEmbeddingsExistForRecipes } from '@/composables/useEmbeddings'
+import { exportDatabase, importDatabase } from '@/composables/useImportExport'
 // Use liveQuery for reactive history updates
 const liveHistory = getLiveHistory()
 const liveFavourites = getLiveFavourites()
@@ -45,6 +46,12 @@ const selectCollectionOpen = ref(false)
 const currentCollectionId = ref<number | null>(null)
 const currentRecipe = ref<History | null>(null)
 const searchResults = ref<{ recipeId: number, title: string }[]>([])
+const restoreInput = ref<HTMLInputElement | null>(null)
+
+const handleRestore = () => {
+  if (!restoreInput.value) return
+  restoreInput.value.click()
+}
 
 const handleCollectionSelected = (collectionId: number) => {
   selectCollectionOpen.value = false
@@ -186,6 +193,13 @@ const handleSearchChange = (query: string) => {
     searchResults.value = []
   }
 }
+
+const handleRestoreChange = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  importDatabase(file)
+}
+
 </script>
 
 <template>
@@ -221,13 +235,11 @@ const handleSearchChange = (query: string) => {
             <div class="text-xs text-muted-foreground mt-1">Heart a recipe to save it here</div>
           </div>
           <SidebarMenuItem v-for="item in favourites" :key="item.id" class="list-none w-full mb-1 last:mb-0">
-            <SidebarMenuButton class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm group">
-              <router-link class="w-full flex items-center gap-2 truncate"
-                :to="`/recipe/${encodeURIComponent(item.url)}`" @click="openRecipe(item.url)">
+            <SidebarMenuButton @click="openRecipe(item.url)" class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm group">
+
                 <Heart
                   class="h-3.5 w-3.5 flex-shrink-0 fill-emerald-500 text-emerald-500/80 group-hover:text-emerald-600" />
                 <span class="truncate">{{ item.title }}</span>
-              </router-link>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -308,12 +320,9 @@ const handleSearchChange = (query: string) => {
                     </div>
                     <SidebarMenuItem v-for="recipe in collection.recipes" :key="recipe.id"
                       class="list-none w-full mb-1 last:mb-0">
-                      <SidebarMenuButton class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm">
-                        <router-link class="w-full flex items-center gap-2 truncate"
-                          :to="`/recipe/${encodeURIComponent(recipe.url)}`" @click="openRecipe(recipe.url)">
-                          <div class="w-3.5 h-3.5 invisible flex-shrink-0"></div>
-                          <span class="truncate">{{ recipe.title }}</span>
-                        </router-link>
+                      <SidebarMenuButton @click="openRecipe(recipe.url)" class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm">
+                        <div class="w-3.5 h-3.5 invisible flex-shrink-0"></div>
+                        <span class="truncate">{{ recipe.title }}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarGroupContent>
@@ -331,12 +340,9 @@ const handleSearchChange = (query: string) => {
             <div class="text-xs text-muted-foreground mt-1">View recipes to see them here</div>
           </div>
           <SidebarMenuItem v-for="item in history" :key="item.id" class="list-none w-full mb-1 last:mb-0">
-            <SidebarMenuButton class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm">
-              <router-link class="w-full flex items-center gap-2 truncate"
-                :to="`/recipe/${encodeURIComponent(item.url)}`" @click="openRecipe(item.url)">
+            <SidebarMenuButton @click="openRecipe(item.url)" class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm">
                 <HistoryIcon class="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" /> <span class="truncate">{{
                   item.title }}</span>
-              </router-link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarGroupContent>
@@ -347,9 +353,10 @@ const handleSearchChange = (query: string) => {
       <div class="flex items-center justify-between">
         <div class="text-xs text-muted-foreground">Recipe Scraper v1.0</div>
         <div class="text-xs flex items-center gap-1.5">
-          <a href="#" class="text-muted-foreground hover:text-foreground transition-colors">Help</a>
+          <button @click="exportDatabase()" class="text-muted-foreground hover:text-foreground transition-colors">Backup</button>
           <span class="text-border">•</span>
-          <a href="#" class="text-muted-foreground hover:text-foreground transition-colors">About</a>
+          <button @click="handleRestore()" class="text-muted-foreground hover:text-foreground transition-colors">Restore</button>
+          <input ref="restoreInput" type="file" class="hidden" accept=".json" @change="handleRestoreChange"/>
         </div>
       </div>
     </SidebarFooter>
