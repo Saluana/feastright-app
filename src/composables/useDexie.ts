@@ -42,6 +42,7 @@ interface CollectionWithRecipes {
 interface RecipeEmbedding {
     id?: number;
     recipeId: number;
+    title: string;
     embedding: number[];
     createdAt: Date;
     updatedAt: Date
@@ -57,14 +58,14 @@ const db = new Dexie('RecipeDatabase') as Dexie & {
 
 // Schema declaration:
 // Incremented version number due to schema change for 'recipes' table
-db.version(3).stores({
+db.version(4).stores({
   recipes: '++id, title, url, *images, description, publisher, servings, prepTime, cookTime, totalTime, *cuisine, *categories, favicon, hostUrl', // Corrected 'image' to '*images', made 'cuisine' and 'categories' multiEntry, removed complex objects (video, nutrition, ingredients, instructions, ratings, meta) from direct indexing.
   history: '++id, recipeId, url, title, createdAt',
   favourites: '++id, recipeId, title, url, createdAt',
   collections: '++id, name, recipes, createdAt, updatedAt',
-  embeddings: '++id, recipeId, embedding, createdAt, updatedAt'
+  embeddings: '++id, recipeId, title, embedding, createdAt, updatedAt'
 }).upgrade(tx => {
-  console.log("Upgrading Dexie schema from version 1 to 2 for 'RecipeDatabase'.");
+  console.log("Upgrading Dexie schema from version 1 to 4 for 'RecipeDatabase'.");
   // This is a basic upgrade path. If specific data migration for the 'recipes' table
   // (e.g., renaming 'image' to 'images' and moving data) was needed, it would go here.
   // Given the console log showed 'images: Array(0)', it's likely 'image' was an unused or incorrect index.

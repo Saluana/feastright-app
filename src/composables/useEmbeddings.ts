@@ -34,6 +34,7 @@ export async function ensureEmbeddingsExistForRecipes (recipeIds: number[]) {
       // Define the expected shape of a successfully resolved embedding object
       type ResolvedEmbedding = {
         recipeId: number;
+        title: string;
         embedding: number[];
         createdAt: Date;
         updatedAt: Date;
@@ -49,6 +50,7 @@ export async function ensureEmbeddingsExistForRecipes (recipeIds: number[]) {
           if (embeddingResponse && embeddingResponse.recipeId && embeddingResponse.embedding) {
             return {
               recipeId: embeddingResponse.recipeId,
+              title: recipe.title,
               embedding: embeddingResponse.embedding,
               createdAt: now, // Assign Date object
               updatedAt: now, // Assign Date object
