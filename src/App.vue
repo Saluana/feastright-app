@@ -2,6 +2,7 @@
 import { RouterView } from 'vue-router'
 import Sidebar from '@/components/sections/sidebar/Sidebar.vue'
 import { SidebarProvider } from '@/components/ui/sidebar'
+import { Toaster } from '@/components/ui/toast'
 </script>
 
 <template>
@@ -11,6 +12,7 @@ import { SidebarProvider } from '@/components/ui/sidebar'
     <main class="w-full">
       <RouterView />
     </main>
-
+    
+    <Toaster />
   </SidebarProvider>
 </template>

@@ -9,6 +9,8 @@ import {
   HeroTitle,
   HeroDescription
 } from '@/components/sections/hero'
+import { useToast } from '@/components/ui/toast';
+const { toast } = useToast();
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {ChefHat, Hamburger, Shrimp, Salad, Link2, ClipboardPaste, Clipboard} from 'lucide-vue-next'
@@ -25,6 +27,7 @@ const isRecipeModalOpen = ref(false)
 const isAddRecipeModalOpen = ref(false)
 
 const importRecipe = async () => {
+  try {
   const recipeData = await getRecipeFromUrl(recipeUrl.value)
 
   console.log(recipeData)
@@ -37,7 +40,21 @@ const importRecipe = async () => {
     if (recipeId) {
       addHistory({ ...recipe.value, id: recipeId })
     }
+  } else {
+    toast({
+      title: 'Error',
+      description: 'Failed to import recipe',
+      variant: 'destructive',
+      
+    })
   }
+} catch (error) {
+  toast({
+    title: 'Error',
+    description: 'Failed to import recipe',
+    variant: 'destructive',
+  })
+}
 }
 
 const handlePaste = async () => {
