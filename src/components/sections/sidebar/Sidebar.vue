@@ -222,6 +222,7 @@ const handleRestoreChange = (e: Event) => {
           class="h-10 w-10 border-none  flex-shrink-0 flex items-center justify-center text-white font-bold  text-lg">
           <img src="/fr-logo.png" alt="Recipe Scraper Logo" class="w-10 h-10" />
         </div>
+        <input type="text" class="hidden" />
         <SearchInput @onSearch="handleSearch" @onChange="handleSearchChange" />
       </div>
     </SidebarHeader>

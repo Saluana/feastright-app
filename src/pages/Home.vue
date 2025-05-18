@@ -192,7 +192,7 @@ onMounted(async () => {
         </div>
         <HeroActions class="gap-3 mt-1">
           <a @click.prevent="importRecipe">
-            <Button :disabled="!isOnline" size="lg" class="text-white font-medium">Import recipe</Button>
+            <Button :disabled="!isOnline" size="lg" class="text-white dark:bg-emerald-700 font-medium">Import recipe</Button>
           </a>
           <a href="#">
             <Button @click="isAddRecipeModalOpen = true" size="lg" variant="outline" class="font-medium dark:border-gray-600 dark:text-gray-200">Manual Entry</Button>

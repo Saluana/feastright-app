@@ -75,7 +75,7 @@ watch(searchQuery, () => {
             <div class="relative w-full group">
           <input
             type="search"
-            class="w-full h-10 pl-10 pr-4 rounded-lg border border-border/60 bg-gradient-to-b from-white/5 to-white/10 dark:from-black/5 dark:to-black/10 backdrop-blur-sm text-sm font-medium placeholder:text-muted-foreground/80 shadow-sm transition-all duration-200 focus:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 hover:border-border"
+            class="w-full h-10 pl-10 pr-4 text-[16px] rounded-lg border border-border/60 bg-gradient-to-b from-white/5 to-white/10 dark:from-black/5 dark:to-black/10 backdrop-blur-sm text-sm font-medium placeholder:text-muted-foreground/80 shadow-sm transition-all duration-200 focus:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 hover:border-border"
             placeholder="Search recipes..."
             autocomplete="off"
             v-model="searchQuery"

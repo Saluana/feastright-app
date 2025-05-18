@@ -211,7 +211,7 @@ const handleTabChange = (tab: string | number) => {
       
       <!-- Favorites Tab -->
       <TabsContent value="favorites" class="mt-0">
-        <div class="h-[300px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm p-1">
+        <div class="h-[300px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800/50 bg-white dark:bg-slate-900/50 shadow-sm p-1">
           <div v-if="isLoading" class="flex items-center justify-center p-8">
             <div class="animate-spin text-muted-foreground">↻</div>
           </div>
@@ -253,7 +253,7 @@ const handleTabChange = (tab: string | number) => {
       
       <!-- History Tab -->
       <TabsContent value="history" class="mt-0">
-        <div class="h-[300px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm p-1">
+        <div class="h-[300px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800/50 bg-white dark:bg-slate-900/50 shadow-sm p-1">
           <div v-if="isLoading" class="flex items-center justify-center p-8">
             <div class="animate-spin text-muted-foreground">↻</div>
           </div>
@@ -300,7 +300,7 @@ const handleTabChange = (tab: string | number) => {
       
       <!-- URL Import Tab -->
       <TabsContent value="url" class="mt-0">
-        <div class="h-[348px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm p-6 pt-10 space-y-5 flex flex-col justify-center">
+        <div class="h-[348px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-900/50 bg-white dark:bg-slate-900/50 shadow-sm p-6 pt-10 space-y-5 flex flex-col justify-center">
           <div class="space-y-2">
             <div class="relative">
               <GlobeIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

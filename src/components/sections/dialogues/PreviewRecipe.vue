@@ -255,7 +255,7 @@ watch(() => props.recipe, (newValue) => {
 
 <template>
   <Dialog :open="open" @update:open="(value) => emit('update:open', value)">
-    <DialogContent class="sm:max-w-[700px] max-h-[90vh] overflow-y-auto DialogContent pt-12">
+    <DialogContent class="sm:max-w-[700px] max-h-[100vh] overflow-y-auto overflow-x-hidden DialogContent pt-12">
       <DialogHeader>
         <DialogTitle class="text-2xl font-bold mb-2">
           <Input v-if="editableRecipe" v-model="editableRecipe.title" class="text-2xl font-bold"
@@ -264,13 +264,13 @@ watch(() => props.recipe, (newValue) => {
         </DialogTitle>
         <div v-if="editableRecipe" class="mb-2">
           <Textarea v-model="editableRecipe.description" placeholder="Add a brief description of your recipe"
-            class="resize-none" rows="2" />
+            class="resize-none text-[16px]" rows="2" />
         </div>
       </DialogHeader>
 
       <div v-if="editableRecipe" class="py-4 flex flex-col">
         <!-- Recipe image section -->
-        <div class="mb-8 bg-white dark:bg-slate-800  dark:border-slate-700 overflow-hidden">
+        <div class="mb-8   overflow-hidden">
           <div class="flex flex-col md:flex-row">
             <!-- Image Preview -->
             <div class="relative md:w-1/2 aspect-[4/3]  bg-slate-100 dark:bg-slate-700/50">
@@ -323,7 +323,7 @@ watch(() => props.recipe, (newValue) => {
                       v-model="newImageUrl" 
                       placeholder="https://example.com/your-recipe-image.jpg"
                       @keyup.enter="updateImageUrl" 
-                      class="w-full"
+                      class="w-full text-[16px]"
                     />
                   </div>
                   <Button 
@@ -438,19 +438,19 @@ watch(() => props.recipe, (newValue) => {
             <!-- Publisher field -->
             <div class="space-y-1">
               <Label>Publisher</Label>
-              <Input v-model="publisherString" placeholder="e.g., Italian, Mediterranean" />
+              <Input class="text-[16px]" v-model="publisherString" placeholder="e.g., Italian, Mediterranean" />
             </div>
 
             <!-- Cuisine field -->
             <div class="space-y-1">
               <Label>Cuisine (comma-separated)</Label>
-              <Input v-model="cuisineString" placeholder="e.g., Italian, Mediterranean" />
+              <Input class="text-[16px]" v-model="cuisineString" placeholder="e.g., Italian, Mediterranean" />
             </div>
 
             <!-- Categories field -->
             <div class="space-y-1">
               <Label>Categories (comma-separated)</Label>
-              <Input v-model="categoriesString" placeholder="e.g., Dinner, Pasta" />
+              <Input class="text-[16px]" v-model="categoriesString" placeholder="e.g., Dinner, Pasta" />
             </div>
           </div>
         </div>
@@ -481,7 +481,7 @@ watch(() => props.recipe, (newValue) => {
                     {{ key.replace('Content', '') }}
                   </Label>
                   <Input :id="`nutrition-${key}`" v-model="editableRecipe.nutrition[key]"
-                    placeholder="e.g., 200 kcal" />
+                    placeholder="e.g., 200 kcal" class="text-[16px]" />
                 </div>
               </div>
             </div>
@@ -511,23 +511,23 @@ watch(() => props.recipe, (newValue) => {
                   <div class="col-span-3">
                     <Label :for="`quantity-${index}`" class="text-xs">Quantity</Label>
                     <Input :id="`quantity-${index}`" v-model.number="ingredient.quantity" type="number" min="0"
-                      step="0.1" placeholder="e.g., 2" />
+                      step="0.1" placeholder="e.g., 2" class="text-[16px]" />
                   </div>
 
                   <div class="col-span-3">
                     <Label :for="`unit-${index}`" class="text-xs">Unit</Label>
                     <Input :id="`unit-${index}`" v-if="ingredient.unit !== null" v-model="ingredient.unit"
-                      placeholder="e.g., tsp" />
+                      placeholder="e.g., tsp" class="text-[16px]" />
                     <Input :id="`unit-${index}-null`" v-else @input="ingredient.unit = $event.target.value"
-                      placeholder="e.g., tsp" />
+                      placeholder="e.g., tsp" class="text-[16px]" />
                   </div>
 
                   <div class="col-span-6">
                     <Label :for="`ingredient-${index}`" class="text-xs">Ingredient</Label>
                     <Input :id="`ingredient-${index}`" v-if="ingredient.name !== null" v-model="ingredient.name"
-                      placeholder="e.g., Salt" />
+                      placeholder="e.g., Salt" class="text-[16px]" />
                     <Input :id="`ingredient-${index}-null`" v-else @input="ingredient.name = $event.target.value"
-                      placeholder="e.g., Salt" />
+                      placeholder="e.g., Salt" class="text-[16px]" />
                   </div>
                 </div>
               </div>
@@ -564,10 +564,9 @@ watch(() => props.recipe, (newValue) => {
                     {{ index + 1 }}
                   </div>
                   <Textarea v-if="editableRecipe.instructions[index] !== null"
-                    v-model="editableRecipe.instructions[index]" placeholder="Describe this step..."
-                    class="flex-grow resize-none" rows="2" />
+                    v-model="editableRecipe.instructions[index]" placeholder="Describe this step..." class="flex-grow resize-none text-[16px]" rows="2" />
                   <Textarea v-else @input="editableRecipe.instructions[index] = $event.target.value"
-                    placeholder="Describe this step..." class="flex-grow resize-none" rows="2" />
+                    placeholder="Describe this step..." class="flex-grow resize-none text-[16px]" rows="2" />
                 </div>
               </div>
 

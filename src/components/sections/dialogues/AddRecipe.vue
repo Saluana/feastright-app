@@ -227,6 +227,7 @@ const handleEditRecipe = () => {
                             <Input
                                 id="recipe-name"
                                 v-model="recipeName"
+                                class="text-[16px]"
                                 placeholder="E.g., Grandma's Apple Pie"
                             />
                         </div>
@@ -237,7 +238,7 @@ const handleEditRecipe = () => {
                                 id="recipe-text"
                                 v-model="recipeText"
                                 placeholder="Paste your recipe text here including ingredients and instructions..."
-                                class="min-h-[200px] resize-y"
+                                class="min-h-[200px] resize-y text-[16px]"
                             />
                             <p class="text-xs text-muted-foreground">
                                 Tip: Include sections for ingredients and
@@ -256,6 +257,7 @@ const handleEditRecipe = () => {
                                 id="recipe-name-img"
                                 v-model="recipeName"
                                 placeholder="E.g., Grandma's Apple Pie"
+                                class="text-[16px]"
                             />
                         </div>
 

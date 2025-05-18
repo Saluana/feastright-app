@@ -89,15 +89,15 @@ const handleSubmit = async () => {
     </template>
     
     <form @submit.prevent="handleSubmit" class="space-y-4">
-      <div class="space-y-2">
+      <div class="space-y-2 flex flex-col mx-0.5">
         <Label for="collection-name" class="text-sm font-medium">Collection Name</Label>
-        <div class="relative">
+        <div class="relative flex w-full">
           <BookmarkIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             id="collection-name"
             v-model="collectionName"
             placeholder="My Favorite Recipes"
-            class="pl-9"
+            class="pl-9 text-[16px]"
             :class="{ 'border-destructive': nameError }"
             autofocus
           />
