@@ -5,9 +5,6 @@ import router from './router'
 import { initializeTheme } from '@/components/theming/themeManager'
 import './components/theming/themes.css'
 
-import { isOnline } from './composables/useState'
-import { ensureEmbeddingsExistForRecipes } from './composables/useEmbeddings'
-import {getHistory} from '@/composables/useDexie'
 
 // Initialize theme and collecty store
 initializeTheme()
@@ -15,6 +12,10 @@ initializeTheme()
 const app = createApp(App)
 app.use(router)
 app.mount('#app')
+
+import { isOnline } from './composables/useState'
+import { ensureEmbeddingsExistForRecipes } from './composables/useEmbeddings'
+import {getHistory} from '@/composables/useDexie'
 
 isOnline.value = navigator.onLine
 window.addEventListener('online', async () => {

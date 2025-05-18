@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { provide } from 'vue'
-import { MainNavigation } from '@/components/sections/navbar'
+import MainNavigation from '@/components/sections/navbar/MainNavigation.vue'
 import {
   Hero,
   HeroContent,

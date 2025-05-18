@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { MainNavigation } from '@/components/sections/navbar'
+import MainNavigation from '@/components/sections/navbar/MainNavigation.vue'
 import { useRoute } from 'vue-router'
 import {
   Hero,
@@ -13,7 +13,7 @@ import { useToast } from '@/components/ui/toast';
 const { toast } = useToast();
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {ChefHat, Hamburger, Shrimp, Salad, Link2, ClipboardPaste, Clipboard} from 'lucide-vue-next'
+import {Link2, Clipboard} from 'lucide-vue-next'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
 import { isOnline } from '@/composables/useState'
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
