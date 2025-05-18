@@ -251,7 +251,7 @@ const handleRestoreChange = (e: Event) => {
               <div class="h-6 w-6 ml-1 bg-transparent"></div>
             </div>
           </div>
-          <div v-else-if="favourites.length === 0" class="px-2 py-3 text-center rounded-md bg-muted/40">
+          <div v-else-if="favourites.length === 0" class="px-2 py-3 text-center rounded-md">
             <div class="text-sm text-muted-foreground">No favorites yet</div>
             <div class="text-xs text-muted-foreground mt-1">Heart a recipe to save it here</div>
           </div>
@@ -309,7 +309,7 @@ const handleRestoreChange = (e: Event) => {
               </div>
             </div>
           </div>
-          <div v-else-if="collections.length === 0" class="px-2 py-3 text-center rounded-md bg-muted/40">
+          <div v-else-if="collections.length === 0" class="px-2 py-3 text-center rounded-md ">
             <div class="text-sm text-muted-foreground">No collections yet</div>
             <div class="text-xs text-muted-foreground mt-1">Create a collection to organize recipes</div>
           </div>
@@ -380,7 +380,7 @@ const handleRestoreChange = (e: Event) => {
               <div class="h-6 w-6 ml-1 bg-transparent"></div>
             </div>
           </div>
-          <div v-else-if="history.length === 0" class="px-2 py-3 text-center rounded-md bg-muted/40">
+          <div v-else-if="history.length === 0" class="px-2 py-3 text-center rounded-md ">
             <div class="text-sm text-muted-foreground">No history yet</div>
             <div class="text-xs text-muted-foreground mt-1">View recipes to see them here</div>
           </div>

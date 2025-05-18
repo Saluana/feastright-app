@@ -64,6 +64,6 @@ export default defineConfig({
     },
     build: {
         target: 'esnext',
-        minify: true // Use esbuild (default, safest)
+        minify: true, // Use esbuild (default, safest)
     }
 });

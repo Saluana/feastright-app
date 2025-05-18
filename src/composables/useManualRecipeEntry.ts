@@ -29,23 +29,35 @@ export async function getRecipeFromImage(image: File): Promise<Recipe> {
   const formData = new FormData();
   formData.append('recipeImage', image);
 
-  const response = await fetch(`${host.value}/image-to-recipe`, {
-    method: 'POST',
-    body: formData,
-  });
+  try {
+    console.log('Uploading image:', image.name, 'Size:', image.size, 'Type:', image.type);
+    
+    const response = await fetch(`${host.value}/image-to-recipe`, {
+      method: 'POST',
+      body: formData,
+      // Don't set Content-Type header - browser will set it with boundary
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch recipe');
-  }
+    console.log('Upload response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Upload error response:', errorText);
+      throw new Error(`Failed to fetch recipe: ${response.status} ${response.statusText}`);
+    }
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (data.data) {
-    return data.data as Recipe;
-  } else if (data.error) {
-    throw new Error(data.error);
-  } else {
-    throw new Error('Unknown error');
+    if (data.data) {
+      return data.data as Recipe;
+    } else if (data.error) {
+      throw new Error(data.error);
+    } else {
+      throw new Error('Unknown error');
+    }
+  } catch (error) {
+    console.error('Error during image upload:', error);
+    throw error;
   }
 }
 

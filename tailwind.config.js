@@ -5,7 +5,7 @@ module.exports = {
   darkMode: ["class"],
   safelist: [
     {
-      pattern: /^(theme-|bg-)(zinc|slate|stone|gray|neutral|red|rose|orange|green|blue|violet)/,
+      pattern: /^(theme-|bg-)green/,
       variants: ['dark', 'hover', 'focus', 'lg', 'active', 'disabled'],
     }
   ],

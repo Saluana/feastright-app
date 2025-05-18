@@ -31,7 +31,6 @@ import {
     updateFavourite,
 } from '@/composables/useDexie';
 import { useToast } from '@/components/ui/toast';
-import { ensureEmbeddingsExistForRecipes } from '@/composables/useEmbeddings';
 
 const props = defineProps<{
     open: boolean;
@@ -241,8 +240,6 @@ const saveRecipe = async () => {
                 ...recipeData,
                 id,
             });
-
-            await ensureEmbeddingsExistForRecipes([id]);
 
             toast({
                 title: 'Success!',
