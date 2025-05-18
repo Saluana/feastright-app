@@ -176,8 +176,8 @@ const handleTabChange = (tab: string | number) => {
       </slot>
     </template>
     
-    <Tabs :default-value="activeTab" class="w-full min-h-[412px]" @update:modelValue="handleTabChange">
-      <TabsList class="grid w-full grid-cols-3 mb-6 rounded-xl bg-slate-100/50 dark:bg-slate-900/50 p-1">
+    <Tabs :default-value="activeTab" class="w-full flex flex-col mx-1 overflow-hidden min-h-[412px]" @update:modelValue="handleTabChange">
+      <TabsList class="grid mx-1 grid-cols-3 mb-6 rounded-xl bg-slate-100/50 dark:bg-slate-900/50">
         <TabsTrigger value="favorites" >
           <div class="flex items-center gap-1">
             <HeartIcon class="h-3.5 w-3.5" />
@@ -199,7 +199,7 @@ const handleTabChange = (tab: string | number) => {
       </TabsList>
       
       <!-- Search Bar (for Favorites and History tabs) -->
-      <div v-if="activeTab !== 'url'" class="relative mb-4">
+      <div v-if="activeTab !== 'url'" class="relative mx-2 mb-4">
         <MagnifyingGlassIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           v-model="searchQuery"
@@ -210,7 +210,7 @@ const handleTabChange = (tab: string | number) => {
       </div>
       
       <!-- Favorites Tab -->
-      <TabsContent value="favorites" class="mt-0">
+      <TabsContent value="favorites" class="mt-0 mx-1">
         <div class="h-[300px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800/50 bg-white dark:bg-slate-900/50 shadow-sm p-1">
           <div v-if="isLoading" class="flex items-center justify-center p-8">
             <div class="animate-spin text-muted-foreground">↻</div>
@@ -252,7 +252,7 @@ const handleTabChange = (tab: string | number) => {
       </TabsContent>
       
       <!-- History Tab -->
-      <TabsContent value="history" class="mt-0">
+      <TabsContent value="history" class="mt-0 mx-1">
         <div class="h-[300px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-800/50 bg-white dark:bg-slate-900/50 shadow-sm p-1">
           <div v-if="isLoading" class="flex items-center justify-center p-8">
             <div class="animate-spin text-muted-foreground">↻</div>
@@ -299,7 +299,7 @@ const handleTabChange = (tab: string | number) => {
       </TabsContent>
       
       <!-- URL Import Tab -->
-      <TabsContent value="url" class="mt-0">
+      <TabsContent value="url" class="mt-0 mx-1">
         <div class="h-[348px] overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-900/50 bg-white dark:bg-slate-900/50 shadow-sm p-6 pt-10 space-y-5 flex flex-col justify-center">
           <div class="space-y-2">
             <div class="relative">

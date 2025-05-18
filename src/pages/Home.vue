@@ -168,9 +168,11 @@ onMounted(async () => {
       <HeroContent class="container mx-auto px-4" padding="sm">
         <div class="flex flex-col w-full justify-center items-center">
           <div class="flex items-center justify-center gap-3 mb-2">
-            <img src="/Chef/Chef.webp" alt="Recipe Scraper Logo" class="w-32 h-32 " />
+            <img src="/Chef/Chef.webp" alt="Recipe Scraper Logo" class="w-48 h-48 " />
           </div>
-          <HeroTitle size="2xl" class="flex items-center justify-center gap-2 mb-1 font-semibold drop-shadow-md">Feast<span class="text-primary font-bold">Right</span></HeroTitle>
+          <HeroTitle size="3xl" class="flex items-center justify-center mb-1 font-extrabold drop-shadow-md dark:text-white/90 feastright-3d">
+  Feast<span class="feastright-3d-green ml-0">Right</span>
+</HeroTitle>
         </div>
         <HeroDescription class="mb-3 text-lg max-w-2xl mx-auto">Import recipes from the web and save them to your database.</HeroDescription>
         <div class="relative max-w-[42rem] mx-auto w-full mb-3">
@@ -213,3 +215,40 @@ onMounted(async () => {
     />
   </main>
 </template>
+
+<style scoped>
+.feastright-3d {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-shadow: 
+    0 1px 0 #ddd,
+    0 2px 0 #ccc,
+    0 3px 3px rgba(0,0,0,0.1),
+    0 0 2px rgba(0,0,0,0.1);
+}
+
+.dark .feastright-3d {
+  text-shadow: 
+    0 1px 0 rgba(255,255,255,0.1),
+    0 2px 2px rgba(0,0,0,0.3),
+    0 0 3px rgba(255,255,255,0.1);
+}
+
+.feastright-3d-green {
+  color: #16A34A;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-shadow: 
+    0 1px 0 rgba(255,255,255,0.5),
+    0 2px 2px rgba(0,0,0,0.15),
+    0 0 1px rgba(0,0,0,0.1);
+}
+
+.dark .feastright-3d-green {
+  color: #22C55E;
+  text-shadow: 
+    0 1px 0 rgba(0,0,0,0.5),
+    0 2px 2px rgba(0,0,0,0.3),
+    0 0 3px rgba(255,255,255,0.1);
+}
+</style>

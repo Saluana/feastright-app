@@ -144,7 +144,7 @@ const handleCollectionCreated = async () => {
       </slot>
     </template>
     
-    <div class="space-y-4">
+    <div class="space-y-4 mx-0.5">
       <!-- Search Bar -->
       <div class="relative">
         <MagnifyingGlassIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
