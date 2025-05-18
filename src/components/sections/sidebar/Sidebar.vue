@@ -228,7 +228,7 @@ const handleRestoreChange = (e: Event) => {
     </SidebarHeader>
     <SidebarContent class="px-2 py-1 space-y-6 overflow-y-auto scrollbar-gutter-stable">
       <SidebarGroup v-if="searchResults.length > 0" class="pb-3">
-        <SidebarGroupLabel class="text-sm font-semibold text-foreground mb-2 px-1">Search Results</SidebarGroupLabel>
+        <SidebarGroupLabel class="text-base font-semibold text-foreground mb-2 px-1">Search Results</SidebarGroupLabel>
         <SidebarGroupContent class="list-none space-y-1 pl-0">
           <SidebarMenuItem v-for="item in searchResults" :key="item.recipeId" class="list-none w-full mb-1 last:mb-0">
             <SidebarMenuButton @click="openRecipeById(item.recipeId)" class="w-full px-2 py-1.5 rounded-md hover:bg-muted text-sm">
@@ -241,7 +241,7 @@ const handleRestoreChange = (e: Event) => {
         </SidebarGroupContent>
       </SidebarGroup>
       <SidebarGroup class="pb-3">
-        <SidebarGroupLabel class="text-sm font-semibold text-foreground mb-2 px-1">Favourites</SidebarGroupLabel>
+        <SidebarGroupLabel class="text-base font-semibold text-foreground mb-2 px-1">Favourites</SidebarGroupLabel>
         <SidebarGroupContent class="list-none w-full space-y-1 pl-0">
           <div v-if="isFavouritesLoading">
             <!-- Skeleton loaders for favourites -->
@@ -286,7 +286,7 @@ const handleRestoreChange = (e: Event) => {
       </SidebarGroup>
       <SidebarGroup class="pb-3">
         <div class="flex items-center justify-between mb-2 ">
-          <SidebarGroupLabel class="text-sm font-semibold text-foreground">Collections</SidebarGroupLabel>
+          <SidebarGroupLabel class="text-base font-semibold text-foreground">Collections</SidebarGroupLabel>
           <SidebarGroupAction @click="isCollectionModalOpen = true" title="Add Collection"
             class="h-5 w-5 hover:bg-muted rounded-sm">
             <Plus class="h-4 w-4" /> <span class="sr-only">Add Collection</span>
@@ -314,14 +314,14 @@ const handleRestoreChange = (e: Event) => {
             <div class="text-xs text-muted-foreground mt-1">Create a collection to organize recipes</div>
           </div>
           <Collapsible v-else v-for="collection in collections" :key="collection.id"
-            class="group/collapsible mb-1 !w-full last:mb-0">
+            class="group/collapsible mb-3 last:mb-0 !w-full border-l-2 border-emerald-600">
             <SidebarGroup
               class="!p-0 border-l-0 border-r-0 border-t-0 border-b border-border/30 pb-1 mb-1 last:border-b-0 last:mb-0 last:pb-0">
               <SidebarGroupLabel asChild>
                 <CollapsibleTrigger
                   class="flex items-center w-full group/trigger px-2 py-1.5 rounded-md hover:bg-muted text-sm font-medium relative">
                   <BookMarked class="h-3.5 w-3.5 mr-2 text-muted-foreground" />
-                  <span class="truncate text-sm mr-8">{{ collection.name }}</span>
+                  <span class="truncate font-normal text-base text-foreground/80 mr-8">{{ collection.name }}</span>
                   <ChevronDown
                     class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180 h-4 w-4 text-muted-foreground absolute right-2" />
 
@@ -370,7 +370,7 @@ const handleRestoreChange = (e: Event) => {
         </SidebarGroupContent>
       </SidebarGroup>
       <SidebarGroup class="pb-3">
-        <SidebarGroupLabel class="text-sm font-semibold text-foreground mb-2 px-1">History</SidebarGroupLabel>
+        <SidebarGroupLabel class="text-base font-semibold text-foreground mb-2 px-1">History</SidebarGroupLabel>
         <SidebarGroupContent class="list-none space-y-1 pl-0">
           <div v-if="isHistoryLoading">
             <!-- Skeleton loaders for history -->
