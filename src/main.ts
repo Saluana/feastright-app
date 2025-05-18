@@ -13,6 +13,15 @@ const app = createApp(App)
 app.use(router)
 app.mount('#app')
 
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    if (import.meta.env.PROD) {
+      navigator.serviceWorker.register('/sw.js')
+    }
+  })
+}
+
 import { isOnline } from './composables/useState'
 import { ensureEmbeddingsExistForRecipes } from './composables/useEmbeddings'
 import {getHistory} from '@/composables/useDexie'

@@ -9,6 +9,7 @@ import { MagnifyingGlassIcon, HeartIcon, ClockIcon, GlobeIcon, CheckIcon } from 
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { formatDistanceToNow } from 'date-fns'
+import { host } from '@/composables/useState'
 
 // Helper function to extract hostname from URL
 function extractHostname(url: string): string {
@@ -114,7 +115,7 @@ const importFromUrl = async () => {
       // For example purposes, we'll simulate it
       try {
         // Make API call to fetch recipe
-        const response = await fetch('http://localhost:4200/scrape', {
+        const response = await fetch(`${host.value}/scrape`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
