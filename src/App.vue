@@ -16,3 +16,10 @@ import { Toaster } from '@/components/ui/toast'
     <Toaster />
   </SidebarProvider>
 </template>
+
+<style >
+body {
+  overflow: hidden;
+  height: 100vh !important;
+}
+</style>

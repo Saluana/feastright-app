@@ -19,6 +19,11 @@ const isOpen = computed(() => isMobileView.value ? openMobile.value : open.value
 function toggleSidebar() {
   if (isMobileView.value) {
     setOpenMobile(!openMobile.value)
+
+    setTimeout(() => {
+      // Type cast to HTMLElement which has the blur method
+      (document.activeElement as HTMLElement)?.blur()
+    }, 100)
   } else {
     setOpen(!open.value)
   }

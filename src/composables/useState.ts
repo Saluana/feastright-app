@@ -1,16 +1,15 @@
-import { ref, computed } from "vue"
+import { ref, computed } from 'vue';
 
-const isOnline = ref(true)
-const isProduction = ref(true)
-const backendDevelopmentHost = ref('http://localhost:4200')
-const backendProductionHost = ref('https://api.feastright.com')
-const host = computed(() => isProduction.value ? backendProductionHost.value : backendDevelopmentHost.value)
+const isOnline = ref(true);
+const isProduction = ref(true);
+const backendDevelopmentHost = ref('http://localhost:4200');
+const backendProductionHost = ref('https://api.feastright.com');
+const host = computed(() =>
+    isProduction.value
+        ? backendProductionHost.value
+        : backendDevelopmentHost.value
+);
 
-console.log(host.value)
+console.log(host.value);
 
-export  {
-    isOnline,
-    isProduction,
-    host
-}
-    
+export { isOnline, isProduction, host };
