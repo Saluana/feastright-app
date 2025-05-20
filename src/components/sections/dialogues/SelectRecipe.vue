@@ -204,7 +204,7 @@ const handleTabChange = (tab: string | number) => {
         <Input
           v-model="searchQuery"
           placeholder="Search..."
-          class="pl-9"
+          class="pl-9 !text-[16px]"
           :disabled="isLoading"
         />
       </div>
@@ -307,7 +307,7 @@ const handleTabChange = (tab: string | number) => {
               <Input
                 v-model="urlInput"
                 placeholder="https://www.example.com/recipe"
-                class="pl-9"
+                class="pl-9 !text-[16px]"
                 :disabled="isFetchingUrl"
                 :class="{ 'border-destructive': urlError }"
               />

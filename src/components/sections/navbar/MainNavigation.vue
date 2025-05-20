@@ -23,7 +23,7 @@ function toggleSidebar() {
     setTimeout(() => {
       // Type cast to HTMLElement which has the blur method
       (document.activeElement as HTMLElement)?.blur()
-    }, 100)
+    }, 0)
   } else {
     setOpen(!open.value)
   }
