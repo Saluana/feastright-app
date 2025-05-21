@@ -13,7 +13,7 @@ import { useToast } from '@/components/ui/toast';
 const { toast } = useToast();
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {Link2, Clipboard} from 'lucide-vue-next'
+import {Link2, Clipboard, X} from 'lucide-vue-next'
 import { getRecipeFromUrl } from '@/composables/useRecipeImporter'
 import { isOnline } from '@/composables/useState'
 import RecipeCard from '@/components/sections/cards/RecipeCard.vue'
@@ -61,13 +61,19 @@ const importRecipe = async () => {
 }
 
 const handlePaste = async () => {
-  try {
-    const clipboardText = await navigator.clipboard.readText()
-    if (clipboardText && clipboardText.trim() !== '') {
-      recipeUrl.value = clipboardText.trim()
+  if (recipeUrl.value) {
+    // Clear the input if there's already text
+    recipeUrl.value = ''
+  } else {
+    // Paste from clipboard if the input is empty
+    try {
+      const clipboardText = await navigator.clipboard.readText()
+      if (clipboardText && clipboardText.trim() !== '') {
+        recipeUrl.value = clipboardText.trim()
+      }
+    } catch (error) {
+      console.error('Failed to read clipboard contents:', error)
     }
-  } catch (error) {
-    console.error('Failed to read clipboard contents:', error)
   }
 }
 
@@ -187,9 +193,10 @@ onMounted(async () => {
           <div 
             class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-primary transition-colors"
             @click="handlePaste"
-            title="Paste from clipboard"
+            :title="recipeUrl ? 'Clear input' : 'Paste from clipboard'"
           >
-            <Clipboard class="w-5 h-5" />
+            <X v-if="recipeUrl" class="w-5 h-5" />
+            <Clipboard v-else class="w-5 h-5" />
           </div>
         </div>
         <HeroActions class="gap-3 mt-1">

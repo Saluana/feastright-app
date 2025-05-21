@@ -80,13 +80,17 @@ import { type Recipe } from "@/types/Recipe";
 import { getRecipeFromUrl } from "@/composables/useRecipeImporter";
 import { getRecipeByURL, addFavourite } from "@/composables/useDexie";
 import { useRoute } from "vue-router";
-import NewCollection from "@/components/sections/dialogues/NewCollection.vue";
-import SelectCollection from "@/components/sections/dialogues/SelectCollection.vue";
-import SelectRecipe from "@/components/sections/dialogues/SelectRecipe.vue";
-import { isOnline } from "@/composables/useState";
+import NewCollection from '@/components/sections/dialogues/NewCollection.vue'
+import SelectCollection from '@/components/sections/dialogues/SelectCollection.vue'
+import SelectRecipe from '@/components/sections/dialogues/SelectRecipe.vue'
+import DeleteConfirmation from '@/components/sections/dialogues/DeleteConfirmation.vue'
+import { isOnline } from '@/composables/useState';
 const isRecipeSelectModalOpen = ref(false);
 const isCollectionModalOpen = ref(false);
 const selectCollectionOpen = ref(false);
+const isDeleteConfirmationOpen = ref(false);
+const collectionToDelete = ref<number | null>(null);
+const collectionNameToDelete = ref('');
 const currentCollectionId = ref<number | null>(null);
 const currentRecipe = ref<History | null>(null);
 const searchResults = ref<{ recipeId: number; title: string }[]>([]);
@@ -108,6 +112,14 @@ function handleRecipeSelected(recipe: History) {
 
 function trashHistory(historyId: number) {
   moveHistoryToTrash(historyId);
+}
+
+const handleDeleteConfirmation = async () => {
+  if (collectionToDelete.value) {
+    await deleteCollectionById(collectionToDelete.value);
+    collectionToDelete.value = null;
+    isDeleteConfirmationOpen.value = false;
+  }
 }
 
 async function handleSelectRecipeUpdate(url: string) {
@@ -400,9 +412,9 @@ const handleRestoreChange = (e: Event) => {
           <SidebarGroupAction
             @click="isCollectionModalOpen = true"
             title="Add Collection"
-            class="h-5 w-5 hover:bg-muted rounded-sm"
+            class="h-[28px] w-[28px] hover:bg-muted rounded-sm"
           >
-            <Plus class="h-4 w-4" /> <span class="sr-only">Add Collection</span>
+            <Plus class="h-[24px] w-[24px]" /> <span class="sr-only">Add Collection</span>
           </SidebarGroupAction>
         </div>
         <SidebarGroupContent class="space-y-1 pl-0">
@@ -480,7 +492,11 @@ const handleRestoreChange = (e: Event) => {
                     <!-- Delete button that appears on hover -->
                     <button
                       v-if="collection.id"
-                      @click.stop="deleteCollectionById(collection.id)"
+                      @click.stop="
+                        collectionToDelete = collection.id;
+                        collectionNameToDelete = collection.name;
+                        isDeleteConfirmationOpen = true;
+                      "
                       class="opacity-0 group-hover/trigger:opacity-70 hover:opacity-100 transition-opacity h-[28px] w-[28px] rounded-sm hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 flex items-center justify-center"
                       title="Delete collection"
                     >
@@ -681,6 +697,15 @@ const handleRestoreChange = (e: Event) => {
   <SelectRecipe
     v-model:open="isRecipeSelectModalOpen"
     @recipe-selected="handleSelectRecipeUpdate"
+  />
+  
+  <DeleteConfirmation
+    v-model:open="isDeleteConfirmationOpen"
+    title="Delete Collection"
+    description="Are you sure you want to delete this collection?"
+    delete-button-text="Delete Collection"
+    @confirm="handleDeleteConfirmation"
+    @cancel="collectionToDelete = null"
   />
 </template>
 
